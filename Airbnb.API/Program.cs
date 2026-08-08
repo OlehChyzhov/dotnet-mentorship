@@ -1,13 +1,32 @@
+using Airbnb.Application.Services;
 using Airbnb.Infrastructure;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Application Services
+builder.Services.AddScoped<IAuthService, AuthService>();
+
+// Database
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
 
+// Database (Identity)
+builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
+{
+    options.Password.RequiredLength = 5;
+    options.Password.RequireNonAlphanumeric = false;
+    options.Password.RequireUppercase = false;
+    options.Password.RequireLowercase = false;
+})
+    .AddEntityFrameworkStores<ApplicationDbContext>()
+    .AddDefaultTokenProviders();
+
+// Default
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 
@@ -16,6 +35,13 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
+    app.MapScalarApiReference(options =>
+    {
+        options
+            .WithTitle("Airbnb API")
+            .WithTheme(ScalarTheme.Default)
+            .WithDefaultHttpClient(ScalarTarget.CSharp, ScalarClient.Http);
+    });
 }
 
 app.UseHttpsRedirection();
