@@ -1,5 +1,5 @@
-﻿using Airbnb.Application.Services;
-using Airbnb.Domain;
+﻿using Airbnb.Application.Requests;
+using Airbnb.Application.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
@@ -29,9 +29,16 @@ public class AuthController : ControllerBase
         return BadRequest(result.Errors);
     }
     
-    [HttpGet("login")]
-    public IActionResult Login()
+    [HttpPost("login")]
+    public async Task<IActionResult> Login([FromBody] UserLoginRequest userLoginRequest)
     {
-        return Ok();
+        var result = await _authService.LoginUserAsync(userLoginRequest);
+
+        if (result.isSuccessful)
+        {
+            return Ok(result.message);
+        }
+        
+        return BadRequest(result.message);
     }
 }
