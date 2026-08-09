@@ -1,3 +1,5 @@
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using Airbnb.Application;
 using Airbnb.Application.Services;
 using Airbnb.Domain.Enums;
@@ -70,6 +72,10 @@ public class AuthServiceTests
 
         _userManagerMock
             .Setup(m => m.CreateAsync(It.IsAny<IdentityUser>(), It.IsAny<string>()))
+            .ReturnsAsync(IdentityResult.Success);
+
+        _userManagerMock
+            .Setup(m => m.AddToRoleAsync(It.IsAny<IdentityUser>(), It.IsAny<string>()))
             .ReturnsAsync(IdentityResult.Success);
 
         var request = new UserRegisterRequest
@@ -174,5 +180,29 @@ public class AuthServiceTests
         // Assert
         token.ShouldNotBeNullOrEmpty();
         token.Split('.').Length.ShouldBe(3);
+    }
+
+    [Fact]
+    public async Task GenerateJwtTokenAsync_WhenUserExists_TokenContainsExpectedClaims()
+    {
+        // Arrange
+        var identityUser = new IdentityUser { Email = "test@test.com" };
+        _userManagerMock.Setup(m => m.FindByEmailAsync("test@test.com")).ReturnsAsync(identityUser);
+        _userManagerMock.Setup(m => m.GetRolesAsync(identityUser)).ReturnsAsync(new List<string> { "Client", "Host" });
+
+        var request = new UserLoginRequest { Email = "test@test.com", Password = "correct" };
+
+        // Act
+        string token = await _sut.GenerateJwtTokenAsync(request);
+
+        // Assert
+        JwtSecurityToken jwt = new JwtSecurityTokenHandler().ReadJwtToken(token);
+
+        jwt.Issuer.ShouldBe("test-issuer");
+        jwt.Audiences.ShouldContain("test-audience");
+
+        jwt.Claims.ShouldContain(c => c.Type == ClaimTypes.Email && c.Value == "test@test.com");
+        jwt.Claims.ShouldContain(c => c.Type == ClaimTypes.Role && c.Value == "Client");
+        jwt.Claims.ShouldContain(c => c.Type == ClaimTypes.Role && c.Value == "Host");
     }
 }
