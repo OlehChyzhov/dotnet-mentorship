@@ -36,8 +36,12 @@ public class AuthService : IAuthService
         if (doesRoleExist)
         {
             var result = await _userManager.CreateAsync(identityUser, user.Password);
-            await _userManager.AddToRoleAsync(identityUser, user.Role.ToString());
-            return result;
+            if (!result.Succeeded)
+            {
+                return result;
+            }
+
+            return await _userManager.AddToRoleAsync(identityUser, user.Role.ToString());
         }
         
         return IdentityResult.Failed(new  IdentityError()
