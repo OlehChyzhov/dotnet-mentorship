@@ -1,4 +1,4 @@
-﻿namespace Airbnb.Application.Requests;
+﻿namespace Airbnb.Domain.Requests;
 
 public class UserLoginRequest
 {

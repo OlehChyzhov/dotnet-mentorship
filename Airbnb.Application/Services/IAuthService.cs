@@ -1,11 +1,13 @@
-﻿using Airbnb.Application.Requests;
+﻿using Airbnb.Domain.Requests;
 using Microsoft.AspNetCore.Identity;
 
 namespace Airbnb.Application.Services;
 
 public interface IAuthService
 {
-    public Task<IdentityResult> RegisterUserAsync(UserLoginRequest user);
+    public Task<IdentityResult> RegisterUserAsync(UserRegisterRequest user);
 
     public Task<(bool isSuccessful, string message)> LoginUserAsync(UserLoginRequest user);
+    
+    public Task<string> GenerateJwtTokenAsync(UserLoginRequest user);
 }

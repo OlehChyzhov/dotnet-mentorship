@@ -1,5 +1,5 @@
-﻿using Airbnb.Application.Requests;
-using Airbnb.Application.Services;
+﻿using Airbnb.Application.Services;
+using Airbnb.Domain.Requests;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
@@ -17,9 +17,9 @@ public class AuthController : ControllerBase
     }
     
     [HttpPost("register")]
-    public async Task<IActionResult> Register([FromBody] UserLoginRequest userLoginRequest)
+    public async Task<IActionResult> Register([FromBody] UserRegisterRequest userRegisterRequest)
     {
-        IdentityResult result = await _authService.RegisterUserAsync(userLoginRequest);
+        IdentityResult result = await _authService.RegisterUserAsync(userRegisterRequest);
 
         if (result.Succeeded)
         {
@@ -36,7 +36,8 @@ public class AuthController : ControllerBase
 
         if (result.isSuccessful)
         {
-            return Ok(result.message);
+            string token = await _authService.GenerateJwtTokenAsync(userLoginRequest);
+            return Ok(token);
         }
         
         return BadRequest(result.message);
