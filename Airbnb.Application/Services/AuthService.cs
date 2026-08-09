@@ -3,6 +3,7 @@ using System.Security.Claims;
 using System.Text;
 using Airbnb.Application.Options;
 using Airbnb.Domain.Requests;
+using MapsterMapper;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -14,24 +15,23 @@ public class AuthService : IAuthService
     private readonly UserManager<IdentityUser> _userManager;
     private readonly RoleManager<IdentityRole> _roleManager;
     private readonly IOptions<JwtOptions> _jwtOptions;
+    private readonly IMapper _mapper;
     
     public AuthService(
         UserManager<IdentityUser> userManager, 
         RoleManager<IdentityRole> roleManager, 
-        IOptions<JwtOptions> jwtOptions)
+        IOptions<JwtOptions> jwtOptions,
+        IMapper mapper)
     {
         _userManager = userManager;
         _roleManager = roleManager;
         _jwtOptions =  jwtOptions;
+        _mapper = mapper;
     }
 
     public async Task<IdentityResult> RegisterUserAsync(UserRegisterRequest user)
     {
-        IdentityUser identityUser = new IdentityUser()
-        {
-            UserName = user.Email,
-            Email = user.Email,
-        };
+        IdentityUser identityUser = _mapper.Map<UserRegisterRequest, IdentityUser>(user);
         
         bool roleExists = await _roleManager.RoleExistsAsync(user.Role.ToString());
         if (roleExists)

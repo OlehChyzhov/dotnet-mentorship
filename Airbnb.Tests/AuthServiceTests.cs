@@ -4,6 +4,7 @@ using Airbnb.Application.Options;
 using Airbnb.Application.Services;
 using Airbnb.Domain.Enums;
 using Airbnb.Domain.Requests;
+using MapsterMapper;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Moq;
@@ -16,6 +17,7 @@ public class AuthServiceTests
     private readonly Mock<UserManager<IdentityUser>> _userManagerMock;
     private readonly Mock<RoleManager<IdentityRole>> _roleManagerMock;
     private readonly IOptions<JwtOptions> _jwtOptions;
+    private readonly Mock<IMapper> _mapperMock;
     private readonly AuthService _sut;
 
     public AuthServiceTests()
@@ -36,7 +38,12 @@ public class AuthServiceTests
             ExpirationMinutes = 60
         });
 
-        _sut = new AuthService(_userManagerMock.Object, _roleManagerMock.Object, _jwtOptions);
+        _mapperMock = new Mock<IMapper>();
+        _mapperMock
+            .Setup(m => m.Map<UserRegisterRequest, IdentityUser>(It.IsAny<UserRegisterRequest>()))
+            .Returns((UserRegisterRequest src) => new IdentityUser { Email = src.Email, UserName = src.Email });
+
+        _sut = new AuthService(_userManagerMock.Object, _roleManagerMock.Object, _jwtOptions, _mapperMock.Object);
     }
 
     [Fact]

@@ -1,10 +1,12 @@
 using System.Text;
 using Airbnb.Application;
+using Airbnb.Application.Mapping;
 using Airbnb.Application.Options;
 using Airbnb.Application.Services;
 using Airbnb.Application.Validators;
 using Airbnb.Infrastructure;
 using FluentValidation;
+using Mapster;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -55,6 +57,12 @@ builder.Services.AddAuthentication(options =>
     };
     
 });
+
+// Mapping
+TypeAdapterConfig.GlobalSettings.RequireExplicitMapping = true;
+var applicationAssembly = typeof(UserMappingConfig).Assembly;
+TypeAdapterConfig.GlobalSettings.Scan(applicationAssembly);
+builder.Services.AddMapster();
 
 // Fluent Validation
 builder.Services.AddValidatorsFromAssembly(typeof(UserLoginRequestValidator).Assembly);
