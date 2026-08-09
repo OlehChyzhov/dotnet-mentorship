@@ -32,8 +32,8 @@ public class AuthService : IAuthService
             Email = user.Email,
         };
         
-        bool doesRoleExist = await _roleManager.RoleExistsAsync(user.Role.ToString());
-        if (doesRoleExist)
+        bool roleExists = await _roleManager.RoleExistsAsync(user.Role.ToString());
+        if (roleExists)
         {
             var result = await _userManager.CreateAsync(identityUser, user.Password);
             if (!result.Succeeded)
@@ -83,14 +83,14 @@ public class AuthService : IAuthService
         };
         claims.AddRange(userRoles.Select(role => new Claim(ClaimTypes.Role, role)));
 
-        SecurityKey key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config[Constants.JwtKeyKey]));
-        SigningCredentials credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config[Constants.JwtKeyKey]));
+        var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
         
-        SecurityToken securityToken = new JwtSecurityToken(
+        var securityToken = new JwtSecurityToken(
             issuer: _config[Constants.JwtIssuerKey], 
             audience: _config[Constants.JwtAudienceKey], 
             claims: claims,
-            expires: DateTime.Now.AddMinutes(60),
+            expires: DateTime.Now.AddMinutes(int.Parse(_config[Constants.JwtExpirationMinutesKey])),
             signingCredentials: credentials
         );
         
