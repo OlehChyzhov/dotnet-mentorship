@@ -1,7 +1,9 @@
 using System.Text;
 using Airbnb.Application;
 using Airbnb.Application.Services;
+using Airbnb.Application.Validators;
 using Airbnb.Infrastructure;
+using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -52,6 +54,9 @@ builder.Services.AddAuthentication(options =>
     };
     
 });
+
+// Fluent Validation
+builder.Services.AddValidatorsFromAssembly(typeof(UserLoginRequestValidator).Assembly);
 
 // Default
 builder.Services.AddControllers();
