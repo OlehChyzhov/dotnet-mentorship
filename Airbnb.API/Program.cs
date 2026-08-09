@@ -1,5 +1,6 @@
 using System.Text;
 using Airbnb.Application;
+using Airbnb.Application.Options;
 using Airbnb.Application.Services;
 using Airbnb.Application.Validators;
 using Airbnb.Infrastructure;
@@ -48,15 +49,18 @@ builder.Services.AddAuthentication(options =>
         ValidateAudience = true,
         RequireExpirationTime = true,
         ValidateIssuerSigningKey = true,
-        ValidIssuer = builder.Configuration[Constants.JwtIssuerKey],
-        ValidAudience = builder.Configuration[Constants.JwtAudienceKey],
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration[Constants.JwtKeyKey]))
+        ValidIssuer = builder.Configuration["JWT:Issuer"],
+        ValidAudience = builder.Configuration["JWT:Audience"],
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT:Key"]))
     };
     
 });
 
 // Fluent Validation
 builder.Services.AddValidatorsFromAssembly(typeof(UserLoginRequestValidator).Assembly);
+
+// Options
+builder.Services.AddOptions<JwtOptions>().BindConfiguration("JWT");
 
 // Default
 builder.Services.AddControllers();

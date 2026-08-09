@@ -1,9 +1,10 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Airbnb.Application.Options;
 using Airbnb.Domain.Requests;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
 namespace Airbnb.Application.Services;
@@ -12,16 +13,16 @@ public class AuthService : IAuthService
 {
     private readonly UserManager<IdentityUser> _userManager;
     private readonly RoleManager<IdentityRole> _roleManager;
-    private readonly IConfiguration _config;
+    private readonly IOptions<JwtOptions> _jwtOptions;
     
     public AuthService(
         UserManager<IdentityUser> userManager, 
         RoleManager<IdentityRole> roleManager, 
-        IConfiguration config)
+        IOptions<JwtOptions> jwtOptions)
     {
         _userManager = userManager;
         _roleManager = roleManager;
-        _config = config;
+        _jwtOptions =  jwtOptions;
     }
 
     public async Task<IdentityResult> RegisterUserAsync(UserRegisterRequest user)
@@ -83,14 +84,14 @@ public class AuthService : IAuthService
         };
         claims.AddRange(userRoles.Select(role => new Claim(ClaimTypes.Role, role)));
 
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config[Constants.JwtKeyKey]));
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtOptions.Value.Key));
         var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
         
         var securityToken = new JwtSecurityToken(
-            issuer: _config[Constants.JwtIssuerKey], 
-            audience: _config[Constants.JwtAudienceKey], 
+            issuer: _jwtOptions.Value.Issuer, 
+            audience: _jwtOptions.Value.Audience, 
             claims: claims,
-            expires: DateTime.Now.AddMinutes(int.Parse(_config[Constants.JwtExpirationMinutesKey])),
+            expires: DateTime.Now.AddMinutes(_jwtOptions.Value.ExpirationMinutes),
             signingCredentials: credentials
         );
         

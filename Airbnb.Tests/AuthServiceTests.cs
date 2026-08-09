@@ -1,11 +1,11 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using Airbnb.Application;
+using Airbnb.Application.Options;
 using Airbnb.Application.Services;
 using Airbnb.Domain.Enums;
 using Airbnb.Domain.Requests;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using Moq;
 using Shouldly;
 
@@ -15,7 +15,7 @@ public class AuthServiceTests
 {
     private readonly Mock<UserManager<IdentityUser>> _userManagerMock;
     private readonly Mock<RoleManager<IdentityRole>> _roleManagerMock;
-    private readonly Mock<IConfiguration> _configMock;
+    private readonly IOptions<JwtOptions> _jwtOptions;
     private readonly AuthService _sut;
 
     public AuthServiceTests()
@@ -28,12 +28,15 @@ public class AuthServiceTests
         _roleManagerMock = new Mock<RoleManager<IdentityRole>>(
             roleStoreMock.Object, null, null, null, null);
 
-        _configMock = new Mock<IConfiguration>();
-        _configMock.Setup(c => c[Constants.JwtKeyKey]).Returns("65C57A40D2BF4EE3851EC843D125770D65C57A40D2BF4EE3851EC843D125770D");
-        _configMock.Setup(c => c[Constants.JwtIssuerKey]).Returns("test-issuer");
-        _configMock.Setup(c => c[Constants.JwtAudienceKey]).Returns("test-audience");
+        _jwtOptions = Options.Create(new JwtOptions
+        {
+            Key = "65C57A40D2BF4EE3851EC843D125770D65C57A40D2BF4EE3851EC843D125770D",
+            Issuer = "test-issuer",
+            Audience = "test-audience",
+            ExpirationMinutes = 60
+        });
 
-        _sut = new AuthService(_userManagerMock.Object, _roleManagerMock.Object, _configMock.Object);
+        _sut = new AuthService(_userManagerMock.Object, _roleManagerMock.Object, _jwtOptions);
     }
 
     [Fact]
