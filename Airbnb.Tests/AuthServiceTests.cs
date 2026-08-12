@@ -3,7 +3,7 @@ using System.Security.Claims;
 using Airbnb.Application.Abstracts.Repositories;
 using Airbnb.Application.Options;
 using Airbnb.Application.Services;
-using Airbnb.Domain.Enums;
+using Airbnb.Domain;
 using Airbnb.Domain.Requests;
 using MapsterMapper;
 using Microsoft.AspNetCore.Identity;
@@ -52,7 +52,7 @@ public class AuthServiceTests
         {
             Email = "test@test.com",
             Password = "Password123!",
-            Role = Role.Client
+            Role = Roles.Client
         };
 
         // Act
@@ -71,7 +71,7 @@ public class AuthServiceTests
     {
         // Arrange
         _userRepositoryMock
-            .Setup(m => m.RoleExistsAsync(Role.Client.ToString()))
+            .Setup(m => m.RoleExistsAsync(Roles.Client))
             .ReturnsAsync(true);
 
         _userRepositoryMock
@@ -86,7 +86,7 @@ public class AuthServiceTests
         {
             Email = "test@test.com",
             Password = "Password123!",
-            Role = Role.Client
+            Role = Roles.Client
         };
 
         // Act
@@ -102,7 +102,7 @@ public class AuthServiceTests
             Times.Once);
 
         _userRepositoryMock.Verify(
-            m => m.AddUserToRoleAsync(It.IsAny<IdentityUser>(), Role.Client.ToString()),
+            m => m.AddUserToRoleAsync(It.IsAny<IdentityUser>(), Roles.Client),
             Times.Once);
     }
 

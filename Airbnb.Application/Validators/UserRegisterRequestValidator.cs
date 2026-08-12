@@ -1,5 +1,4 @@
-﻿using Airbnb.Domain.Enums;
-using Airbnb.Domain.Requests;
+﻿using Airbnb.Domain.Requests;
 using FluentValidation;
 
 namespace Airbnb.Application.Validators;
@@ -20,7 +19,8 @@ public class UserRegisterRequestValidator : AbstractValidator<UserRegisterReques
             .WithMessage("Password is required");
         
         RuleFor(x => x.Role)
-            .IsInEnum()
-            .WithMessage("Role must be a valid value");
+            .NotEmpty()
+            .NotNull()
+            .WithMessage("Role is required");
     }
 }
