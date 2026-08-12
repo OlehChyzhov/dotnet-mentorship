@@ -1,5 +1,6 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using Airbnb.Application.Abstracts.Repositories;
 using Airbnb.Application.Options;
 using Airbnb.Application.Services;
 using Airbnb.Domain.Enums;
@@ -14,21 +15,14 @@ namespace Airbnb.Tests;
 
 public class AuthServiceTests
 {
-    private readonly Mock<UserManager<IdentityUser>> _userManagerMock;
-    private readonly Mock<RoleManager<IdentityRole>> _roleManagerMock;
+    private readonly Mock<IUserRepository> _userRepositoryMock;
     private readonly IOptions<JwtOptions> _jwtOptions;
     private readonly Mock<IMapper> _mapperMock;
     private readonly AuthService _sut;
 
     public AuthServiceTests()
     {
-        var userStoreMock = new Mock<IUserStore<IdentityUser>>();
-        _userManagerMock = new Mock<UserManager<IdentityUser>>(
-            userStoreMock.Object, null, null, null, null, null, null, null, null);
-
-        var roleStoreMock = new Mock<IRoleStore<IdentityRole>>();
-        _roleManagerMock = new Mock<RoleManager<IdentityRole>>(
-            roleStoreMock.Object, null, null, null, null);
+        _userRepositoryMock = new Mock<IUserRepository>();
 
         _jwtOptions = Options.Create(new JwtOptions
         {
@@ -43,14 +37,14 @@ public class AuthServiceTests
             .Setup(m => m.Map<UserRegisterRequest, IdentityUser>(It.IsAny<UserRegisterRequest>()))
             .Returns((UserRegisterRequest src) => new IdentityUser { Email = src.Email, UserName = src.Email });
 
-        _sut = new AuthService(_userManagerMock.Object, _roleManagerMock.Object, _jwtOptions, _mapperMock.Object);
+        _sut = new AuthService(_userRepositoryMock.Object, _jwtOptions, _mapperMock.Object);
     }
 
     [Fact]
     public async Task RegisterUserAsync_WhenRoleDoesNotExist_ReturnsFailedResult()
     {
         // Arrange
-        _roleManagerMock
+        _userRepositoryMock
             .Setup(m => m.RoleExistsAsync(It.IsAny<string>()))
             .ReturnsAsync(false);
 
@@ -67,25 +61,25 @@ public class AuthServiceTests
         // Assert
         result.Succeeded.ShouldBeFalse();
         result.Errors.ShouldContain(e => e.Code == "RoleNotFound");
-        
-        _userManagerMock.Verify(
-            m => m.CreateAsync(It.IsAny<IdentityUser>(), It.IsAny<string>()), Times.Never);
+
+        _userRepositoryMock.Verify(
+            m => m.CreateUserAsync(It.IsAny<IdentityUser>(), It.IsAny<string>()), Times.Never);
     }
 
     [Fact]
     public async Task RegisterUserAsync_WhenRoleExists_CreatesUserAndAddsRole()
     {
         // Arrange
-        _roleManagerMock
+        _userRepositoryMock
             .Setup(m => m.RoleExistsAsync(Role.Client.ToString()))
             .ReturnsAsync(true);
 
-        _userManagerMock
-            .Setup(m => m.CreateAsync(It.IsAny<IdentityUser>(), It.IsAny<string>()))
+        _userRepositoryMock
+            .Setup(m => m.CreateUserAsync(It.IsAny<IdentityUser>(), It.IsAny<string>()))
             .ReturnsAsync(IdentityResult.Success);
 
-        _userManagerMock
-            .Setup(m => m.AddToRoleAsync(It.IsAny<IdentityUser>(), It.IsAny<string>()))
+        _userRepositoryMock
+            .Setup(m => m.AddUserToRoleAsync(It.IsAny<IdentityUser>(), It.IsAny<string>()))
             .ReturnsAsync(IdentityResult.Success);
 
         var request = new UserRegisterRequest
@@ -101,14 +95,14 @@ public class AuthServiceTests
         // Assert
         result.Succeeded.ShouldBeTrue();
 
-        _userManagerMock.Verify(
-            m => m.CreateAsync(
+        _userRepositoryMock.Verify(
+            m => m.CreateUserAsync(
                 It.Is<IdentityUser>(u => u.Email == "test@test.com"),
                 "Password123!"),
             Times.Once);
 
-        _userManagerMock.Verify(
-            m => m.AddToRoleAsync(It.IsAny<IdentityUser>(), Role.Client.ToString()),
+        _userRepositoryMock.Verify(
+            m => m.AddUserToRoleAsync(It.IsAny<IdentityUser>(), Role.Client.ToString()),
             Times.Once);
     }
 
@@ -130,8 +124,8 @@ public class AuthServiceTests
     {
         // Arrange
         var identityUser = new IdentityUser { Email = "test@test.com" };
-        _userManagerMock.Setup(m => m.FindByEmailAsync("test@test.com")).ReturnsAsync(identityUser);
-        _userManagerMock.Setup(m => m.CheckPasswordAsync(identityUser, "wrong")).ReturnsAsync(false);
+        _userRepositoryMock.Setup(m => m.FindUserByEmailAsync("test@test.com")).ReturnsAsync(identityUser);
+        _userRepositoryMock.Setup(m => m.CheckPasswordAsync(identityUser, "wrong")).ReturnsAsync(false);
 
         var request = new UserLoginRequest { Email = "test@test.com", Password = "wrong" };
 
@@ -148,8 +142,8 @@ public class AuthServiceTests
     {
         // Arrange
         var identityUser = new IdentityUser { Email = "test@test.com" };
-        _userManagerMock.Setup(m => m.FindByEmailAsync("test@test.com")).ReturnsAsync(identityUser);
-        _userManagerMock.Setup(m => m.CheckPasswordAsync(identityUser, "correct")).ReturnsAsync(true);
+        _userRepositoryMock.Setup(m => m.FindUserByEmailAsync("test@test.com")).ReturnsAsync(identityUser);
+        _userRepositoryMock.Setup(m => m.CheckPasswordAsync(identityUser, "correct")).ReturnsAsync(true);
 
         var request = new UserLoginRequest { Email = "test@test.com", Password = "correct" };
 
@@ -179,8 +173,8 @@ public class AuthServiceTests
     {
         // Arrange
         var identityUser = new IdentityUser { Email = "test@test.com" };
-        _userManagerMock.Setup(m => m.FindByEmailAsync("test@test.com")).ReturnsAsync(identityUser);
-        _userManagerMock.Setup(m => m.GetRolesAsync(identityUser)).ReturnsAsync(new List<string> { "Client" });
+        _userRepositoryMock.Setup(m => m.FindUserByEmailAsync("test@test.com")).ReturnsAsync(identityUser);
+        _userRepositoryMock.Setup(m => m.GetRolesAsync(identityUser)).ReturnsAsync(new List<string> { "Client" });
 
         var request = new UserLoginRequest { Email = "test@test.com", Password = "correct" };
 
@@ -197,8 +191,8 @@ public class AuthServiceTests
     {
         // Arrange
         var identityUser = new IdentityUser { Email = "test@test.com" };
-        _userManagerMock.Setup(m => m.FindByEmailAsync("test@test.com")).ReturnsAsync(identityUser);
-        _userManagerMock.Setup(m => m.GetRolesAsync(identityUser)).ReturnsAsync(new List<string> { "Client", "Host" });
+        _userRepositoryMock.Setup(m => m.FindUserByEmailAsync("test@test.com")).ReturnsAsync(identityUser);
+        _userRepositoryMock.Setup(m => m.GetRolesAsync(identityUser)).ReturnsAsync(new List<string> { "Client", "Host" });
 
         var request = new UserLoginRequest { Email = "test@test.com", Password = "correct" };
 

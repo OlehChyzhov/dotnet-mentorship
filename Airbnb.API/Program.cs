@@ -1,10 +1,13 @@
 using System.Text;
 using Airbnb.Application;
+using Airbnb.Application.Abstracts.Repositories;
+using Airbnb.Application.Abstracts.Services;
 using Airbnb.Application.Mapping;
 using Airbnb.Application.Options;
 using Airbnb.Application.Services;
 using Airbnb.Application.Validators;
 using Airbnb.Infrastructure;
+using Airbnb.Infrastructure.Repositories;
 using FluentValidation;
 using Mapster;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -17,6 +20,9 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Application Services
 builder.Services.AddScoped<IAuthService, AuthService>();
+
+// Repositories
+builder.Services.AddScoped<IUserRepository, UserRepository>();
 
 // Database
 builder.Services.AddDbContext<ApplicationDbContext>(options =>

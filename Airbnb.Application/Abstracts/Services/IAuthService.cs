@@ -1,7 +1,7 @@
 ﻿using Airbnb.Domain.Requests;
 using Microsoft.AspNetCore.Identity;
 
-namespace Airbnb.Application.Services;
+namespace Airbnb.Application.Abstracts.Services;
 
 public interface IAuthService
 {

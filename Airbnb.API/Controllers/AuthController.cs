@@ -1,4 +1,5 @@
-﻿using Airbnb.Application.Services;
+﻿using Airbnb.Application.Abstracts.Services;
+using Airbnb.Application.Services;
 using Airbnb.Domain.Requests;
 using FluentValidation;
 using FluentValidation.Results;
