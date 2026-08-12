@@ -29,12 +29,6 @@ public class AuthController : ControllerBase
     [HttpPost("register")]
     public async Task<IActionResult> Register([FromBody] UserRegisterRequest userRegisterRequest)
     {
-        ValidationResult validationResult = await _registerValidator.ValidateAsync(userRegisterRequest);
-        if (!validationResult.IsValid)
-        {
-            return BadRequest(validationResult.Errors);
-        }
-        
         IdentityResult result = await _authService.RegisterUserAsync(userRegisterRequest);
 
         if (result.Succeeded)
@@ -48,12 +42,6 @@ public class AuthController : ControllerBase
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] UserLoginRequest userLoginRequest)
     {
-        ValidationResult validationResult = await _loginValidator.ValidateAsync(userLoginRequest);
-        if (!validationResult.IsValid)
-        {
-            return BadRequest(validationResult.Errors);
-        }
-        
         var result = await _authService.LoginUserAsync(userLoginRequest);
 
         if (result.IsSuccessful)

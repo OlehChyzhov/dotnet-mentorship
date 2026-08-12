@@ -1,4 +1,6 @@
 using System.Text;
+using Airbnb.API.Middleware;
+using Airbnb.API.Middlewares;
 using Airbnb.Application;
 using Airbnb.Application.Abstracts.Repositories;
 using Airbnb.Application.Abstracts.Services;
@@ -20,6 +22,9 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Application Services
 builder.Services.AddScoped<IAuthService, AuthService>();
+
+// Middlewares
+builder.Services.AddTransient<ValidationMiddleware>();
 
 // Repositories
 builder.Services.AddScoped<IUserRepository, UserRepository>();
@@ -98,6 +103,9 @@ app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+// Custom Middlewares
+app.UseValidationMiddleware();
 
 app.MapControllers();
 
