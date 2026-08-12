@@ -56,12 +56,12 @@ public class AuthController : ControllerBase
         
         var result = await _authService.LoginUserAsync(userLoginRequest);
 
-        if (result.isSuccessful)
+        if (result.IsSuccessful)
         {
             string token = await _authService.GenerateJwtTokenAsync(userLoginRequest);
             return Ok(token);
         }
         
-        return BadRequest(result.message);
+        return BadRequest(result.Message);
     }
 }

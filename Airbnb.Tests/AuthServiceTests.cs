@@ -112,11 +112,11 @@ public class AuthServiceTests
         var request = new UserLoginRequest { Email = "missing@test.com", Password = "whatever" };
 
         // Act
-        var (isSuccessful, message) = await _sut.LoginUserAsync(request);
+        var result = await _sut.LoginUserAsync(request);
 
         // Assert
-        isSuccessful.ShouldBeFalse();
-        message.ShouldBe("No user found");
+        result.IsSuccessful.ShouldBeFalse();
+        result.Message.ShouldBe("No user found");
     }
 
     [Fact]
@@ -130,11 +130,11 @@ public class AuthServiceTests
         var request = new UserLoginRequest { Email = "test@test.com", Password = "wrong" };
 
         // Act
-        var (isSuccessful, message) = await _sut.LoginUserAsync(request);
+        var result = await _sut.LoginUserAsync(request);
 
         // Assert
-        isSuccessful.ShouldBeFalse();
-        message.ShouldBe("Incorrect password");
+        result.IsSuccessful.ShouldBeFalse();
+        result.Message.ShouldBe("Incorrect password");
     }
 
     [Fact]
@@ -148,11 +148,11 @@ public class AuthServiceTests
         var request = new UserLoginRequest { Email = "test@test.com", Password = "correct" };
 
         // Act
-        var (isSuccessful, message) = await _sut.LoginUserAsync(request);
+        var result = await _sut.LoginUserAsync(request);
 
         // Assert
-        isSuccessful.ShouldBeTrue();
-        message.ShouldBe("Login successful");
+        result.IsSuccessful.ShouldBeTrue();
+        result.Value.ShouldBe(request);
     }
 
     [Fact]

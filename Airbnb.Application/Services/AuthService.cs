@@ -4,6 +4,7 @@ using System.Text;
 using Airbnb.Application.Abstracts.Repositories;
 using Airbnb.Application.Abstracts.Services;
 using Airbnb.Application.Options;
+using Airbnb.Domain;
 using Airbnb.Domain.Requests;
 using MapsterMapper;
 using Microsoft.AspNetCore.Identity;
@@ -51,20 +52,20 @@ public class AuthService : IAuthService
         });
     }
 
-    public async Task<(bool isSuccessful, string message)> LoginUserAsync(UserLoginRequest user)
+    public async Task<Result<UserLoginRequest>> LoginUserAsync(UserLoginRequest user)
     {
         IdentityUser? identityUser = await _userRepository.FindUserByEmailAsync(user.Email);
         if (identityUser == null)
         {
-            return (false, "No user found");
+            return "No user found";
         }
         
         if (await _userRepository.CheckPasswordAsync(identityUser, user.Password))
         {
-            return (true, "Login successful");
+            return user;
         }
-        
-        return (false, "Incorrect password");
+
+        return "Incorrect password";
     }
 
     public async Task<string> GenerateJwtTokenAsync(UserLoginRequest user)
