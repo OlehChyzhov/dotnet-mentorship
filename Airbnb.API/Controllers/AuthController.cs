@@ -13,17 +13,10 @@ namespace Airbnb.API.Controllers;
 public class AuthController : ControllerBase
 {
     private readonly IAuthService _authService;
-    private readonly IValidator<UserRegisterRequest> _registerValidator;
-    private readonly IValidator<UserLoginRequest> _loginValidator;
     
-    public AuthController(
-        IAuthService authService,
-        IValidator<UserRegisterRequest> registerValidator,
-        IValidator<UserLoginRequest> loginValidator)
+    public AuthController(IAuthService authService)
     {
         _authService = authService;
-        _registerValidator = registerValidator;
-        _loginValidator = loginValidator;
     }
     
     [HttpPost("register")]
