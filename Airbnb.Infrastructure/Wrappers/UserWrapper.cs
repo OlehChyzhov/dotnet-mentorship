@@ -1,19 +1,21 @@
-﻿using Airbnb.Application.Abstracts.Repositories;
+﻿using Airbnb.Application.Abstracts.Wrappers;
 using Microsoft.AspNetCore.Identity;
 
-namespace Airbnb.Infrastructure.Repositories;
+namespace Airbnb.Infrastructure.Wrappers;
 
-public class UserRepository : IUserRepository
+public class UserWrapper : IUserWrapper
 {
     private readonly UserManager<IdentityUser> _userManager;
     private readonly RoleManager<IdentityRole> _roleManager;
 
-    public UserRepository(UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager)
+    public UserWrapper(
+        UserManager<IdentityUser> userManager, 
+        RoleManager<IdentityRole> roleManager)
     {
         _userManager = userManager;
         _roleManager = roleManager;
     }
-    
+
     public async Task<bool> RoleExistsAsync(string roleName)
     {
         return await _roleManager.RoleExistsAsync(roleName);

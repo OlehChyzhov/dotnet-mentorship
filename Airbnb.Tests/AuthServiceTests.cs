@@ -1,6 +1,7 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using Airbnb.Application.Abstracts.Repositories;
+using Airbnb.Application.Abstracts.Wrappers;
 using Airbnb.Application.Options;
 using Airbnb.Application.Services;
 using Airbnb.Domain;
@@ -16,14 +17,14 @@ namespace Airbnb.Tests;
 
 public class AuthServiceTests
 {
-    private readonly Mock<IUserRepository> _userRepositoryMock;
+    private readonly Mock<IUserWrapper> _userRepositoryMock;
     private readonly IOptions<JwtOptions> _jwtOptions;
     private readonly Mock<IMapper> _mapperMock;
     private readonly AuthService _sut;
 
     public AuthServiceTests()
     {
-        _userRepositoryMock = new Mock<IUserRepository>();
+        _userRepositoryMock = new Mock<IUserWrapper>();
 
         _jwtOptions = Options.Create(new JwtOptions
         {
