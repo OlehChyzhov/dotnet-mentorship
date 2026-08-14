@@ -10,4 +10,12 @@
       <ProjectReference Include="..\Airbnb.Domain\Airbnb.Domain.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.1.1" />
+      <PackageReference Include="Mapster.DependencyInjection" Version="10.1.0-pre01" />
+      <PackageReference Include="Microsoft.Extensions.Identity.Core" Version="10.0.10" />
+      <PackageReference Include="Microsoft.Extensions.Identity.Stores" Version="10.0.10" />
+      <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.19.2" />
+    </ItemGroup>
+
 </Project>
