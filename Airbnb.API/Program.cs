@@ -1,12 +1,14 @@
 using System.Text;
 using Airbnb.API.Middleware;
+using Airbnb.Application.Abstracts.Repositories;
 using Airbnb.Application.Abstracts.Services;
 using Airbnb.Application.Mapping;
 using Airbnb.Application.Options;
 using Airbnb.Application.Services;
 using Airbnb.Application.Validators;
 using Airbnb.Infrastructure;
-using Airbnb.Infrastructure.Wrappers;
+using Airbnb.Infrastructure.Repositories;
+using Airbnb.Infrastructure.Services;
 using FluentValidation;
 using Mapster;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -24,7 +26,12 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddTransient<ValidationMiddleware>();
 
 // Repositories
-builder.Services.AddScoped<UserWrapper>();
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddScoped<IApartmentRepository, ApartmentRepository>();
+builder.Services.AddScoped<IBookingRepository, BookingRepository>();
+
+// Services
+builder.Services.AddScoped<UserService>();
 
 // Database
 builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));

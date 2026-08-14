@@ -1,14 +1,14 @@
-﻿using Airbnb.Application.Abstracts.Wrappers;
+﻿using Airbnb.Application.Abstracts.Services;
 using Microsoft.AspNetCore.Identity;
 
-namespace Airbnb.Infrastructure.Wrappers;
+namespace Airbnb.Infrastructure.Services;
 
-public class UserWrapper : IUserWrapper
+public class UserService : IUserService
 {
     private readonly UserManager<IdentityUser> _userManager;
     private readonly RoleManager<IdentityRole> _roleManager;
 
-    public UserWrapper(
+    public UserService(
         UserManager<IdentityUser> userManager, 
         RoleManager<IdentityRole> roleManager)
     {
