@@ -1,4 +1,4 @@
-﻿namespace Airbnb.Domain;
+﻿namespace Airbnb.Domain.Constants;
 
 public static class Roles
 {

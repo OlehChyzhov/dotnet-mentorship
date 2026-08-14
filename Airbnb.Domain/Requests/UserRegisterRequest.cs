@@ -1,4 +1,6 @@
-﻿namespace Airbnb.Domain.Requests;
+﻿using Airbnb.Domain.Constants;
+
+namespace Airbnb.Domain.Requests;
 
 public class UserRegisterRequest
 {

@@ -1,0 +1,39 @@
+﻿using Airbnb.Domain.Enums;
+using Microsoft.AspNetCore.Identity;
+
+namespace Airbnb.Domain.Models;
+
+public class Apartment : IEntity
+{
+    public Guid Id { get; set; }
+
+    // Listing info
+    public string Title { get; set; } = string.Empty;
+    public string Description { get; set; } = string.Empty;
+    public ApartmentType Type { get; set; }
+    
+    // Location
+    public string Country { get; set; } = string.Empty;
+    public string City { get; set; } = string.Empty;
+    public string Address { get; set; } = string.Empty;
+    
+    // Capacity & Pricing
+    public int MaxGuests { get; set; }
+    public int Bedrooms { get; set; }
+    public int Bathrooms { get; set; }
+    public int Kitchens { get; set; }
+    public int LivingRooms { get; set; }
+    public double PricePerNight { get; set; }
+    
+    // Lifecycle
+    public bool IsListed { get; set; } = true;
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    
+    // Ownership
+    public string OwnerId { get; set; } = string.Empty;
+    
+    // Navigation
+    public IdentityUser? Owner { get; set; }
+    public ICollection<Booking> Bookings { get; set; } = new List<Booking>();
+    
+}
