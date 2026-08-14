@@ -33,7 +33,7 @@ public class AuthService : IAuthService
     {
         IdentityUser identityUser = _mapper.Map<UserRegisterRequest, IdentityUser>(user);
         
-        bool roleExists = await _userRepository.RoleExistsAsync(user.Role.ToString());
+        bool roleExists = await _userRepository.RoleExistsAsync(user.Role);
         if (roleExists)
         {
             var result = await _userRepository.CreateUserAsync(identityUser, user.Password);
@@ -42,13 +42,13 @@ public class AuthService : IAuthService
                 return result;
             }
 
-            return await _userRepository.AddUserToRoleAsync(identityUser, user.Role.ToString());
+            return await _userRepository.AddUserToRoleAsync(identityUser, user.Role);
         }
         
         return IdentityResult.Failed(new  IdentityError()
         {
-            Code = "RoleNotFound",
-            Description = $"The role '{user.Role.ToString()}' does not exist"
+            Code = Constants.CodeRoleNotFound,
+            Description = $"The role '{user.Role}' does not exist"
         });
     }
 

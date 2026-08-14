@@ -1,7 +1,5 @@
 using System.Text;
 using Airbnb.API.Middleware;
-using Airbnb.API.Middlewares;
-using Airbnb.Application;
 using Airbnb.Application.Abstracts.Repositories;
 using Airbnb.Application.Abstracts.Services;
 using Airbnb.Application.Mapping;
@@ -30,10 +28,7 @@ builder.Services.AddTransient<ValidationMiddleware>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 
 // Database
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-{
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
-});
+builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // Database (Identity)
 builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
@@ -105,7 +100,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 // Custom Middlewares
-app.UseValidationMiddleware();
+app.UseMiddleware<ValidationMiddleware>();
 
 app.MapControllers();
 
