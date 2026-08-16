@@ -25,7 +25,7 @@ public class BookingController : ControllerBase
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
 
         var bookings = await _bookingService.GetBookingsAsync(parameters, userId);
-        return Ok(bookings);
+        return Ok(bookings.bookings);
     }
 
     [HttpPost("bookings")]

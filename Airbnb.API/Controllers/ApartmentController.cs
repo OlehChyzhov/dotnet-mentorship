@@ -23,7 +23,7 @@ public class ApartmentController : ControllerBase
     public async Task<IActionResult> GetAllApartments([FromQuery] ApartmentParameters parameters)
     {
         var apartments = await _apartmentService.GetApartmentsAsync(parameters);
-        return Ok(apartments);
+        return Ok(apartments.apartments);
     }
 
     [Authorize(Roles = "Host")]

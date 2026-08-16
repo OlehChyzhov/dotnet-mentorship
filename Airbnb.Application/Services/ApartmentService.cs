@@ -33,6 +33,7 @@ public class ApartmentService
         
         apartment.Id = apartmentGuid;
         apartment.OwnerId = userId;
+        apartment.CreatedAt = DateTime.UtcNow;
         
         await _unitOfWork.Apartments.CreateAsync(apartment);
         await _unitOfWork.SaveChangesAsync();
