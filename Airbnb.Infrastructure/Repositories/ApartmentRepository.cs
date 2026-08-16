@@ -3,7 +3,6 @@ using Airbnb.Application.DTOs.Querying;
 using Airbnb.Application.DTOs.Querying.Filtering;
 using Airbnb.Domain.Enums;
 using Airbnb.Domain.Models;
-using Airbnb.Domain.Requests;
 using Microsoft.EntityFrameworkCore;
 
 namespace Airbnb.Infrastructure.Repositories;

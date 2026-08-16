@@ -1,28 +1,35 @@
-﻿using Airbnb.Application.Abstracts.Repositories;
+﻿using Airbnb.Application.DTOs.Apartment;
 using Airbnb.Application.DTOs.Querying.Filtering;
-using Airbnb.Domain.Models;
+using Airbnb.Application.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Airbnb.API.Controllers;
 
 [ApiController]
-[Authorize(Roles = "Client")]
 [Route("api")]
 public class ApartmentController : ControllerBase
 {
-    private readonly IUnitOfWork _unitOfWork;
+    private readonly ApartmentService _apartmentService;
     
-    public ApartmentController(IUnitOfWork unitOfWork)
+    public ApartmentController(ApartmentService apartmentService)
     {
-        _unitOfWork = unitOfWork;
+        _apartmentService = apartmentService;
     }
     
-    // TODO: implement controllers with the services adding paging info in the headers
+    [Authorize(Roles = "Client,Host")]
     [HttpGet("apartments")]
-    public async Task<ActionResult<List<Apartment>>> GetAllApartments([FromQuery] ApartmentParameters parameters)
+    public async Task<IActionResult> GetAllApartments([FromQuery] ApartmentParameters parameters)
     {
-        var apartments = await _unitOfWork.Apartments.GetApartmentsPagedAsync(parameters);
+        var apartments = await _apartmentService.GetApartmentsAsync(parameters);
         return Ok(apartments);
+    }
+
+    [Authorize(Roles = "Host")]
+    [HttpPost("apartments")]
+    public async Task<IActionResult> CreateApartmentAsync([FromBody] CreateApartmentDto dto)
+    {
+        var createdApartment = await _apartmentService.CreateApartmentAsync(dto);
+        return Ok(createdApartment);
     }
 }
