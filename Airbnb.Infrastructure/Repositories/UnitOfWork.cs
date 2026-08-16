@@ -19,9 +19,9 @@ public class UnitOfWork : IUnitOfWork
         Bookings = bookings;
     }
 
-    public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+    public async Task<int> SaveChangesAsync()
     {
-        return await _context.SaveChangesAsync(cancellationToken);
+        return await _context.SaveChangesAsync();
     }
     
     public void Dispose()

@@ -15,4 +15,7 @@ public class CreateBookingDto
     public int GuestsCount { get; set; }
 
     public DateTime CreatedAt { get; set; }
+    
+    public Guid ApartmentId { get; set; }
+    public string ClientId { get; set; } = string.Empty;
 }

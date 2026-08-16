@@ -26,4 +26,11 @@ public class ApartmentService
         
         return (apartmentsDto, apartmentsWithMetaData.MetaData);
     }
+
+    public async Task CreateApartmentAsync(CreateApartmentDto dto)
+    {
+        var apartment = _mapper.Map<Apartment>(dto);
+        await _unitOfWork.Apartments.CreateAsync(apartment);
+        await _unitOfWork.SaveChangesAsync();
+    }
 }

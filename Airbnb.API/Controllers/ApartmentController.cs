@@ -18,9 +18,6 @@ public class ApartmentController : ControllerBase
         _unitOfWork = unitOfWork;
     }
     
-    // TODO: Add services that return dtos
-    // TODO: Create booking repository
-    // TODO: Use services for filtering and mapping returning the dtos
     // TODO: implement controllers with the services adding paging info in the headers
     [HttpGet("apartments")]
     public async Task<ActionResult<List<Apartment>>> GetAllApartments([FromQuery] ApartmentParameters parameters)
