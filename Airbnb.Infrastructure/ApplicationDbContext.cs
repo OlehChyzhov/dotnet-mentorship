@@ -18,5 +18,7 @@ public class ApplicationDbContext : IdentityDbContext<IdentityUser, IdentityRole
         base.OnModelCreating(builder);
         
         builder.ApplyConfiguration(new IdentityRoleConfiguration());
+        builder.ApplyConfiguration(new ApartmentConfiguration());
+        builder.ApplyConfiguration(new BookingConfiguration());
     }
 }
