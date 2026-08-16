@@ -1,5 +1,4 @@
 ﻿using Airbnb.Application.Abstracts.Repositories;
-using Airbnb.Application.DTOs;
 using Airbnb.Application.DTOs.Apartment;
 using Airbnb.Application.DTOs.Querying;
 using Airbnb.Application.DTOs.Querying.Filtering;
@@ -27,11 +26,12 @@ public class ApartmentService
         return (apartmentsDto, apartmentsWithMetaData.MetaData);
     }
 
-    public async Task<ApartmentDto> CreateApartmentAsync(CreateApartmentDto dto)
+    public async Task<ApartmentDto> CreateApartmentAsync(CreateApartmentDto dto, string userId)
     {
         var apartmentGuid = Guid.NewGuid();
         var apartment = _mapper.Map<Apartment>(dto);
         apartment.Id = apartmentGuid;
+        apartment.OwnerId = userId;
         
         await _unitOfWork.Apartments.CreateAsync(apartment);
         await _unitOfWork.SaveChangesAsync();

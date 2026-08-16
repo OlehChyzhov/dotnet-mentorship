@@ -1,4 +1,5 @@
-﻿using Airbnb.Application.DTOs.Apartment;
+﻿using System.Security.Claims;
+using Airbnb.Application.DTOs.Apartment;
 using Airbnb.Application.DTOs.Querying.Filtering;
 using Airbnb.Application.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -29,7 +30,9 @@ public class ApartmentController : ControllerBase
     [HttpPost("apartments")]
     public async Task<IActionResult> CreateApartmentAsync([FromBody] CreateApartmentDto dto)
     {
-        var createdApartment = await _apartmentService.CreateApartmentAsync(dto);
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        
+        var createdApartment = await _apartmentService.CreateApartmentAsync(dto, userId);
         return Ok(createdApartment);
     }
 }

@@ -17,5 +17,4 @@ public class CreateBookingDto
     public DateTime CreatedAt { get; set; }
     
     public Guid ApartmentId { get; set; }
-    public string ClientId { get; set; } = string.Empty;
 }

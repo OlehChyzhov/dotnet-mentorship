@@ -24,6 +24,4 @@ public class CreateApartmentDto
     // Lifecycle & Ownership
     public bool IsListed { get; set; }
     public DateTime CreatedAt { get; set; }
-    
-    public string OwnerId { get; set; } = string.Empty;
 }

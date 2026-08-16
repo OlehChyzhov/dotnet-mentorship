@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using System.Text;
 using Airbnb.API.Middleware;
 using Airbnb.Application.Abstracts.Repositories;
@@ -69,7 +70,20 @@ builder.Services.AddAuthentication(options =>
         ValidAudience = builder.Configuration["JWT:Audience"],
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT:Key"]))
     };
-    
+
+    options.Events = new JwtBearerEvents
+    {
+        OnTokenValidated = context =>
+        {
+            var hasNameIdentifier = context.Principal?.HasClaim(claim => claim.Type == ClaimTypes.NameIdentifier) ?? false;
+            if (!hasNameIdentifier)
+            {
+                context.Fail("Token is missing the required NameIdentifier claim.");
+            }
+
+            return Task.CompletedTask;
+        }
+    };
 });
 
 // Mapping
