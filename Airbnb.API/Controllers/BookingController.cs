@@ -1,26 +1,39 @@
-﻿using Airbnb.Application.Abstracts.Repositories;
+﻿using System.Security.Claims;
+using Airbnb.Application.DTOs.Booking;
+using Airbnb.Application.DTOs.Querying.Filtering;
+using Airbnb.Application.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Airbnb.API.Controllers;
 
+[Authorize(Roles = "Client,Host")]
 [ApiController]
 [Route("api")]
 public class BookingController : ControllerBase
 {
-    private readonly IUnitOfWork _unitOfWork;
+    private readonly BookingService _bookingService;
 
-    public BookingController(IUnitOfWork unitOfWork)
+    public BookingController(BookingService bookingService)
     {
-        _unitOfWork = unitOfWork;
+        _bookingService = bookingService;
     }
     
-    public IActionResult GetUserBookings()
+    [HttpGet("bookings")]
+    public IActionResult GetUserBookings([FromQuery] BookingParameters parameters)
     {
-        return Ok();
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
+        
+        var bookings = _bookingService.GetBookingsAsync(parameters, userId);
+        return Ok(bookings);
     }
     
-    public IActionResult CreateBooking()
+    [HttpPost("bookings")]
+    public IActionResult CreateBooking([FromBody] CreateBookingDto dto)
     {
-        return Ok();
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
+        
+        var createdBooking = _bookingService.CreateBookingAsync(dto, userId);
+        return Ok(createdBooking);
     }
 }

@@ -30,7 +30,7 @@ public class ApartmentController : ControllerBase
     [HttpPost("apartments")]
     public async Task<IActionResult> CreateApartmentAsync([FromBody] CreateApartmentDto dto)
     {
-        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
         
         var createdApartment = await _apartmentService.CreateApartmentAsync(dto, userId);
         return Ok(createdApartment);

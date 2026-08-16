@@ -30,6 +30,7 @@ public class ApartmentService
     {
         var apartmentGuid = Guid.NewGuid();
         var apartment = _mapper.Map<Apartment>(dto);
+        
         apartment.Id = apartmentGuid;
         apartment.OwnerId = userId;
         
