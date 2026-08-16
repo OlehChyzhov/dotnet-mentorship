@@ -47,7 +47,7 @@ public class BookingService
         await _unitOfWork.Bookings.CreateAsync(booking);
         await _unitOfWork.SaveChangesAsync();
         
-        var createdBooking = _unitOfWork.Bookings.GetByIdAsync(bookingId);
+        var createdBooking = await _unitOfWork.Bookings.GetByIdAsync(bookingId);
         var createdBookingDto = _mapper.Map<BookingDto>(createdBooking);
         
         return createdBookingDto;

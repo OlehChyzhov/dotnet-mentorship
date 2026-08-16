@@ -14,11 +14,13 @@ public class BookingRepository : Repository<Booking>, IBookingRepository
 
     public async Task<PagedList<Booking>> GetBookingsPagedAsync(BookingParameters parameters, string userId)
     {
-        var totalCount = await _dbSet.CountAsync();
-
-        var bookings = await _dbSet
+        var userBookings = _dbSet
             .Where(booking => booking.ClientId == userId)
-            .OrderBy(booking => booking.CheckIn)
+            .OrderBy(booking => booking.CheckIn);
+
+        var totalCount = await userBookings.CountAsync();
+
+        var bookings = await userBookings
             .Skip((parameters.PageNumber - 1) * parameters.PageSize)
             .Take(parameters.PageSize)
             .ToListAsync();
@@ -30,7 +32,7 @@ public class BookingRepository : Repository<Booking>, IBookingRepository
     {
         return await _dbSet
             .Where(booking => booking.Status == BookingStatus.Confirmed || booking.Status == BookingStatus.Pending)
-            .Where(booking => booking.CheckIn >= from && booking.CheckIn <= to)
+            .Where(booking => booking.CheckIn < to && booking.CheckOut > from)
             .Where(booking => booking.ApartmentId == apartmentId)
             .OrderBy(booking => booking.CheckIn)
             .ToListAsync();

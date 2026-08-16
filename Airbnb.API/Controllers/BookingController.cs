@@ -20,20 +20,20 @@ public class BookingController : ControllerBase
     }
     
     [HttpGet("bookings")]
-    public IActionResult GetUserBookings([FromQuery] BookingParameters parameters)
+    public async Task<IActionResult> GetUserBookings([FromQuery] BookingParameters parameters)
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
-        
-        var bookings = _bookingService.GetBookingsAsync(parameters, userId);
+
+        var bookings = await _bookingService.GetBookingsAsync(parameters, userId);
         return Ok(bookings);
     }
-    
+
     [HttpPost("bookings")]
-    public IActionResult CreateBooking([FromBody] CreateBookingDto dto)
+    public async Task<IActionResult> CreateBooking([FromBody] CreateBookingDto dto)
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
-        
-        var createdBooking = _bookingService.CreateBookingAsync(dto, userId);
+
+        var createdBooking = await _bookingService.CreateBookingAsync(dto, userId);
         return Ok(createdBooking);
     }
 }
