@@ -1,4 +1,5 @@
 ﻿using Airbnb.Domain.Requests;
+using Airbnb.Domain.Requests.Authentication;
 using Mapster;
 using Microsoft.AspNetCore.Identity;
 
@@ -9,8 +10,6 @@ public class UserMappingConfig : IRegister
     public void Register(TypeAdapterConfig config)
     {
         // UserRegisterRequest => Identity User
-        config.NewConfig<UserRegisterRequest, IdentityUser>()
-            .Map(dest => dest.Email, src => src.Email)
-            .Map(dest => dest.UserName, src => src.Email);
+        config.NewConfig<UserRegisterRequest, IdentityUser>();
     }
 }

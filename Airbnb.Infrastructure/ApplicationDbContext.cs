@@ -8,8 +8,11 @@ namespace Airbnb.Infrastructure;
 
 public class ApplicationDbContext : IdentityDbContext<IdentityUser, IdentityRole, string>
 {
+    public DbSet<Apartment> Apartments { get; set; }
+    public DbSet<Booking> Bookings { get; set; }
+    
     public ApplicationDbContext(DbContextOptions options) : base(options) {}
-
+    
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);

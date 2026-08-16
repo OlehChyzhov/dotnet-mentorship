@@ -1,4 +1,5 @@
 ﻿using Airbnb.Domain.Requests;
+using Airbnb.Domain.Requests.Authentication;
 using FluentValidation;
 
 namespace Airbnb.Application.Validators;

@@ -31,7 +31,9 @@ builder.Services.AddScoped<IApartmentRepository, ApartmentRepository>();
 builder.Services.AddScoped<IBookingRepository, BookingRepository>();
 
 // Services
-builder.Services.AddScoped<UserService>();
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<ApartmentService>();
+builder.Services.AddScoped<BookingService>();
 
 // Database
 builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
