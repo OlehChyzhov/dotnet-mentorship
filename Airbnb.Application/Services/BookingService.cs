@@ -30,6 +30,7 @@ public class BookingService
 
     public async Task<BookingDto> CreateBookingAsync(CreateBookingDto dto, string userId)
     {
+        var apartment = await _unitOfWork.Apartments.GetByIdAsync(dto.ApartmentId);
         var bookingsInTimeRange = await _unitOfWork.Bookings
             .GetConfirmedOrPendingBookingsInTimeRangeAsync(dto.ApartmentId, dto.CheckIn, dto.CheckOut);
 
@@ -37,12 +38,21 @@ public class BookingService
         {
             throw new BookingConflictException("The apartment is already booked for the selected time range");
         }
+        else if (!apartment.IsListed)
+        {
+            throw new BookingConflictException("Can't create booking for an unlisted apartment");
+        }
         
+
         Guid bookingId = Guid.NewGuid();
         var booking = _mapper.Map<Booking>(dto);
 
         booking.Id = bookingId;
         booking.ClientId = userId;
+        booking.Status = BookingStatus.Pending;
+        booking.CreatedAt = DateTime.UtcNow;
+        booking.BookedPricePerNight = apartment.PricePerNight;
+        booking.BookedTotalPrice =  apartment.PricePerNight * ((dto.CheckOut - dto.CheckIn).TotalDays);
         
         await _unitOfWork.Bookings.CreateAsync(booking);
         await _unitOfWork.SaveChangesAsync();
