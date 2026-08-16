@@ -1,5 +1,4 @@
-﻿using Airbnb.Domain.Requests;
-using Airbnb.Domain.Requests.Authentication;
+﻿using Airbnb.Application.DTOs.Authentication;
 using Mapster;
 using Microsoft.AspNetCore.Identity;
 

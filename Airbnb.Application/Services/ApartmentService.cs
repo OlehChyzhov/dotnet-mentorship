@@ -1,7 +1,9 @@
 ﻿using Airbnb.Application.Abstracts.Repositories;
 using Airbnb.Application.DTOs;
+using Airbnb.Application.DTOs.Apartment;
+using Airbnb.Application.DTOs.Querying;
+using Airbnb.Application.DTOs.Querying.Filtering;
 using Airbnb.Domain.Models;
-using Airbnb.Domain.Requests.Paging;
 using MapsterMapper;
 
 namespace Airbnb.Application.Services;

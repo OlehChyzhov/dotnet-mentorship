@@ -1,6 +1,6 @@
 using Airbnb.Domain.Enums;
 
-namespace Airbnb.Application.DTOs;
+namespace Airbnb.Application.DTOs.Booking;
 
 public class BookingDto
 {

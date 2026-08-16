@@ -1,9 +1,5 @@
 ﻿using Airbnb.Application.Abstracts.Services;
-using Airbnb.Application.Services;
-using Airbnb.Domain.Requests;
-using Airbnb.Domain.Requests.Authentication;
-using FluentValidation;
-using FluentValidation.Results;
+using Airbnb.Application.DTOs.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 

@@ -1,4 +1,4 @@
-﻿namespace Airbnb.Domain.Requests.Paging;
+﻿namespace Airbnb.Application.DTOs.Querying;
 
 public class PagedList<T> : List<T>
 {

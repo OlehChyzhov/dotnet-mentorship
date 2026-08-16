@@ -1,4 +1,4 @@
-﻿namespace Airbnb.Domain.Requests.Paging;
+﻿namespace Airbnb.Application.DTOs.Querying;
 
 public abstract class BaseParameters
 {

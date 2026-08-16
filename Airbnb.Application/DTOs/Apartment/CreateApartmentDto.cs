@@ -1,10 +1,9 @@
 ﻿using Airbnb.Domain.Enums;
 
-namespace Airbnb.Application.DTOs;
+namespace Airbnb.Application.DTOs.Apartment;
 
-public class ApartmentDto
+public class CreateApartmentDto
 {
-    public Guid Id { get; set; }
     public string Title { get; set; } = string.Empty;
     public string Description { get; set; } = string.Empty;
     public ApartmentType Type { get; set; }

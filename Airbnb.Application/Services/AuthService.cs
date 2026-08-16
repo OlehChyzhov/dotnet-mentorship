@@ -2,10 +2,9 @@
 using System.Security.Claims;
 using System.Text;
 using Airbnb.Application.Abstracts.Services;
+using Airbnb.Application.DTOs.Authentication;
 using Airbnb.Application.Options;
 using Airbnb.Domain;
-using Airbnb.Domain.Requests;
-using Airbnb.Domain.Requests.Authentication;
 using MapsterMapper;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;

@@ -1,7 +1,6 @@
 ﻿using Airbnb.Application.Abstracts.Repositories;
+using Airbnb.Application.DTOs.Querying.Filtering;
 using Airbnb.Domain.Models;
-using Airbnb.Domain.Requests;
-using Airbnb.Domain.Requests.Paging;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

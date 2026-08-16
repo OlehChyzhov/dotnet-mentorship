@@ -1,7 +1,8 @@
 ﻿using Airbnb.Application.Abstracts.Repositories;
 using Airbnb.Application.DTOs;
+using Airbnb.Application.DTOs.Querying;
+using Airbnb.Application.DTOs.Querying.Filtering;
 using Airbnb.Domain.Models;
-using Airbnb.Domain.Requests.Paging;
 using Microsoft.EntityFrameworkCore;
 
 namespace Airbnb.Infrastructure.Repositories;

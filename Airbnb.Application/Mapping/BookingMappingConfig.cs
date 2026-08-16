@@ -1,4 +1,5 @@
 ﻿using Airbnb.Application.DTOs;
+using Airbnb.Application.DTOs.Booking;
 using Airbnb.Domain.Models;
 using Mapster;
 
@@ -10,5 +11,8 @@ public class BookingMappingConfig : IRegister
     {
         // Booking => BookingDto
         config.NewConfig<Booking, BookingDto>();
+        
+        // CreateBookingDto => Booking
+        config.NewConfig<CreateBookingDto, Booking>();
     }
 }
