@@ -1,6 +1,8 @@
 ﻿using System.Security.Claims;
+using System.Text.Json;
 using Airbnb.Application.Abstracts.Services;
 using Airbnb.Application.DTOs.Apartment;
+using Airbnb.Application.DTOs.Querying;
 using Airbnb.Application.DTOs.Querying.Filtering;
 using Airbnb.Domain.Constants;
 using Microsoft.AspNetCore.Authorization;
@@ -31,8 +33,16 @@ public class ApartmentsController : ControllerBase
     [Authorize(Roles = $"{Roles.Client}, {Roles.Host}")]
     public async Task<IActionResult> GetAllApartments([FromQuery] ApartmentPagingParamters query)
     {
-        var apartments = await _apartmentService.GetApartmentsAsync(query);
-        return Ok(apartments.apartments);
+        var result = await _apartmentService.GetApartmentsAsync(query);
+        if (!result.IsSuccessful)
+        {
+            return BadRequest(result.Message);
+        }
+        
+        PagedList<ApartmentDto> pagedList = result.Value!;
+        Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(pagedList.MetaData));
+        
+        return Ok(pagedList);
     }
 
     [HttpPost]

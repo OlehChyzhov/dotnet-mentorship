@@ -3,7 +3,7 @@ using Airbnb.Application.Abstracts.Services;
 using Airbnb.Application.DTOs.Apartment;
 using Airbnb.Application.DTOs.Querying;
 using Airbnb.Application.DTOs.Querying.Filtering;
-using Airbnb.Domain.Models;
+using Airbnb.Domain;
 using MapsterMapper;
 
 namespace Airbnb.Application.Services;
@@ -26,12 +26,20 @@ public class ApartmentService : IApartmentService
         return apartmentDto;
     }
 
-    public async Task<(List<ApartmentDto> apartments, PagingMetaData metadata)> GetApartmentsAsync(ApartmentPagingParamters query)
+    public async Task<Result<PagedList<ApartmentDto>>> GetApartmentsAsync(ApartmentPagingParamters query)
     {
         var apartmentsWithMetaData = await _unitOfWork.Apartments.GetApartmentsPagedAsync(query);
+
+        var pagingMetaData = apartmentsWithMetaData.MetaData;
         var apartmentsDto = _mapper.Map<List<ApartmentDto>>(apartmentsWithMetaData);
         
-        return (apartmentsDto, apartmentsWithMetaData.MetaData);
+        var apartmentsResult = PagedList<ApartmentDto>.ToPagedList(
+            source: apartmentsDto, 
+            totalCount: pagingMetaData.TotalCount, 
+            pageNumber: pagingMetaData.CurrentPage, 
+            pageSize: pagingMetaData.PageSize);
+
+        return apartmentsResult;
     }
 
     public async Task<ApartmentDto> CreateApartmentAsync(CreateApartmentDto dto, string userId)
