@@ -2,6 +2,7 @@
 using Airbnb.Application.DTOs.Apartment;
 using Airbnb.Application.DTOs.Querying.Filtering;
 using Airbnb.Application.Services;
+using Airbnb.Domain.Constants;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -18,7 +19,7 @@ public class ApartmentController : ControllerBase
         _apartmentService = apartmentService;
     }
     
-    [Authorize(Roles = "Client,Host")]
+    [Authorize(Roles = $"{Roles.Client}, {Roles.Host}")]
     [HttpGet("apartments")]
     public async Task<IActionResult> GetAllApartments([FromQuery] ApartmentParameters parameters)
     {
@@ -26,7 +27,7 @@ public class ApartmentController : ControllerBase
         return Ok(apartments.apartments);
     }
 
-    [Authorize(Roles = "Host")]
+    [Authorize(Roles = $"{Roles.Host}")]
     [HttpPost("apartments")]
     public async Task<IActionResult> CreateApartmentAsync([FromBody] CreateApartmentDto dto)
     {

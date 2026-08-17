@@ -2,12 +2,13 @@
 using Airbnb.Application.DTOs.Booking;
 using Airbnb.Application.DTOs.Querying.Filtering;
 using Airbnb.Application.Services;
+using Airbnb.Domain.Constants;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Airbnb.API.Controllers;
 
-[Authorize(Roles = "Client,Host")]
+[Authorize(Roles = $"{Roles.Client}, {Roles.Host}")]
 [ApiController]
 [Route("api")]
 public class BookingController : ControllerBase

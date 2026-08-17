@@ -2,7 +2,7 @@
 
 public static class Roles
 {
-    public static string Client { get; } = "Client";
+    public const string Client = "Client";
 
-    public static string Host { get; } = "Host";
+    public const string Host = "Host";
 }
