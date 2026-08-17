@@ -1,4 +1,5 @@
 ﻿using Airbnb.Application.Abstracts.Repositories;
+using Airbnb.Application.Abstracts.Services;
 using Airbnb.Application.DTOs.Apartment;
 using Airbnb.Application.DTOs.Querying;
 using Airbnb.Application.DTOs.Querying.Filtering;
@@ -7,7 +8,7 @@ using MapsterMapper;
 
 namespace Airbnb.Application.Services;
 
-public class ApartmentService
+public class ApartmentService : IApartmentService
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;

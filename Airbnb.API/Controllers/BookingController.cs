@@ -1,4 +1,5 @@
 ﻿using System.Security.Claims;
+using Airbnb.Application.Abstracts.Services;
 using Airbnb.Application.DTOs.Booking;
 using Airbnb.Application.DTOs.Querying.Filtering;
 using Airbnb.Application.Services;
@@ -13,9 +14,9 @@ namespace Airbnb.API.Controllers;
 [Route("api")]
 public class BookingController : ControllerBase
 {
-    private readonly BookingService _bookingService;
+    private readonly IBookingService _bookingService;
 
-    public BookingController(BookingService bookingService)
+    public BookingController(IBookingService bookingService)
     {
         _bookingService = bookingService;
     }
