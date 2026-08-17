@@ -7,11 +7,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Airbnb.Infrastructure.Repositories;
 
-public class ApartmentRepository : Repository<Apartment>, IApartmentRepository
+public class ApartmentRepository : Repository<Domain.Models.Apartment>, IApartmentRepository
 {
     public ApartmentRepository(ApplicationDbContext context) : base(context) {}
     
-    public async Task<PagedList<Apartment>> GetApartmentsPagedAsync(ApartmentQuery query)
+    public async Task<PagedList<Domain.Models.Apartment>> GetApartmentsPagedAsync(ApartmentPagingParamters query)
     {
         var apartmentsQuery = _dbSet.AsQueryable();
 
@@ -46,6 +46,6 @@ public class ApartmentRepository : Repository<Apartment>, IApartmentRepository
             .Take(query.PageSize)
             .ToListAsync();
 
-        return PagedList<Apartment>.ToPagedList(apartments, totalCount, query.PageNumber, query.PageSize);
+        return PagedList<Domain.Models.Apartment>.ToPagedList(apartments, totalCount, query.PageNumber, query.PageSize);
     }
 }

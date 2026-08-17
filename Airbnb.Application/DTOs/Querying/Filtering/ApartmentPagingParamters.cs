@@ -1,6 +1,6 @@
 ﻿namespace Airbnb.Application.DTOs.Querying.Filtering;
 
-public record ApartmentQuery : BaseQuery
+public record ApartmentPagingParamters : PagingParametersBase
 {
     public DateTime? StartDate { get; init; } = null;
     public DateTime? EndDate { get; init; } = null;

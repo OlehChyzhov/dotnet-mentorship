@@ -26,7 +26,7 @@ public class ApartmentService : IApartmentService
         return apartmentDto;
     }
 
-    public async Task<(List<ApartmentDto> apartments, PagingMetaData metadata)> GetApartmentsAsync(ApartmentQuery query)
+    public async Task<(List<ApartmentDto> apartments, PagingMetaData metadata)> GetApartmentsAsync(ApartmentPagingParamters query)
     {
         var apartmentsWithMetaData = await _unitOfWork.Apartments.GetApartmentsPagedAsync(query);
         var apartmentsDto = _mapper.Map<List<ApartmentDto>>(apartmentsWithMetaData);
@@ -37,7 +37,7 @@ public class ApartmentService : IApartmentService
     public async Task<ApartmentDto> CreateApartmentAsync(CreateApartmentDto dto, string userId)
     {
         var apartmentGuid = Guid.NewGuid();
-        var apartment = _mapper.Map<Apartment>(dto);
+        var apartment = _mapper.Map<Domain.Models.Apartment>(dto);
         
         apartment.Id = apartmentGuid;
         apartment.OwnerId = userId;

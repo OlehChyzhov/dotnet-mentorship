@@ -8,7 +8,7 @@ public interface IApartmentService
 {
     Task<ApartmentDto> GetApartmentByIdAsync(Guid id);
     
-    Task<(List<ApartmentDto> apartments, PagingMetaData metadata)> GetApartmentsAsync(ApartmentQuery query);
+    Task<(List<ApartmentDto> apartments, PagingMetaData metadata)> GetApartmentsAsync(ApartmentPagingParamters query);
 
     Task<ApartmentDto> CreateApartmentAsync(CreateApartmentDto dto, string userId);
 }

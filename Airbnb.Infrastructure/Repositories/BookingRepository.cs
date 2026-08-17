@@ -8,11 +8,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Airbnb.Infrastructure.Repositories;
 
-public class BookingRepository : Repository<Booking>, IBookingRepository
+public class BookingRepository : Repository<Domain.Models.Booking>, IBookingRepository
 {
     public BookingRepository(ApplicationDbContext context) : base(context) {}
 
-    public async Task<PagedList<Booking>> GetBookingsPagedAsync(BookingQuery query, string userId)
+    public async Task<PagedList<Domain.Models.Booking>> GetBookingsPagedAsync(BookingPagingParameters query, string userId)
     {
         var userBookings = _dbSet
             .Where(booking => booking.ClientId == userId)
@@ -25,10 +25,10 @@ public class BookingRepository : Repository<Booking>, IBookingRepository
             .Take(query.PageSize)
             .ToListAsync();
 
-        return PagedList<Booking>.ToPagedList(bookings, totalCount, query.PageNumber, query.PageSize);
+        return PagedList<Domain.Models.Booking>.ToPagedList(bookings, totalCount, query.PageNumber, query.PageSize);
     }
 
-    public async Task<List<Booking>> GetConfirmedOrPendingBookingsInTimeRangeAsync(Guid apartmentId, DateTime from, DateTime to)
+    public async Task<List<Domain.Models.Booking>> GetConfirmedOrPendingBookingsInTimeRangeAsync(Guid apartmentId, DateTime from, DateTime to)
     {
         return await _dbSet
             .Where(booking => booking.Status == BookingStatus.Confirmed || booking.Status == BookingStatus.Pending)

@@ -28,7 +28,7 @@ public class BookingService : IBookingService
         return bookingDto;
     }
     
-    public async Task<(List<BookingDto> bookings, PagingMetaData metadata)> GetBookingsAsync(BookingQuery query, string userId)
+    public async Task<(List<BookingDto> bookings, PagingMetaData metadata)> GetBookingsAsync(BookingPagingParameters query, string userId)
     {
         var bookingsWithMetaData = await _unitOfWork.Bookings.GetBookingsPagedAsync(query, userId);
         var bookingsDto = _mapper.Map<List<BookingDto>>(bookingsWithMetaData);
@@ -53,7 +53,7 @@ public class BookingService : IBookingService
         
 
         Guid bookingId = Guid.NewGuid();
-        var booking = _mapper.Map<Booking>(dto);
+        var booking = _mapper.Map<Domain.Models.Booking>(dto);
 
         booking.Id = bookingId;
         booking.ClientId = userId;

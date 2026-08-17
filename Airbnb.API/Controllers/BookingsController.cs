@@ -28,7 +28,7 @@ public class BookingsController : ControllerBase
     }
     
     [HttpGet]
-    public async Task<IActionResult> GetUserBookings([FromQuery] BookingQuery query)
+    public async Task<IActionResult> GetUserBookings([FromQuery] BookingPagingParameters query)
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
 
