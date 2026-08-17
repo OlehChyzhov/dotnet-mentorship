@@ -35,7 +35,7 @@ public class Repository<T> : IRepository<T> where T : class, IEntity
         return Task.CompletedTask;
     }
 
-    public async Task<IEnumerable<T>> FindAsync(Expression<Func<T, bool>> predicate)
+    protected async Task<IEnumerable<T>> FindAsync(Expression<Func<T, bool>> predicate)
     {
         return await _dbSet.Where(predicate).AsNoTracking().ToListAsync();
     }
