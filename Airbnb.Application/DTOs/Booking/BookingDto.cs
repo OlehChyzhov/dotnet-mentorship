@@ -2,18 +2,17 @@ using Airbnb.Domain.Enums;
 
 namespace Airbnb.Application.DTOs.Booking;
 
-public class BookingDto
+public record BookingDto
 {
-    public Guid Id { get; set; }
-    public BookingStatus Status { get; set; }
+    public Guid Id { get; init; }
+    public BookingStatus Status { get; init; }
     
-    public DateTime CheckIn { get; set; }
-    public DateTime CheckOut { get; set; }
+    public DateTime CheckIn { get; init; }
+    public DateTime CheckOut { get; init; }
     
-    public double BookedPricePerNight { get; set; }
-    public double BookedTotalPrice { get; set; }
-
-    public int GuestsCount { get; set; }
-
-    public DateTime CreatedAt { get; set; }
+    public double BookedPricePerNight { get; init; }
+    public double BookedTotalPrice { get; init; }
+    
+    public int GuestsCount { get; init; }
+    public DateTime CreatedAt { get; init; }
 }

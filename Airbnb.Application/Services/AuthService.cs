@@ -28,9 +28,9 @@ public class AuthService : IAuthService
         _mapper = mapper;
     }
 
-    public async Task<IdentityResult> RegisterUserAsync(UserRegisterRequest user)
+    public async Task<IdentityResult> RegisterUserAsync(UserRegisterDto user)
     {
-        IdentityUser identityUser = _mapper.Map<UserRegisterRequest, IdentityUser>(user);
+        IdentityUser identityUser = _mapper.Map<UserRegisterDto, IdentityUser>(user);
         
         bool roleExists = await _userService.RoleExistsAsync(user.Role);
         if (roleExists)
@@ -51,7 +51,7 @@ public class AuthService : IAuthService
         });
     }
 
-    public async Task<Result<UserLoginRequest>> LoginUserAsync(UserLoginRequest user)
+    public async Task<Result<UserLoginDto>> LoginUserAsync(UserLoginDto user)
     {
         IdentityUser? identityUser = await _userService.FindUserByEmailAsync(user.Email);
         if (identityUser == null)
@@ -67,7 +67,7 @@ public class AuthService : IAuthService
         return "Incorrect password";
     }
 
-    public async Task<string> GenerateJwtTokenAsync(UserLoginRequest user)
+    public async Task<string> GenerateJwtTokenAsync(UserLoginDto user)
     {
         IdentityUser? identityUser = await _userService.FindUserByEmailAsync(user.Email);
         if (identityUser == null)

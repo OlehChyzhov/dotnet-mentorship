@@ -2,13 +2,11 @@
 
 namespace Airbnb.Application.DTOs.Booking;
 
-public class CreateBookingDto
+public record CreateBookingDto
 {
-    public DateTime CheckIn { get; set; }
-    
-    public DateTime CheckOut { get; set; }
+    public DateTime CheckIn { get; init; }
+    public DateTime CheckOut { get; init; }
 
-    public int GuestsCount { get; set; }
-    
-    public Guid ApartmentId { get; set; }
+    public int GuestsCount { get; init; }
+    public Guid ApartmentId { get; init; }
 }

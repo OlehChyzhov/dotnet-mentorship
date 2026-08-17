@@ -3,7 +3,7 @@ using FluentValidation;
 
 namespace Airbnb.Application.Validators;
 
-public class UserRegisterRequestValidator : AbstractValidator<UserRegisterRequest>
+public class UserRegisterRequestValidator : AbstractValidator<UserRegisterDto>
 {
     public UserRegisterRequestValidator()
     {

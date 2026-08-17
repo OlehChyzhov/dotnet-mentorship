@@ -9,6 +9,6 @@ public class UserMappingConfig : IRegister
     public void Register(TypeAdapterConfig config)
     {
         // UserRegisterRequest => Identity User
-        config.NewConfig<UserRegisterRequest, IdentityUser>();
+        config.NewConfig<UserRegisterDto, IdentityUser>();
     }
 }

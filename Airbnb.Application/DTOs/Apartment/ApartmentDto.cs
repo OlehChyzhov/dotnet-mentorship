@@ -2,27 +2,27 @@
 
 namespace Airbnb.Application.DTOs.Apartment;
 
-public class ApartmentDto
+public record ApartmentDto
 {
-    public Guid Id { get; set; }
-    public string Title { get; set; } = string.Empty;
-    public string Description { get; set; } = string.Empty;
-    public ApartmentType Type { get; set; }
+    public Guid Id { get; init; }
+    public string Title { get; init; } = string.Empty;
+    public string Description { get; init; } = string.Empty;
+    public ApartmentType Type { get; init; }
     
     // Location
-    public string Country { get; set; } = string.Empty;
-    public string City { get; set; } = string.Empty;
-    public string Address { get; set; } = string.Empty;
+    public string Country { get; init; } = string.Empty;
+    public string City { get; init; } = string.Empty;
+    public string Address { get; init; } = string.Empty;
     
     // Capacity & Pricing
-    public int MaxGuests { get; set; }
-    public int Bedrooms { get; set; }
-    public int Bathrooms { get; set; }
-    public int Kitchens { get; set; }
-    public int LivingRooms { get; set; }
-    public double PricePerNight { get; set; }
+    public int MaxGuests { get; init; }
+    public int Bedrooms { get; init; }
+    public int Bathrooms { get; init; }
+    public int Kitchens { get; init; }
+    public int LivingRooms { get; init; }
+    public double PricePerNight { get; init; }
     
     // Lifecycle & Ownership
-    public bool IsListed { get; set; }
-    public DateTime CreatedAt { get; set; }
+    public bool IsListed { get; init; }
+    public DateTime CreatedAt { get; init; }
 }

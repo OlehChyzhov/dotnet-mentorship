@@ -1,7 +1,7 @@
 ﻿namespace Airbnb.Application.DTOs.Querying;
 
-public abstract class BaseQuery
+public abstract record BaseQuery
 {
-    public int PageSize { get; set; } = 100;
-    public int PageNumber { get; set; } = 1;
+    public int PageSize { get; init; } = 100;
+    public int PageNumber { get; init; } = 1;
 }

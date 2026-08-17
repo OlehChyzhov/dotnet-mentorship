@@ -6,9 +6,9 @@ namespace Airbnb.Application.Abstracts.Services;
 
 public interface IAuthService
 {
-    public Task<IdentityResult> RegisterUserAsync(UserRegisterRequest user);
+    public Task<IdentityResult> RegisterUserAsync(UserRegisterDto user);
 
-    public Task<Result<UserLoginRequest>> LoginUserAsync(UserLoginRequest user);
+    public Task<Result<UserLoginDto>> LoginUserAsync(UserLoginDto user);
     
-    public Task<string> GenerateJwtTokenAsync(UserLoginRequest user);
+    public Task<string> GenerateJwtTokenAsync(UserLoginDto user);
 }
