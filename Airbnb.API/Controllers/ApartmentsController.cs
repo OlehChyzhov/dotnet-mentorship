@@ -2,7 +2,6 @@
 using Airbnb.Application.Abstracts.Services;
 using Airbnb.Application.DTOs.Apartment;
 using Airbnb.Application.DTOs.Querying.Filtering;
-using Airbnb.Application.Services;
 using Airbnb.Domain.Constants;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -10,31 +9,39 @@ using Microsoft.AspNetCore.Mvc;
 namespace Airbnb.API.Controllers;
 
 [ApiController]
-[Route("api")]
-public class ApartmentController : ControllerBase
+[Route("api/apartments")]
+public class ApartmentsController : ControllerBase
 {
     private readonly IApartmentService _apartmentService;
     
-    public ApartmentController(IApartmentService apartmentService)
+    public ApartmentsController(IApartmentService apartmentService)
     {
         _apartmentService = apartmentService;
     }
-    
+
+    [HttpGet("{apartmentId:guid}")]
     [Authorize(Roles = $"{Roles.Client}, {Roles.Host}")]
-    [HttpGet("apartments")]
-    public async Task<IActionResult> GetAllApartments([FromQuery] ApartmentParameters parameters)
+    public async Task<IActionResult> GetApartmentById(Guid apartmentId)
     {
-        var apartments = await _apartmentService.GetApartmentsAsync(parameters);
+        var apartment = await _apartmentService.GetApartmentByIdAsync(apartmentId);
+        return Ok(apartment);
+    }
+    
+    [HttpGet]
+    [Authorize(Roles = $"{Roles.Client}, {Roles.Host}")]
+    public async Task<IActionResult> GetAllApartments([FromQuery] ApartmentQuery query)
+    {
+        var apartments = await _apartmentService.GetApartmentsAsync(query);
         return Ok(apartments.apartments);
     }
 
+    [HttpPost]
     [Authorize(Roles = $"{Roles.Host}")]
-    [HttpPost("apartments")]
     public async Task<IActionResult> CreateApartmentAsync([FromBody] CreateApartmentDto dto)
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
         
         var createdApartment = await _apartmentService.CreateApartmentAsync(dto, userId);
-        return Ok(createdApartment);
+        return CreatedAtAction(nameof(GetApartmentById), new { apartmentId = createdApartment.Id }, createdApartment);
     }
 }

@@ -12,7 +12,7 @@ public class BookingRepository : Repository<Booking>, IBookingRepository
 {
     public BookingRepository(ApplicationDbContext context) : base(context) {}
 
-    public async Task<PagedList<Booking>> GetBookingsPagedAsync(BookingParameters parameters, string userId)
+    public async Task<PagedList<Booking>> GetBookingsPagedAsync(BookingQuery query, string userId)
     {
         var userBookings = _dbSet
             .Where(booking => booking.ClientId == userId)
@@ -21,11 +21,11 @@ public class BookingRepository : Repository<Booking>, IBookingRepository
         var totalCount = await userBookings.CountAsync();
 
         var bookings = await userBookings
-            .Skip((parameters.PageNumber - 1) * parameters.PageSize)
-            .Take(parameters.PageSize)
+            .Skip((query.PageNumber - 1) * query.PageSize)
+            .Take(query.PageSize)
             .ToListAsync();
 
-        return PagedList<Booking>.ToPagedList(bookings, totalCount, parameters.PageNumber, parameters.PageSize);
+        return PagedList<Booking>.ToPagedList(bookings, totalCount, query.PageNumber, query.PageSize);
     }
 
     public async Task<List<Booking>> GetConfirmedOrPendingBookingsInTimeRangeAsync(Guid apartmentId, DateTime from, DateTime to)

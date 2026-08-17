@@ -11,28 +11,28 @@ public class ApartmentRepository : Repository<Apartment>, IApartmentRepository
 {
     public ApartmentRepository(ApplicationDbContext context) : base(context) {}
     
-    public async Task<PagedList<Apartment>> GetApartmentsPagedAsync(ApartmentParameters parameters)
+    public async Task<PagedList<Apartment>> GetApartmentsPagedAsync(ApartmentQuery query)
     {
         var apartmentsQuery = _dbSet.AsQueryable();
 
         // All apartments where there are no pending or confirmed bookings for a time range in parameters
-        if (parameters.StartDate != null && parameters.EndDate != null)
+        if (query.StartDate != null && query.EndDate != null)
         {
             apartmentsQuery = apartmentsQuery
                 .Include(apartment => apartment.Bookings)
                 .Where(apartment => apartment.Bookings
                     .Where(booking =>
                         booking.Status == BookingStatus.Confirmed || booking.Status == BookingStatus.Pending)
-                    .All(booking => booking.CheckOut <= parameters.StartDate || booking.CheckIn >= parameters.EndDate)
+                    .All(booking => booking.CheckOut <= query.StartDate || booking.CheckIn >= query.EndDate)
                 );
 
         }
 
         // Apartments that have specified IsListed value
-        if (parameters.IsListed != null)
+        if (query.IsListed != null)
         {
             apartmentsQuery = apartmentsQuery
-                .Where(apartment => apartment.IsListed == parameters.IsListed);
+                .Where(apartment => apartment.IsListed == query.IsListed);
         }
 
         // Order apartments by Title
@@ -42,10 +42,10 @@ public class ApartmentRepository : Repository<Apartment>, IApartmentRepository
         var totalCount = await apartmentsQuery.CountAsync();
 
         var apartments = await apartmentsQuery
-            .Skip((parameters.PageNumber - 1) * parameters.PageSize)
-            .Take(parameters.PageSize)
+            .Skip((query.PageNumber - 1) * query.PageSize)
+            .Take(query.PageSize)
             .ToListAsync();
 
-        return PagedList<Apartment>.ToPagedList(apartments, totalCount, parameters.PageNumber, parameters.PageSize);
+        return PagedList<Apartment>.ToPagedList(apartments, totalCount, query.PageNumber, query.PageSize);
     }
 }

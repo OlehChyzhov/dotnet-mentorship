@@ -6,7 +6,9 @@ namespace Airbnb.Application.Abstracts.Services;
 
 public interface IBookingService
 {
-    Task<(List<BookingDto> bookings, PagingMetaData metadata)> GetBookingsAsync(BookingParameters parameters, string userId);
+    Task<BookingDto> GetBookingByIdAsync(Guid bookingId);
+    
+    Task<(List<BookingDto> bookings, PagingMetaData metadata)> GetBookingsAsync(BookingQuery query, string userId);
 
     Task<BookingDto> CreateBookingAsync(CreateBookingDto dto, string userId);
 }

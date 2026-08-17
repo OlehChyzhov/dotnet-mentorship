@@ -6,5 +6,5 @@ namespace Airbnb.Application.Abstracts.Repositories;
 
 public interface IApartmentRepository : IRepository<Apartment>
 {
-    Task<PagedList<Apartment>> GetApartmentsPagedAsync(ApartmentParameters parameters);
+    Task<PagedList<Apartment>> GetApartmentsPagedAsync(ApartmentQuery query);
 }

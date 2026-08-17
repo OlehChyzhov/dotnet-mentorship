@@ -12,16 +12,23 @@ public class ApartmentService : IApartmentService
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
-    
+
     public ApartmentService(IUnitOfWork unitOfWork, IMapper mapper)
     {
         _unitOfWork = unitOfWork;
         _mapper = mapper;
     }
 
-    public async Task<(List<ApartmentDto> apartments, PagingMetaData metadata)> GetApartmentsAsync(ApartmentParameters parameters)
+    public async Task<ApartmentDto> GetApartmentByIdAsync(Guid id)
     {
-        var apartmentsWithMetaData = await _unitOfWork.Apartments.GetApartmentsPagedAsync(parameters);
+        var apartment = await _unitOfWork.Apartments.GetByIdAsync(id);
+        var apartmentDto = _mapper.Map<ApartmentDto>(apartment);
+        return apartmentDto;
+    }
+
+    public async Task<(List<ApartmentDto> apartments, PagingMetaData metadata)> GetApartmentsAsync(ApartmentQuery query)
+    {
+        var apartmentsWithMetaData = await _unitOfWork.Apartments.GetApartmentsPagedAsync(query);
         var apartmentsDto = _mapper.Map<List<ApartmentDto>>(apartmentsWithMetaData);
         
         return (apartmentsDto, apartmentsWithMetaData.MetaData);
