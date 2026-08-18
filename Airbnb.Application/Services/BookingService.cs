@@ -5,8 +5,6 @@ using Airbnb.Application.DTOs.Querying;
 using Airbnb.Application.DTOs.Querying.Filtering;
 using Airbnb.Domain;
 using Airbnb.Domain.Enums;
-using Airbnb.Domain.Exceptions;
-using Airbnb.Domain.Models;
 using MapsterMapper;
 
 namespace Airbnb.Application.Services;
