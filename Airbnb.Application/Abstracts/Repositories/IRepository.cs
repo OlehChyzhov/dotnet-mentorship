@@ -3,9 +3,9 @@ using Airbnb.Domain.Models;
 
 namespace Airbnb.Application.Abstracts.Repositories;
 
-public interface IRepository<T> where T : class, IEntity
+public interface IRepository<TEntity, TKey> where TEntity : class, IEntity<TKey>
 {
-    Task<T> GetByIdAsync(Guid id);
-    Task CreateAsync(T entity);
-    Task UpdateAsync(T entity);
+    Task<TEntity> GetByIdAsync(TKey id);
+    Task CreateAsync(TEntity entity);
+    Task UpdateAsync(TEntity entity);
 }

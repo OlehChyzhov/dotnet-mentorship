@@ -1,6 +1,6 @@
 ﻿namespace Airbnb.Domain.Models;
 
-public interface IEntity
+public interface IEntity<TKey>
 {
-    public Guid Id { get; set; }
+    public TKey Id { get; set; }
 }

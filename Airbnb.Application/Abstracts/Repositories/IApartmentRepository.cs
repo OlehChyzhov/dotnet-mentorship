@@ -4,7 +4,7 @@ using Airbnb.Domain.Models;
 
 namespace Airbnb.Application.Abstracts.Repositories;
 
-public interface IApartmentRepository : IRepository<Domain.Models.Apartment>
+public interface IApartmentRepository : IRepository<Apartment, Guid>
 {
-    Task<PagedList<Domain.Models.Apartment>> GetApartmentsPagedAsync(ApartmentPagingParamters query);
+    Task<PagedList<Apartment>> GetApartmentsPagedAsync(ApartmentPagingParamters query);
 }

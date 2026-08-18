@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace Airbnb.Domain.Models;
 
-public class Booking : IEntity
+public class Booking : IEntity<Guid>
 {
     public Guid Id { get; set; }
 

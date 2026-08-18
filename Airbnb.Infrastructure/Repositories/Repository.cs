@@ -5,37 +5,36 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Airbnb.Infrastructure.Repositories;
 
-public class Repository<T> : IRepository<T> where T : class, IEntity
+public class Repository<TEntity, TKey> : IRepository<TEntity, TKey> where TEntity : class, IEntity<TKey>
 {
-    protected readonly DbSet<T> _dbSet;
+    protected readonly DbSet<TEntity> _dbSet;
     public Repository(ApplicationDbContext context)
     {
-        _dbSet = context.Set<T>();
+        _dbSet = context.Set<TEntity>();
     }
     
-    public async Task<T> GetByIdAsync(Guid id)
+    public async Task<TEntity> GetByIdAsync(TKey id)
     {
-        return await _dbSet.AsNoTracking().FirstAsync(entity => entity.Id == id);
+        return await _dbSet.AsNoTracking().FirstAsync(entity => entity.Id!.Equals(id));
     }
 
-    public async Task CreateAsync(T entity)
+    public async Task CreateAsync(TEntity entity)
     {
-        Guid entityGuid = Guid.NewGuid();
-        if (entity.Id == Guid.Empty)
+        if (EqualityComparer<TKey>.Default.Equals(entity.Id, default) && typeof(TKey) == typeof(Guid))
         {
-            entity.Id = entityGuid;
+            entity.Id = (TKey)(object)Guid.NewGuid();
         }
-        
+
         await _dbSet.AddAsync(entity);
     }
 
-    public Task UpdateAsync(T entity)
+    public Task UpdateAsync(TEntity entity)
     {
         _dbSet.Update(entity);
         return Task.CompletedTask;
     }
 
-    protected async Task<IEnumerable<T>> FindAsync(Expression<Func<T, bool>> predicate)
+    protected async Task<IEnumerable<TEntity>> FindAsync(Expression<Func<TEntity, bool>> predicate)
     {
         return await _dbSet.Where(predicate).AsNoTracking().ToListAsync();
     }
