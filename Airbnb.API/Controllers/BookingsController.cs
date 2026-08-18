@@ -23,8 +23,13 @@ public class BookingsController : ControllerBase
     [HttpGet("{bookingId}")]
     public async Task<IActionResult> GetBookingById(Guid bookingId)
     {
-        var booking = await _bookingService.GetBookingByIdAsync(bookingId);
-        return Ok(booking);
+        var result = await _bookingService.GetBookingByIdAsync(bookingId);
+        if (!result.IsSuccessful)
+        {
+            return BadRequest(result.Message);
+        }
+
+        return Ok(result.Value);
     }
     
     [HttpGet]
@@ -32,8 +37,13 @@ public class BookingsController : ControllerBase
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
 
-        var bookings = await _bookingService.GetBookingsAsync(query, userId);
-        return Ok(bookings.bookings);
+        var result = await _bookingService.GetBookingsAsync(query, userId);
+        if (!result.IsSuccessful)
+        {
+            return BadRequest(result.Message);
+        }
+        
+        return Ok(result.Value);
     }
 
     [HttpPost]
@@ -41,7 +51,12 @@ public class BookingsController : ControllerBase
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
 
-        var createdBooking = await _bookingService.CreateBookingAsync(dto, userId);
-        return CreatedAtAction(nameof(GetBookingById), new { bookingId = createdBooking.Id }, createdBooking);
+        var result = await _bookingService.CreateBookingAsync(dto, userId);
+        if (!result.IsSuccessful)
+        {
+            return BadRequest(result.Message);
+        }
+        
+        return CreatedAtAction(nameof(GetBookingById), new { bookingId = result.Value!.Id }, result.Value);
     }
 }

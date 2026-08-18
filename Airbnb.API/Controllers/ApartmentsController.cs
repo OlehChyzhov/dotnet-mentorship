@@ -25,8 +25,13 @@ public class ApartmentsController : ControllerBase
     [Authorize(Roles = $"{Roles.Client}, {Roles.Host}")]
     public async Task<IActionResult> GetApartmentById(Guid apartmentId)
     {
-        var apartment = await _apartmentService.GetApartmentByIdAsync(apartmentId);
-        return Ok(apartment);
+        var result = await _apartmentService.GetApartmentByIdAsync(apartmentId);
+        if (!result.IsSuccessful)
+        {
+            return BadRequest(result.Message);
+        }
+        
+        return Ok(result.Value);
     }
     
     [HttpGet]
@@ -51,7 +56,13 @@ public class ApartmentsController : ControllerBase
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
         
-        var createdApartment = await _apartmentService.CreateApartmentAsync(dto, userId);
+        var result = await _apartmentService.CreateApartmentAsync(dto, userId);
+        if (!result.IsSuccessful)
+        {
+            return BadRequest(result.Message);
+        }
+
+        var createdApartment = result.Value!;
         return CreatedAtAction(nameof(GetApartmentById), new { apartmentId = createdApartment.Id }, createdApartment);
     }
 }

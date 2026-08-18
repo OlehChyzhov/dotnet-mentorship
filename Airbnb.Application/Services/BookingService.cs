@@ -3,6 +3,7 @@ using Airbnb.Application.Abstracts.Services;
 using Airbnb.Application.DTOs.Booking;
 using Airbnb.Application.DTOs.Querying;
 using Airbnb.Application.DTOs.Querying.Filtering;
+using Airbnb.Domain;
 using Airbnb.Domain.Enums;
 using Airbnb.Domain.Exceptions;
 using Airbnb.Domain.Models;
@@ -21,22 +22,30 @@ public class BookingService : IBookingService
         _mapper = mapper;
     }
 
-    public async Task<BookingDto> GetBookingByIdAsync(Guid bookingId)
+    public async Task<Result<BookingDto>> GetBookingByIdAsync(Guid bookingId)
     {
         var booking = await _unitOfWork.Bookings.GetByIdAsync(bookingId);
         var bookingDto = _mapper.Map<BookingDto>(booking);
         return bookingDto;
     }
     
-    public async Task<(List<BookingDto> bookings, PagingMetaData metadata)> GetBookingsAsync(BookingPagingParameters query, string userId)
+    public async Task<Result<PagedList<BookingDto>>> GetBookingsAsync(BookingPagingParameters query, string userId)
     {
         var bookingsWithMetaData = await _unitOfWork.Bookings.GetBookingsPagedAsync(query, userId);
-        var bookingsDto = _mapper.Map<List<BookingDto>>(bookingsWithMetaData);
 
-        return (bookingsDto, bookingsWithMetaData.MetaData);
+        var pagingMetaData = bookingsWithMetaData.MetaData;
+        var bookingsDto = _mapper.Map<List<BookingDto>>(bookingsWithMetaData);
+        
+        var bookingsResult = PagedList<BookingDto>.ToPagedList(
+            source: bookingsDto,
+            totalCount: pagingMetaData.TotalCount,
+            pageNumber: pagingMetaData.CurrentPage,
+            pageSize: pagingMetaData.PageSize);
+
+        return bookingsResult;
     }
 
-    public async Task<BookingDto> CreateBookingAsync(CreateBookingDto dto, string userId)
+    public async Task<Result<BookingDto>> CreateBookingAsync(CreateBookingDto dto, string userId)
     {
         var apartment = await _unitOfWork.Apartments.GetByIdAsync(dto.ApartmentId);
         var bookingsInTimeRange = await _unitOfWork.Bookings
@@ -44,11 +53,11 @@ public class BookingService : IBookingService
 
         if (bookingsInTimeRange.Any())
         {
-            throw new BookingConflictException("The apartment is already booked for the selected time range");
+            return "The apartment is already booked for the selected time range";
         }
         else if (!apartment.IsListed)
         {
-            throw new BookingConflictException("Can't create booking for an unlisted apartment");
+            return "Can't create booking for an unlisted apartment";
         }
         
 

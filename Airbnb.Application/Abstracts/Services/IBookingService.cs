@@ -1,14 +1,15 @@
 ﻿using Airbnb.Application.DTOs.Booking;
 using Airbnb.Application.DTOs.Querying;
 using Airbnb.Application.DTOs.Querying.Filtering;
+using Airbnb.Domain;
 
 namespace Airbnb.Application.Abstracts.Services;
 
 public interface IBookingService
 {
-    Task<BookingDto> GetBookingByIdAsync(Guid bookingId);
+    Task<Result<BookingDto>> GetBookingByIdAsync(Guid bookingId);
     
-    Task<(List<BookingDto> bookings, PagingMetaData metadata)> GetBookingsAsync(BookingPagingParameters query, string userId);
+    Task<Result<PagedList<BookingDto>>> GetBookingsAsync(BookingPagingParameters query, string userId);
 
-    Task<BookingDto> CreateBookingAsync(CreateBookingDto dto, string userId);
+    Task<Result<BookingDto>> CreateBookingAsync(CreateBookingDto dto, string userId);
 }

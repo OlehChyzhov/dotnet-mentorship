@@ -7,9 +7,9 @@ namespace Airbnb.Application.Abstracts.Services;
 
 public interface IApartmentService
 {
-    Task<ApartmentDto> GetApartmentByIdAsync(Guid id);
+    Task<Result<ApartmentDto>> GetApartmentByIdAsync(Guid id);
     
     Task<Result<PagedList<ApartmentDto>>> GetApartmentsAsync(ApartmentPagingParamters query);
 
-    Task<ApartmentDto> CreateApartmentAsync(CreateApartmentDto dto, string userId);
+    Task<Result<ApartmentDto>> CreateApartmentAsync(CreateApartmentDto dto, string userId);
 }

@@ -19,10 +19,11 @@ public class ApartmentService : IApartmentService
         _mapper = mapper;
     }
 
-    public async Task<ApartmentDto> GetApartmentByIdAsync(Guid id)
+    public async Task<Result<ApartmentDto>> GetApartmentByIdAsync(Guid id)
     {
         var apartment = await _unitOfWork.Apartments.GetByIdAsync(id);
         var apartmentDto = _mapper.Map<ApartmentDto>(apartment);
+        
         return apartmentDto;
     }
 
@@ -42,7 +43,7 @@ public class ApartmentService : IApartmentService
         return apartmentsResult;
     }
 
-    public async Task<ApartmentDto> CreateApartmentAsync(CreateApartmentDto dto, string userId)
+    public async Task<Result<ApartmentDto>> CreateApartmentAsync(CreateApartmentDto dto, string userId)
     {
         var apartmentGuid = Guid.NewGuid();
         var apartment = _mapper.Map<Domain.Models.Apartment>(dto);
@@ -56,7 +57,7 @@ public class ApartmentService : IApartmentService
         
         var createdApartment = await _unitOfWork.Apartments.GetByIdAsync(apartmentGuid);
         var createdApartmentDto = _mapper.Map<ApartmentDto>(createdApartment);
-
+        
         return createdApartmentDto;
     }
 }
