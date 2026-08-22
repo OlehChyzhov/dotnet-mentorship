@@ -20,11 +20,6 @@ public class Repository<TEntity, TKey> : IRepository<TEntity, TKey> where TEntit
 
     public async Task CreateAsync(TEntity entity)
     {
-        if (EqualityComparer<TKey>.Default.Equals(entity.Id, default) && typeof(TKey) == typeof(Guid))
-        {
-            entity.Id = (TKey)(object)Guid.NewGuid();
-        }
-
         await _dbSet.AddAsync(entity);
     }
 
