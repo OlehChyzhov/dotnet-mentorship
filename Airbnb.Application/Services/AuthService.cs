@@ -1,11 +1,10 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using Airbnb.Application.Abstracts.Repositories;
 using Airbnb.Application.Abstracts.Services;
+using Airbnb.Application.DTOs.Authentication;
 using Airbnb.Application.Options;
 using Airbnb.Domain;
-using Airbnb.Domain.Requests;
 using MapsterMapper;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
@@ -15,34 +14,34 @@ namespace Airbnb.Application.Services;
 
 public class AuthService : IAuthService
 {
-    private readonly IUserRepository _userRepository;
+    private readonly IUserService _userService;
     private readonly IOptions<JwtOptions> _jwtOptions;
     private readonly IMapper _mapper;
     
     public AuthService(
-        IUserRepository userRepository,
+        IUserService userService,
         IOptions<JwtOptions> jwtOptions,
         IMapper mapper)
     {
-        _userRepository = userRepository;
+        _userService = userService;
         _jwtOptions =  jwtOptions;
         _mapper = mapper;
     }
 
-    public async Task<IdentityResult> RegisterUserAsync(UserRegisterRequest user)
+    public async Task<IdentityResult> RegisterUserAsync(UserRegisterDto user)
     {
-        IdentityUser identityUser = _mapper.Map<UserRegisterRequest, IdentityUser>(user);
+        IdentityUser identityUser = _mapper.Map<UserRegisterDto, IdentityUser>(user);
         
-        bool roleExists = await _userRepository.RoleExistsAsync(user.Role);
+        bool roleExists = await _userService.RoleExistsAsync(user.Role);
         if (roleExists)
         {
-            var result = await _userRepository.CreateUserAsync(identityUser, user.Password);
+            var result = await _userService.CreateUserAsync(identityUser, user.Password);
             if (!result.Succeeded)
             {
                 return result;
             }
 
-            return await _userRepository.AddUserToRoleAsync(identityUser, user.Role);
+            return await _userService.AddUserToRoleAsync(identityUser, user.Role);
         }
         
         return IdentityResult.Failed(new  IdentityError()
@@ -52,15 +51,15 @@ public class AuthService : IAuthService
         });
     }
 
-    public async Task<Result<UserLoginRequest>> LoginUserAsync(UserLoginRequest user)
+    public async Task<Result<UserLoginDto>> LoginUserAsync(UserLoginDto user)
     {
-        IdentityUser? identityUser = await _userRepository.FindUserByEmailAsync(user.Email);
+        IdentityUser? identityUser = await _userService.FindUserByEmailAsync(user.Email);
         if (identityUser == null)
         {
             return "No user found";
         }
         
-        if (await _userRepository.CheckPasswordAsync(identityUser, user.Password))
+        if (await _userService.CheckPasswordAsync(identityUser, user.Password))
         {
             return user;
         }
@@ -68,18 +67,19 @@ public class AuthService : IAuthService
         return "Incorrect password";
     }
 
-    public async Task<string> GenerateJwtTokenAsync(UserLoginRequest user)
+    public async Task<string> GenerateJwtTokenAsync(UserLoginDto user)
     {
-        IdentityUser? identityUser = await _userRepository.FindUserByEmailAsync(user.Email);
+        IdentityUser? identityUser = await _userService.FindUserByEmailAsync(user.Email);
         if (identityUser == null)
         {
             return string.Empty;
         }
         
-        IList<string> userRoles = await _userRepository.GetRolesAsync(identityUser);
+        IList<string> userRoles = await _userService.GetRolesAsync(identityUser);
 
         List<Claim> claims = new List<Claim>()
         {
+            new Claim(ClaimTypes.NameIdentifier, identityUser.Id),
             new Claim(ClaimTypes.Email, user.Email),
         };
         claims.AddRange(userRoles.Select(role => new Claim(ClaimTypes.Role, role)));

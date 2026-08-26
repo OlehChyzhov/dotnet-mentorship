@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using System.Text;
 using Airbnb.API.Middleware;
 using Airbnb.Application.Abstracts.Repositories;
@@ -8,6 +9,7 @@ using Airbnb.Application.Services;
 using Airbnb.Application.Validators;
 using Airbnb.Infrastructure;
 using Airbnb.Infrastructure.Repositories;
+using Airbnb.Infrastructure.Services;
 using FluentValidation;
 using Mapster;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -25,7 +27,14 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddTransient<ValidationMiddleware>();
 
 // Repositories
-builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddScoped<IApartmentRepository, ApartmentRepository>();
+builder.Services.AddScoped<IBookingRepository, BookingRepository>();
+
+// Services
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IApartmentService, ApartmentService>();
+builder.Services.AddScoped<IBookingService, BookingService>();
 
 // Database
 builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -61,7 +70,20 @@ builder.Services.AddAuthentication(options =>
         ValidAudience = builder.Configuration["JWT:Audience"],
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT:Key"]))
     };
-    
+
+    options.Events = new JwtBearerEvents
+    {
+        OnTokenValidated = context =>
+        {
+            var hasNameIdentifier = context.Principal?.HasClaim(claim => claim.Type == ClaimTypes.NameIdentifier) ?? false;
+            if (!hasNameIdentifier)
+            {
+                context.Fail("Token is missing the required NameIdentifier claim.");
+            }
+
+            return Task.CompletedTask;
+        }
+    };
 });
 
 // Mapping

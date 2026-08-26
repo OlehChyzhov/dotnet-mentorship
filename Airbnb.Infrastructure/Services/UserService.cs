@@ -1,19 +1,21 @@
-﻿using Airbnb.Application.Abstracts.Repositories;
+﻿using Airbnb.Application.Abstracts.Services;
 using Microsoft.AspNetCore.Identity;
 
-namespace Airbnb.Infrastructure.Repositories;
+namespace Airbnb.Infrastructure.Services;
 
-public class UserRepository : IUserRepository
+public class UserService : IUserService
 {
     private readonly UserManager<IdentityUser> _userManager;
     private readonly RoleManager<IdentityRole> _roleManager;
 
-    public UserRepository(UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager)
+    public UserService(
+        UserManager<IdentityUser> userManager, 
+        RoleManager<IdentityRole> roleManager)
     {
         _userManager = userManager;
         _roleManager = roleManager;
     }
-    
+
     public async Task<bool> RoleExistsAsync(string roleName)
     {
         return await _roleManager.RoleExistsAsync(roleName);

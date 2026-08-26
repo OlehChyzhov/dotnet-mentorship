@@ -1,9 +1,9 @@
-﻿using Airbnb.Domain.Requests;
+﻿using Airbnb.Application.DTOs.Authentication;
 using FluentValidation;
 
 namespace Airbnb.Application.Validators;
 
-public class UserLoginRequestValidator : AbstractValidator<UserLoginRequest>
+public class UserLoginRequestValidator : AbstractValidator<UserLoginDto>
 {
     public UserLoginRequestValidator()
     {

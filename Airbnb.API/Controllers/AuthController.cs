@@ -1,8 +1,5 @@
 ﻿using Airbnb.Application.Abstracts.Services;
-using Airbnb.Application.Services;
-using Airbnb.Domain.Requests;
-using FluentValidation;
-using FluentValidation.Results;
+using Airbnb.Application.DTOs.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
@@ -20,9 +17,9 @@ public class AuthController : ControllerBase
     }
     
     [HttpPost("register")]
-    public async Task<IActionResult> Register([FromBody] UserRegisterRequest userRegisterRequest)
+    public async Task<IActionResult> Register([FromBody] UserRegisterDto userRegisterDto)
     {
-        IdentityResult result = await _authService.RegisterUserAsync(userRegisterRequest);
+        IdentityResult result = await _authService.RegisterUserAsync(userRegisterDto);
 
         if (result.Succeeded)
         {
@@ -33,13 +30,13 @@ public class AuthController : ControllerBase
     }
     
     [HttpPost("login")]
-    public async Task<IActionResult> Login([FromBody] UserLoginRequest userLoginRequest)
+    public async Task<IActionResult> Login([FromBody] UserLoginDto userLoginDto)
     {
-        var result = await _authService.LoginUserAsync(userLoginRequest);
+        var result = await _authService.LoginUserAsync(userLoginDto);
 
         if (result.IsSuccessful)
         {
-            string token = await _authService.GenerateJwtTokenAsync(userLoginRequest);
+            string token = await _authService.GenerateJwtTokenAsync(userLoginDto);
             return Ok(token);
         }
         

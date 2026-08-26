@@ -1,10 +1,10 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using Airbnb.Application.Abstracts.Repositories;
+using Airbnb.Application.Abstracts.Services;
+using Airbnb.Application.DTOs.Authentication;
 using Airbnb.Application.Options;
 using Airbnb.Application.Services;
-using Airbnb.Domain;
-using Airbnb.Domain.Requests;
+using Airbnb.Domain.Constants;
 using MapsterMapper;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
@@ -15,14 +15,14 @@ namespace Airbnb.Tests;
 
 public class AuthServiceTests
 {
-    private readonly Mock<IUserRepository> _userRepositoryMock;
+    private readonly Mock<IUserService> _userRepositoryMock;
     private readonly IOptions<JwtOptions> _jwtOptions;
     private readonly Mock<IMapper> _mapperMock;
     private readonly AuthService _sut;
 
     public AuthServiceTests()
     {
-        _userRepositoryMock = new Mock<IUserRepository>();
+        _userRepositoryMock = new Mock<IUserService>();
 
         _jwtOptions = Options.Create(new JwtOptions
         {
@@ -34,8 +34,8 @@ public class AuthServiceTests
 
         _mapperMock = new Mock<IMapper>();
         _mapperMock
-            .Setup(m => m.Map<UserRegisterRequest, IdentityUser>(It.IsAny<UserRegisterRequest>()))
-            .Returns((UserRegisterRequest src) => new IdentityUser { Email = src.Email, UserName = src.Email });
+            .Setup(m => m.Map<UserRegisterDto, IdentityUser>(It.IsAny<UserRegisterDto>()))
+            .Returns((UserRegisterDto src) => new IdentityUser { Email = src.Email, UserName = src.Email });
 
         _sut = new AuthService(_userRepositoryMock.Object, _jwtOptions, _mapperMock.Object);
     }
@@ -48,7 +48,7 @@ public class AuthServiceTests
             .Setup(m => m.RoleExistsAsync(It.IsAny<string>()))
             .ReturnsAsync(false);
 
-        var request = new UserRegisterRequest
+        var request = new UserRegisterDto
         {
             Email = "test@test.com",
             Password = "Password123!",
@@ -82,7 +82,7 @@ public class AuthServiceTests
             .Setup(m => m.AddUserToRoleAsync(It.IsAny<IdentityUser>(), It.IsAny<string>()))
             .ReturnsAsync(IdentityResult.Success);
 
-        var request = new UserRegisterRequest
+        var request = new UserRegisterDto
         {
             Email = "test@test.com",
             Password = "Password123!",
@@ -109,7 +109,7 @@ public class AuthServiceTests
     [Fact]
     public async Task LoginUserAsync_WhenUserNotFound_ReturnsFailure()
     {
-        var request = new UserLoginRequest { Email = "missing@test.com", Password = "whatever" };
+        var request = new UserLoginDto { Email = "missing@test.com", Password = "whatever" };
 
         // Act
         var result = await _sut.LoginUserAsync(request);
@@ -127,7 +127,7 @@ public class AuthServiceTests
         _userRepositoryMock.Setup(m => m.FindUserByEmailAsync("test@test.com")).ReturnsAsync(identityUser);
         _userRepositoryMock.Setup(m => m.CheckPasswordAsync(identityUser, "wrong")).ReturnsAsync(false);
 
-        var request = new UserLoginRequest { Email = "test@test.com", Password = "wrong" };
+        var request = new UserLoginDto { Email = "test@test.com", Password = "wrong" };
 
         // Act
         var result = await _sut.LoginUserAsync(request);
@@ -145,7 +145,7 @@ public class AuthServiceTests
         _userRepositoryMock.Setup(m => m.FindUserByEmailAsync("test@test.com")).ReturnsAsync(identityUser);
         _userRepositoryMock.Setup(m => m.CheckPasswordAsync(identityUser, "correct")).ReturnsAsync(true);
 
-        var request = new UserLoginRequest { Email = "test@test.com", Password = "correct" };
+        var request = new UserLoginDto { Email = "test@test.com", Password = "correct" };
 
         // Act
         var result = await _sut.LoginUserAsync(request);
@@ -159,7 +159,7 @@ public class AuthServiceTests
     public async Task GenerateJwtTokenAsync_WhenUserNotFound_ReturnsEmptyString()
     {
         // Arrange
-        var request = new UserLoginRequest { Email = "missing@test.com", Password = "whatever" };
+        var request = new UserLoginDto { Email = "missing@test.com", Password = "whatever" };
 
         // Act
         string token = await _sut.GenerateJwtTokenAsync(request);
@@ -176,7 +176,7 @@ public class AuthServiceTests
         _userRepositoryMock.Setup(m => m.FindUserByEmailAsync("test@test.com")).ReturnsAsync(identityUser);
         _userRepositoryMock.Setup(m => m.GetRolesAsync(identityUser)).ReturnsAsync(new List<string> { "Client" });
 
-        var request = new UserLoginRequest { Email = "test@test.com", Password = "correct" };
+        var request = new UserLoginDto { Email = "test@test.com", Password = "correct" };
 
         // Act
         string token = await _sut.GenerateJwtTokenAsync(request);
@@ -194,7 +194,7 @@ public class AuthServiceTests
         _userRepositoryMock.Setup(m => m.FindUserByEmailAsync("test@test.com")).ReturnsAsync(identityUser);
         _userRepositoryMock.Setup(m => m.GetRolesAsync(identityUser)).ReturnsAsync(new List<string> { "Client", "Host" });
 
-        var request = new UserLoginRequest { Email = "test@test.com", Password = "correct" };
+        var request = new UserLoginDto { Email = "test@test.com", Password = "correct" };
 
         // Act
         string token = await _sut.GenerateJwtTokenAsync(request);
