@@ -1,14 +1,15 @@
-﻿using Airbnb.Application.Abstracts.Services;
+﻿using Airbnb.Application.Abstracts.Helpers;
+using Airbnb.Application.Abstracts.Services;
 using Microsoft.AspNetCore.Identity;
 
-namespace Airbnb.Infrastructure.Services;
+namespace Airbnb.Infrastructure.Helpers;
 
-public class UserService : IUserService
+public class UserHelper : IUserHelper
 {
     private readonly UserManager<IdentityUser> _userManager;
     private readonly RoleManager<IdentityRole> _roleManager;
 
-    public UserService(
+    public UserHelper(
         UserManager<IdentityUser> userManager, 
         RoleManager<IdentityRole> roleManager)
     {
