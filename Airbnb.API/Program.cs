@@ -40,7 +40,7 @@ builder.Services.AddScoped<IBookingService, BookingService>();
 
 // Helpers
 builder.Services.AddScoped<IUserHelper, UserHelper>();
-builder.Services.AddScoped<IDataLoader, DataLoader>();
+builder.Services.AddScoped<IExternalDataLoader, ExternalDataLoader>();
 
 // Database
 builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -113,7 +113,7 @@ var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
 {
-    var dataLoader = scope.ServiceProvider.GetRequiredService<IDataLoader>();
+    var dataLoader = scope.ServiceProvider.GetRequiredService<IExternalDataLoader>();
     await dataLoader.LoadDataFromJsonFileAsync();
 }
 

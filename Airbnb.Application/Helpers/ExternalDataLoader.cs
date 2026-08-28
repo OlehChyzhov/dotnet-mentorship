@@ -1,17 +1,19 @@
-﻿using Airbnb.Application.Abstracts.Helpers;
+﻿using System.Text.Json;
+using Airbnb.Application.Abstracts.Helpers;
 using Airbnb.Application.Abstracts.Repositories;
+using Airbnb.Application.DTOs.External;
 using Airbnb.Application.Options;
 using Airbnb.Domain;
 using Microsoft.Extensions.Options;
 
 namespace Airbnb.Application.Helpers;
 
-public class DataLoader : IDataLoader
+public class ExternalDataLoader : IExternalDataLoader
 {
     private readonly IOptions<DataFileOptions> _fileOptions;
     private readonly IUnitOfWork _unitOfWork;
     
-    public DataLoader(IOptions<DataFileOptions> fileOptions, IUnitOfWork unitOfWork)
+    public ExternalDataLoader(IOptions<DataFileOptions> fileOptions, IUnitOfWork unitOfWork)
     {
         _fileOptions = fileOptions;
         _unitOfWork = unitOfWork;
@@ -34,7 +36,15 @@ public class DataLoader : IDataLoader
         
         try
         {
+            await using FileStream stream = File.Open(filePath, FileMode.Open);
             
+            await foreach (ExternalHostDto? hostDto in JsonSerializer.DeserializeAsyncEnumerable<ExternalHostDto>(stream))
+            {
+                if (hostDto != null)
+                {
+                    // Processing logic
+                }
+            }
         }
         catch (Exception ex)
         {

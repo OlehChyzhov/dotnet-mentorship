@@ -20,4 +20,11 @@
       <ProjectReference Include="..\Airbnb.Infrastructure\Airbnb.Infrastructure.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Content Remove="data.json" />
+      <Resource Include="data.json">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Resource>
+    </ItemGroup>
+
 </Project>
