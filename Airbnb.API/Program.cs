@@ -9,6 +9,7 @@ using Airbnb.Application.Mapping;
 using Airbnb.Application.Options;
 using Airbnb.Application.Services;
 using Airbnb.Application.Validators;
+using Airbnb.Domain.Models;
 using Airbnb.Infrastructure;
 using Airbnb.Infrastructure.Helpers;
 using Airbnb.Infrastructure.Repositories;
@@ -45,7 +46,7 @@ builder.Services.AddScoped<IDataLoader, DataLoader>();
 builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // Database (Identity)
-builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
+builder.Services.AddIdentity<User, IdentityRole>(options =>
 {
     options.Password.RequiredLength = 5;
     options.Password.RequireNonAlphanumeric = false;

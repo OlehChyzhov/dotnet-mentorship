@@ -6,6 +6,7 @@ using Airbnb.Application.Abstracts.Services;
 using Airbnb.Application.DTOs.Authentication;
 using Airbnb.Application.Options;
 using Airbnb.Domain;
+using Airbnb.Domain.Models;
 using MapsterMapper;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
@@ -31,7 +32,7 @@ public class AuthService : IAuthService
 
     public async Task<IdentityResult> RegisterUserAsync(UserRegisterDto user)
     {
-        IdentityUser identityUser = _mapper.Map<UserRegisterDto, IdentityUser>(user);
+        User identityUser = _mapper.Map<UserRegisterDto, User>(user);
         
         bool roleExists = await _userHelper.RoleExistsAsync(user.Role);
         if (roleExists)
@@ -54,7 +55,7 @@ public class AuthService : IAuthService
 
     public async Task<Result<UserLoginDto>> LoginUserAsync(UserLoginDto user)
     {
-        IdentityUser? identityUser = await _userHelper.FindUserByEmailAsync(user.Email);
+        User? identityUser = await _userHelper.FindUserByEmailAsync(user.Email);
         if (identityUser == null)
         {
             return "No user found";
@@ -70,7 +71,7 @@ public class AuthService : IAuthService
 
     public async Task<string> GenerateJwtTokenAsync(UserLoginDto user)
     {
-        IdentityUser? identityUser = await _userHelper.FindUserByEmailAsync(user.Email);
+        User? identityUser = await _userHelper.FindUserByEmailAsync(user.Email);
         if (identityUser == null)
         {
             return string.Empty;

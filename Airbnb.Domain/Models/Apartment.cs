@@ -1,5 +1,4 @@
 ﻿using Airbnb.Domain.Enums;
-using Microsoft.AspNetCore.Identity;
 
 namespace Airbnb.Domain.Models;
 
@@ -34,7 +33,7 @@ public class Apartment : IEntity<Guid, Guid>
     public string OwnerId { get; set; } = string.Empty;
     
     // Navigation
-    public IdentityUser? Owner { get; set; }
+    public User? Owner { get; set; }
     public ICollection<Booking> Bookings { get; set; } = new List<Booking>();
     
 }

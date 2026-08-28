@@ -1,13 +1,14 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Airbnb.Domain.Models;
+using Microsoft.AspNetCore.Identity;
 
 namespace Airbnb.Application.Abstracts.Helpers;
 
 public interface IUserHelper
 {
     Task<bool> RoleExistsAsync(string roleName);
-    Task<IdentityUser?> FindUserByEmailAsync(string email);
-    Task<IdentityResult> CreateUserAsync(IdentityUser user, string password);
-    Task<IdentityResult> AddUserToRoleAsync(IdentityUser user, string roleName);
-    Task<bool> CheckPasswordAsync(IdentityUser user, string password);
-    Task<IList<string>> GetRolesAsync(IdentityUser user);
+    Task<User?> FindUserByEmailAsync(string email);
+    Task<IdentityResult> CreateUserAsync(User user, string password);
+    Task<IdentityResult> AddUserToRoleAsync(User user, string roleName);
+    Task<bool> CheckPasswordAsync(User user, string password);
+    Task<IList<string>> GetRolesAsync(User user);
 }

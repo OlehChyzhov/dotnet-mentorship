@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Airbnb.Infrastructure;
 
-public class ApplicationDbContext : IdentityDbContext<IdentityUser, IdentityRole, string>
+public class ApplicationDbContext : IdentityDbContext<User, IdentityRole, string>
 {
     public DbSet<Apartment> Apartments { get; set; }
     public DbSet<Booking> Bookings { get; set; }
