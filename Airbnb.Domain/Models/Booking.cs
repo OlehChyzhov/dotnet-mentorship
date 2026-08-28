@@ -3,9 +3,10 @@ using Microsoft.AspNetCore.Identity;
 
 namespace Airbnb.Domain.Models;
 
-public class Booking : IEntity<Guid>
+public class Booking : IEntity<Guid, Guid>
 {
     public Guid Id { get; set; }
+    public Guid ExternalId { get; set; }
 
     public BookingStatus Status { get; set; } = BookingStatus.Pending;
     

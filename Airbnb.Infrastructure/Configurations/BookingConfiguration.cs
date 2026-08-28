@@ -11,6 +11,7 @@ public class BookingConfiguration : IEntityTypeConfiguration<Booking>
     {
         builder.ToTable("Bookings");
         builder.HasKey(booking => booking.Id);
+        builder.HasIndex(booking => booking.ExternalId).IsUnique();
 
         builder.HasOne(booking => booking.Apartment)
             .WithMany(apartment => apartment.Bookings)

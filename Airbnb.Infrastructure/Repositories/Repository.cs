@@ -5,7 +5,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Airbnb.Infrastructure.Repositories;
 
-public class Repository<TEntity, TKey> : IRepository<TEntity, TKey> where TEntity : class, IEntity<TKey>
+public class Repository<TEntity, TKey, TExternalKey> : IRepository<TEntity, TKey, TExternalKey> 
+    where TEntity : class, IEntity<TKey, TExternalKey>
 {
     protected readonly DbSet<TEntity> _dbSet;
     public Repository(ApplicationDbContext context)

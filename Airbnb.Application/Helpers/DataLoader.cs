@@ -25,7 +25,7 @@ public class DataLoader : IDataLoader
         }
         
         string filePath = Path.Combine(AppContext.BaseDirectory, _fileOptions.Value.FileName);
-        if (File.Exists(_fileOptions.Value.FileName))
+        if (!File.Exists(_fileOptions.Value.FileName))
         {
             return new Result<string>(false, null, "File doesn't exist");
         }
