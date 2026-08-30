@@ -9,7 +9,9 @@ public interface IApartmentService
 {
     Task<Result<ApartmentDto>> GetApartmentByIdAsync(Guid id);
     
+    Task<Result<ApartmentDto>> GetApartmentByExternalIdAsync(Guid id);
+    
     Task<Result<PagedList<ApartmentDto>>> GetApartmentsAsync(ApartmentPagingParamters query);
-
+    
     Task<Result<ApartmentDto>> CreateApartmentAsync(CreateApartmentDto dto, string userId);
 }

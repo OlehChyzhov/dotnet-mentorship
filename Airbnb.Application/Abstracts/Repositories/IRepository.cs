@@ -6,6 +6,7 @@ namespace Airbnb.Application.Abstracts.Repositories;
 public interface IRepository<TEntity, TKey, TExternalKey> where TEntity : class, IEntity<TKey, TExternalKey>
 {
     Task<TEntity> GetByIdAsync(TKey id);
+    Task<TEntity> GetByExternalIdAsync(TExternalKey externalId);
     Task CreateAsync(TEntity entity);
     Task UpdateAsync(TEntity entity);
 }

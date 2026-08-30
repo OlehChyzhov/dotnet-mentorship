@@ -19,6 +19,11 @@ public class Repository<TEntity, TKey, TExternalKey> : IRepository<TEntity, TKey
         return await _dbSet.AsNoTracking().FirstAsync(entity => entity.Id!.Equals(id));
     }
 
+    public async Task<TEntity> GetByExternalIdAsync(TExternalKey externalId)
+    {
+        return await _dbSet.AsNoTracking().FirstAsync(entity => entity.ExternalId!.Equals(externalId));
+    }
+
     public async Task CreateAsync(TEntity entity)
     {
         await _dbSet.AddAsync(entity);
