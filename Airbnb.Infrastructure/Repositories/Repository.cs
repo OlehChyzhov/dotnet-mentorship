@@ -5,7 +5,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Airbnb.Infrastructure.Repositories;
 
-public class Repository<TEntity, TKey> : IRepository<TEntity, TKey> where TEntity : class, IEntity<TKey>
+public class Repository<TEntity, TKey, TExternalKey> : IRepository<TEntity, TKey, TExternalKey> 
+    where TEntity : class, IEntity<TKey, TExternalKey>
 {
     protected readonly DbSet<TEntity> _dbSet;
     public Repository(ApplicationDbContext context)
@@ -16,6 +17,11 @@ public class Repository<TEntity, TKey> : IRepository<TEntity, TKey> where TEntit
     public async Task<TEntity> GetByIdAsync(TKey id)
     {
         return await _dbSet.AsNoTracking().FirstAsync(entity => entity.Id!.Equals(id));
+    }
+
+    public async Task<TEntity> GetByExternalIdAsync(TExternalKey externalId)
+    {
+        return await _dbSet.AsNoTracking().FirstAsync(entity => entity.ExternalId!.Equals(externalId));
     }
 
     public async Task CreateAsync(TEntity entity)

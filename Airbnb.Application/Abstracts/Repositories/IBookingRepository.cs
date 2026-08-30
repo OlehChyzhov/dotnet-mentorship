@@ -4,7 +4,7 @@ using Airbnb.Domain.Models;
 
 namespace Airbnb.Application.Abstracts.Repositories;
 
-public interface IBookingRepository : IRepository<Booking, Guid>
+public interface IBookingRepository : IRepository<Booking, Guid, Guid>
 {
     Task<PagedList<Booking>> GetBookingsPagedAsync(BookingPagingParameters query, string userId);
     

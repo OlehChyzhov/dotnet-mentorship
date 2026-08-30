@@ -43,6 +43,14 @@ public class ApartmentService : IApartmentService
         return apartmentsResult;
     }
 
+    public async Task<Result<ApartmentDto>> GetApartmentByExternalIdAsync(Guid id)
+    {
+        var apartment = await _unitOfWork.Apartments.GetByExternalIdAsync(id);
+        var apartmentDto = _mapper.Map<ApartmentDto>(apartment);
+        
+        return apartmentDto;
+    }
+
     public async Task<Result<ApartmentDto>> CreateApartmentAsync(CreateApartmentDto dto, string userId)
     {
         var apartmentGuid = Guid.NewGuid();

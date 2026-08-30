@@ -6,7 +6,7 @@ public class Result<T>
     public string? Message { get; set; }
     public T? Value { get; set; }
 
-    private Result(bool isSuccessful, T? value, string? message)
+    public Result(bool isSuccessful, T? value, string? message)
     {
         IsSuccessful = isSuccessful;
         Message = message;

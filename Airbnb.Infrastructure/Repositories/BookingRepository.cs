@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Airbnb.Infrastructure.Repositories;
 
-public class BookingRepository : Repository<Booking, Guid>, IBookingRepository
+public class BookingRepository : Repository<Booking, Guid, Guid>, IBookingRepository
 {
     public BookingRepository(ApplicationDbContext context) : base(context) {}
 
