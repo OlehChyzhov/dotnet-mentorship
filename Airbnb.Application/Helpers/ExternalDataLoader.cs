@@ -81,6 +81,7 @@ public class ExternalDataLoader : IExternalDataLoader
             return new Result<string>(false, null, ex.Message);
         }
 
+        File.Delete(filePath);
         await _unitOfWork.CommitTransactionAsync();
         return  new Result<string>(true, $"{_fileOptions.Value.FileName} loaded successfully", null);
     }
