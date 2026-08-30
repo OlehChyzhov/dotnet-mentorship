@@ -104,6 +104,7 @@ builder.Services.AddValidatorsFromAssembly(typeof(UserLoginRequestValidator).Ass
 // Options
 builder.Services.AddOptions<JwtOptions>().BindConfiguration("JWT");
 builder.Services.AddOptions<DataFileOptions>().BindConfiguration("DataFile");
+builder.Services.AddOptions<DefaultUserOptions>().BindConfiguration("DefaultUserOptions");
 
 // Default
 builder.Services.AddControllers();
