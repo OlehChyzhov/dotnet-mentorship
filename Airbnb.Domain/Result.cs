@@ -6,15 +6,25 @@ public class Result<T>
     public string? Message { get; set; }
     public T? Value { get; set; }
 
-    public Result(bool isSuccessful, T? value, string? message)
+    private Result(bool isSuccessful, T? value, string? message)
     {
         IsSuccessful = isSuccessful;
         Message = message;
         Value = value;
     }
     
-    // Success
     public static implicit operator Result<T>(T value)
+    {
+        return new Result<T>(true, value, null);
+    }
+    
+    public static Result<T> Fail(string? error)
+    {
+        return new Result<T>(false, default, error);
+    }
+    
+    // Success
+    public static Result<T> Success(T value)
     {
         return new Result<T>(true, value, null);
     }

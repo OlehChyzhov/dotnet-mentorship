@@ -39,12 +39,12 @@ public class ExternalDataLoader : IExternalDataLoader
     {
         if (string.IsNullOrEmpty(filePath))
         {
-            return new Result<string>(false, null, "File name is empty");
+            return Result<string>.Fail("File name is empty");
         }
 
         if (!File.Exists(filePath))
         {
-            return new Result<string>(false, null, "File doesn't exist");
+            return Result<string>.Fail("File doesn't exist");
         }
 
         await _unitOfWork.StartTransactionAsync();
@@ -89,13 +89,13 @@ public class ExternalDataLoader : IExternalDataLoader
 
         File.Delete(filePath);
         await _unitOfWork.CommitTransactionAsync();
-        return new Result<string>(true, "Data loaded successfully", null);
+        return Result<string>.Success("Data loaded successfully");
     }
 
     private async Task<Result<string>> FailAsync(string? message)
     {
         await _unitOfWork.RollbackTransactionAsync();
-        return new Result<string>(false, null, message);
+        return Result<string>.Fail(message);
     }
 
     private async Task<Result<User>> UpsertHostAsync(ExternalHostDto hostDto)
