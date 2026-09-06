@@ -1,6 +1,7 @@
 using System.Text.Json;
 using Airbnb.Application.Abstracts.Helpers;
 using Airbnb.Application.Abstracts.Repositories;
+using Airbnb.Application.Abstracts.Services;
 using Airbnb.Application.DTOs.External;
 using Airbnb.Application.Helpers;
 using Airbnb.Application.Options;
@@ -19,7 +20,7 @@ namespace Airbnb.Tests;
 public class ExternalDataLoaderTests : IDisposable
 {
     private readonly Mock<IValidator<ExternalHostDto>> _validatorMock;
-    private readonly Mock<IUserHelper> _userHelperMock;
+    private readonly Mock<IUserRegistrationService> _userHelperMock;
     private readonly Mock<IUnitOfWork> _unitOfWorkMock;
     private readonly Mock<IApartmentRepository> _apartmentRepositoryMock;
     private readonly Mock<IMapper> _mapperMock;
@@ -31,7 +32,7 @@ public class ExternalDataLoaderTests : IDisposable
     public ExternalDataLoaderTests()
     {
         _validatorMock = new Mock<IValidator<ExternalHostDto>>();
-        _userHelperMock = new Mock<IUserHelper>();
+        _userHelperMock = new Mock<IUserRegistrationService>();
 
         _apartmentRepositoryMock = new Mock<IApartmentRepository>();
         _unitOfWorkMock = new Mock<IUnitOfWork>();

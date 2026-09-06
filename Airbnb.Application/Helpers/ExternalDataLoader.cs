@@ -1,6 +1,7 @@
 ﻿using System.Text.Json;
 using Airbnb.Application.Abstracts.Helpers;
 using Airbnb.Application.Abstracts.Repositories;
+using Airbnb.Application.Abstracts.Services;
 using Airbnb.Application.DTOs.External;
 using Airbnb.Application.Options;
 using Airbnb.Domain;
@@ -17,7 +18,7 @@ public class ExternalDataLoader : IExternalDataLoader
     private readonly IOptions<DefaultUserOptions> _defaultUserOptions;
     private readonly IOptions<DataFileOptions> _fileOptions;
     private readonly IValidator<ExternalHostDto> _validator;
-    private readonly IUserHelper _userHelper;
+    private readonly IUserRegistrationService _userRegistrationService;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
     
@@ -25,14 +26,14 @@ public class ExternalDataLoader : IExternalDataLoader
         IOptions<DefaultUserOptions> defaultUserOptions,
         IOptions<DataFileOptions> fileOptions, 
         IValidator<ExternalHostDto> validator,
-        IUserHelper userHelper,
+        IUserRegistrationService userRegistrationService,
         IUnitOfWork unitOfWork,
         IMapper mapper)
     {
         _defaultUserOptions = defaultUserOptions;
         _fileOptions = fileOptions;
         _unitOfWork = unitOfWork;
-        _userHelper = userHelper;
+        _userRegistrationService = userRegistrationService;
         _validator = validator;
         _mapper = mapper;
     }
@@ -88,7 +89,7 @@ public class ExternalDataLoader : IExternalDataLoader
 
     private async Task TryCreateHostAsync(User host)
     {
-        var createResult = await _userHelper.CreateUserAsync(host, _defaultUserOptions.Value.DefaultPassword);
+        var createResult = await _userRegistrationService.CreateUserAsync(host, _defaultUserOptions.Value.DefaultPassword);
         if (!createResult.Succeeded)
         {
             var errors = string.Join(", ", createResult.Errors.Select(e => e.Description));
@@ -97,7 +98,7 @@ public class ExternalDataLoader : IExternalDataLoader
             throw new InvalidOperationException(message);
         }
                 
-        var roleResult = await _userHelper.AddUserToRoleAsync(host, Roles.Host);
+        var roleResult = await _userRegistrationService.AddUserToRoleAsync(host, Roles.Host);
         if (!roleResult.Succeeded)
         {
             var errors = string.Join(", ", roleResult.Errors.Select(e => e.Description));

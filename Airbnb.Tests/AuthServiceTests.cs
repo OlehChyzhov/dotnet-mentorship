@@ -17,14 +17,14 @@ namespace Airbnb.Tests;
 
 public class AuthServiceTests
 {
-    private readonly Mock<IUserHelper> _userRepositoryMock;
+    private readonly Mock<IUserRegistrationService> _userRepositoryMock;
     private readonly IOptions<JwtOptions> _jwtOptions;
     private readonly Mock<IMapper> _mapperMock;
     private readonly AuthService _sut;
 
     public AuthServiceTests()
     {
-        _userRepositoryMock = new Mock<IUserHelper>();
+        _userRepositoryMock = new Mock<IUserRegistrationService>();
 
         _jwtOptions = Options.Create(new JwtOptions
         {

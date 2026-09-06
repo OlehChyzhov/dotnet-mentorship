@@ -3,14 +3,14 @@ using Airbnb.Application.Abstracts.Services;
 using Airbnb.Domain.Models;
 using Microsoft.AspNetCore.Identity;
 
-namespace Airbnb.Infrastructure.Helpers;
+namespace Airbnb.Infrastructure.Services;
 
-public class UserHelper : IUserHelper
+public class UserRegistrationService : IUserRegistrationService
 {
     private readonly UserManager<User> _userManager;
     private readonly RoleManager<IdentityRole> _roleManager;
 
-    public UserHelper(
+    public UserRegistrationService(
         UserManager<User> userManager,
         RoleManager<IdentityRole> roleManager)
     {

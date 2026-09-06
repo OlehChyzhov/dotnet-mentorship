@@ -1,9 +1,9 @@
 ﻿using Airbnb.Domain.Models;
 using Microsoft.AspNetCore.Identity;
 
-namespace Airbnb.Application.Abstracts.Helpers;
+namespace Airbnb.Application.Abstracts.Services;
 
-public interface IUserHelper
+public interface IUserRegistrationService
 {
     Task<bool> RoleExistsAsync(string roleName);
     Task<User?> FindUserByEmailAsync(string email);

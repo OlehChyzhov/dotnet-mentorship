@@ -11,8 +11,8 @@ using Airbnb.Application.Services;
 using Airbnb.Application.Validators;
 using Airbnb.Domain.Models;
 using Airbnb.Infrastructure;
-using Airbnb.Infrastructure.Helpers;
 using Airbnb.Infrastructure.Repositories;
+using Airbnb.Infrastructure.Services;
 using FluentValidation;
 using Mapster;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -39,7 +39,7 @@ builder.Services.AddScoped<IApartmentService, ApartmentService>();
 builder.Services.AddScoped<IBookingService, BookingService>();
 
 // Helpers
-builder.Services.AddScoped<IUserHelper, UserHelper>();
+builder.Services.AddScoped<IUserRegistrationService, UserRegistrationService>();
 builder.Services.AddScoped<IExternalDataLoader, ExternalDataLoader>();
 
 // Database
