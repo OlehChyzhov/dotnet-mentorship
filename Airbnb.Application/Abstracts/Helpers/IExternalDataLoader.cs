@@ -4,5 +4,5 @@ namespace Airbnb.Application.Abstracts.Helpers;
 
 public interface IExternalDataLoader
 {
-    Task<Result<string>> LoadDataFromJsonFileAsync();
+    Task<Result<string>> LoadDataFromJsonFileAsync(string filePath);
 }

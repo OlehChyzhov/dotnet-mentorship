@@ -22,9 +22,6 @@
 
     <ItemGroup>
       <Content Remove="data.json" />
-      <EmbeddedResource Include="data.json">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </EmbeddedResource>
     </ItemGroup>
 
 </Project>

@@ -30,7 +30,6 @@ public static class DependencyInjection
 
         // Options
         services.AddOptions<JwtOptions>().BindConfiguration("JWT");
-        services.AddOptions<DataFileOptions>().BindConfiguration("DataFile");
         services.AddOptions<DefaultUserOptions>().BindConfiguration("DefaultUserOptions");
 
         return services;

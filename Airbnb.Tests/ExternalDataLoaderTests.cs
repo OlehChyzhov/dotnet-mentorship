@@ -24,7 +24,6 @@ public class ExternalDataLoaderTests : IDisposable
     private readonly Mock<IUnitOfWork> _unitOfWorkMock;
     private readonly Mock<IApartmentRepository> _apartmentRepositoryMock;
     private readonly Mock<IMapper> _mapperMock;
-    private readonly DataFileOptions _fileOptions;
     private readonly ExternalDataLoader _sut;
 
     private readonly List<string> _filesToCleanUp = new();
@@ -40,12 +39,10 @@ public class ExternalDataLoaderTests : IDisposable
 
         _mapperMock = new Mock<IMapper>();
 
-        _fileOptions = new DataFileOptions();
         var defaultUserOptions = new DefaultUserOptions { DefaultPassword = "P@ssword1" };
 
         _sut = new ExternalDataLoader(
             Options.Create(defaultUserOptions),
-            Options.Create(_fileOptions),
             _validatorMock.Object,
             _userHelperMock.Object,
             _unitOfWorkMock.Object,
@@ -98,18 +95,14 @@ public class ExternalDataLoaderTests : IDisposable
         File.WriteAllText(filePath, JsonSerializer.Serialize(hosts));
         _filesToCleanUp.Add(filePath);
 
-        _fileOptions.FileName = fileName;
         return filePath;
     }
 
     [Fact]
     public async Task LoadDataFromJsonFileAsync_WhenFileNameIsEmpty_ReturnsFailureWithoutStartingTransaction()
     {
-        // Arrange
-        _fileOptions.FileName = string.Empty;
-
         // Act
-        var result = await _sut.LoadDataFromJsonFileAsync();
+        var result = await _sut.LoadDataFromJsonFileAsync(string.Empty);
 
         // Assert
         result.IsSuccessful.ShouldBeFalse();
@@ -121,11 +114,8 @@ public class ExternalDataLoaderTests : IDisposable
     [Fact]
     public async Task LoadDataFromJsonFileAsync_WhenFileDoesNotExist_ReturnsFailureWithoutStartingTransaction()
     {
-        // Arrange
-        _fileOptions.FileName = "does-not-exist.json";
-
         // Act
-        var result = await _sut.LoadDataFromJsonFileAsync();
+        var result = await _sut.LoadDataFromJsonFileAsync("does-not-exist.json");
 
         // Assert
         result.IsSuccessful.ShouldBeFalse();
@@ -139,7 +129,7 @@ public class ExternalDataLoaderTests : IDisposable
     {
         // Arrange
         ExternalHostDto hostDto = CreateHostDto();
-        WriteHostsFile(hostDto);
+        string filePath = WriteHostsFile(hostDto);
 
         _validatorMock
             .Setup(v => v.ValidateAsync(MatchingHost(hostDto), default))
@@ -150,8 +140,8 @@ public class ExternalDataLoaderTests : IDisposable
 
         _mapperMock.Setup(m => m.Map<User>(MatchingHost(hostDto))).Returns(user);
         _mapperMock
-            .Setup(m => m.Map<List<Apartment>>(It.IsAny<List<ExternalApartmentDto>>()))
-            .Returns([apartment]);
+            .Setup(m => m.Map<Apartment>(It.IsAny<ExternalApartmentDto>()))
+            .Returns(apartment);
 
         _userHelperMock
             .Setup(h => h.CreateUserAsync(user, "P@ssword1"))
@@ -161,7 +151,7 @@ public class ExternalDataLoaderTests : IDisposable
             .ReturnsAsync(IdentityResult.Success);
 
         // Act
-        var result = await _sut.LoadDataFromJsonFileAsync();
+        var result = await _sut.LoadDataFromJsonFileAsync(filePath);
 
         // Assert
         result.IsSuccessful.ShouldBeTrue();
@@ -183,7 +173,7 @@ public class ExternalDataLoaderTests : IDisposable
     {
         // Arrange
         ExternalHostDto hostDto = CreateHostDto();
-        WriteHostsFile(hostDto);
+        string filePath = WriteHostsFile(hostDto);
 
         var failure = new ValidationFailure("Email", "Email is required");
         _validatorMock
@@ -191,7 +181,7 @@ public class ExternalDataLoaderTests : IDisposable
             .ReturnsAsync(new ValidationResult([failure]));
 
         // Act
-        var result = await _sut.LoadDataFromJsonFileAsync();
+        var result = await _sut.LoadDataFromJsonFileAsync(filePath);
 
         // Assert
         result.IsSuccessful.ShouldBeFalse();
@@ -208,7 +198,7 @@ public class ExternalDataLoaderTests : IDisposable
     {
         // Arrange
         ExternalHostDto hostDto = CreateHostDto();
-        WriteHostsFile(hostDto);
+        string filePath = WriteHostsFile(hostDto);
 
         _validatorMock
             .Setup(v => v.ValidateAsync(MatchingHost(hostDto), default))
@@ -216,7 +206,6 @@ public class ExternalDataLoaderTests : IDisposable
 
         var user = new User { Id = "generated-user-id", Email = hostDto.Email };
         _mapperMock.Setup(m => m.Map<User>(MatchingHost(hostDto))).Returns(user);
-        _mapperMock.Setup(m => m.Map<List<Apartment>>(It.IsAny<List<ExternalApartmentDto>>())).Returns([]);
 
         var identityError = new IdentityError { Description = "Email already taken" };
         _userHelperMock
@@ -224,7 +213,7 @@ public class ExternalDataLoaderTests : IDisposable
             .ReturnsAsync(IdentityResult.Failed(identityError));
 
         // Act
-        var result = await _sut.LoadDataFromJsonFileAsync();
+        var result = await _sut.LoadDataFromJsonFileAsync(filePath);
 
         // Assert
         result.IsSuccessful.ShouldBeFalse();
@@ -242,7 +231,7 @@ public class ExternalDataLoaderTests : IDisposable
     {
         // Arrange
         ExternalHostDto hostDto = CreateHostDto();
-        WriteHostsFile(hostDto);
+        string filePath = WriteHostsFile(hostDto);
 
         _validatorMock
             .Setup(v => v.ValidateAsync(MatchingHost(hostDto), default))
@@ -250,7 +239,6 @@ public class ExternalDataLoaderTests : IDisposable
 
         var user = new User { Id = "generated-user-id", Email = hostDto.Email };
         _mapperMock.Setup(m => m.Map<User>(MatchingHost(hostDto))).Returns(user);
-        _mapperMock.Setup(m => m.Map<List<Apartment>>(It.IsAny<List<ExternalApartmentDto>>())).Returns([]);
 
         _userHelperMock
             .Setup(h => h.CreateUserAsync(user, "P@ssword1"))
@@ -262,7 +250,7 @@ public class ExternalDataLoaderTests : IDisposable
             .ReturnsAsync(IdentityResult.Failed(identityError));
 
         // Act
-        var result = await _sut.LoadDataFromJsonFileAsync();
+        var result = await _sut.LoadDataFromJsonFileAsync(filePath);
 
         // Assert
         result.IsSuccessful.ShouldBeFalse();
@@ -280,7 +268,7 @@ public class ExternalDataLoaderTests : IDisposable
         // Arrange
         ExternalHostDto firstHost = CreateHostDto("8f14e45f-ceea-4d5c-b0b6-93e13f7f5e2a", "first-host@bookly-legacy.com");
         ExternalHostDto secondHost = CreateHostDto("1b2c3d4e-5f6a-4b7c-8d9e-0f1a2b3c4d5e", "second-host@bookly-legacy.com");
-        WriteHostsFile(firstHost, secondHost);
+        string filePath = WriteHostsFile(firstHost, secondHost);
 
         _validatorMock
             .Setup(v => v.ValidateAsync(It.IsAny<ExternalHostDto>(), default))
@@ -291,7 +279,7 @@ public class ExternalDataLoaderTests : IDisposable
 
         _mapperMock.Setup(m => m.Map<User>(MatchingHost(firstHost))).Returns(firstUser);
         _mapperMock.Setup(m => m.Map<User>(MatchingHost(secondHost))).Returns(secondUser);
-        _mapperMock.Setup(m => m.Map<List<Apartment>>(It.IsAny<List<ExternalApartmentDto>>())).Returns([]);
+        _mapperMock.Setup(m => m.Map<Apartment>(It.IsAny<ExternalApartmentDto>())).Returns(() => new Apartment());
 
         _userHelperMock
             .Setup(h => h.CreateUserAsync(It.IsAny<User>(), "P@ssword1"))
@@ -301,7 +289,7 @@ public class ExternalDataLoaderTests : IDisposable
             .ReturnsAsync(IdentityResult.Success);
 
         // Act
-        var result = await _sut.LoadDataFromJsonFileAsync();
+        var result = await _sut.LoadDataFromJsonFileAsync(filePath);
 
         // Assert
         result.IsSuccessful.ShouldBeTrue();
@@ -312,5 +300,51 @@ public class ExternalDataLoaderTests : IDisposable
         _unitOfWorkMock.Verify(u => u.StartTransactionAsync(), Times.Once);
         _unitOfWorkMock.Verify(u => u.CommitTransactionAsync(), Times.Once);
         _unitOfWorkMock.Verify(u => u.SaveChangesAsync(), Times.Exactly(2));
+    }
+
+    [Fact]
+    public async Task LoadDataFromJsonFileAsync_WhenHostAndApartmentAlreadyExist_UpdatesInsteadOfCreating()
+    {
+        // Arrange
+        ExternalHostDto hostDto = CreateHostDto();
+        string filePath = WriteHostsFile(hostDto);
+
+        _validatorMock
+            .Setup(v => v.ValidateAsync(MatchingHost(hostDto), default))
+            .ReturnsAsync(new ValidationResult());
+
+        var existingHost = new User { Id = "existing-user-id", Email = hostDto.Email };
+        _userHelperMock
+            .Setup(h => h.FindUserByEmailAsync(hostDto.Email))
+            .ReturnsAsync(existingHost);
+
+        var existingApartment = new Apartment
+        {
+            Id = Guid.NewGuid(),
+            ExternalId = Guid.Parse(hostDto.Apartments[0].ExternalId),
+            Title = "Old title"
+        };
+        _apartmentRepositoryMock
+            .Setup(r => r.GetByExternalIdAsync(existingApartment.ExternalId))
+            .ReturnsAsync(existingApartment);
+
+        // Act
+        var result = await _sut.LoadDataFromJsonFileAsync(filePath);
+
+        // Assert
+        result.IsSuccessful.ShouldBeTrue();
+
+        _userHelperMock.Verify(h => h.CreateUserAsync(It.IsAny<User>(), It.IsAny<string>()), Times.Never);
+        _apartmentRepositoryMock.Verify(r => r.CreateAsync(It.IsAny<Apartment>()), Times.Never);
+
+        _mapperMock.Verify(
+            m => m.Map(
+                It.Is<ExternalApartmentDto>(d => d.ExternalId == hostDto.Apartments[0].ExternalId),
+                existingApartment),
+            Times.Once);
+        _apartmentRepositoryMock.Verify(r => r.UpdateAsync(existingApartment), Times.Once);
+        existingApartment.OwnerId.ShouldBe(existingHost.Id);
+
+        _unitOfWorkMock.Verify(u => u.CommitTransactionAsync(), Times.Once);
     }
 }

@@ -74,12 +74,6 @@ builder.Services.AddOpenApi();
 
 var app = builder.Build();
 
-using (var scope = app.Services.CreateScope())
-{
-    var dataLoader = scope.ServiceProvider.GetRequiredService<IExternalDataLoader>();
-    await dataLoader.LoadDataFromJsonFileAsync();
-}
-
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();

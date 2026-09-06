@@ -10,7 +10,8 @@ public class ExternalApartmentDtoMapping : IRegister
     {
         // ExternalApartmentDto => Apartment
         config.NewConfig<ExternalApartmentDto, Apartment>()
-            .Map(dest => dest.Id, src => Guid.NewGuid())
+            .Ignore(dest => dest.Id)          // set on insert, never overwritten on update
+            .Ignore(dest => dest.CreatedAt)   // set on insert, never overwritten on update
             .Map(dest => dest.ExternalId, src => src.ExternalId)
             .Ignore(dest => dest.OwnerId)
             .Ignore(dest => dest.Owner)
