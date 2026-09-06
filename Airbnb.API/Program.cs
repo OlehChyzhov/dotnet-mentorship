@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using System.Text;
 using Airbnb.API.Middleware;
+using Airbnb.Application;
 using Airbnb.Application.Abstracts.Helpers;
 using Airbnb.Application.Abstracts.Repositories;
 using Airbnb.Application.Abstracts.Services;
@@ -23,88 +24,49 @@ using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Application Services
-builder.Services.AddScoped<IAuthService, AuthService>();
-
 // Middlewares
 builder.Services.AddTransient<ValidationMiddleware>();
 
-// Repositories
-builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-builder.Services.AddScoped<IApartmentRepository, ApartmentRepository>();
-builder.Services.AddScoped<IBookingRepository, BookingRepository>();
+// DbContext, Repositories, UnitOfWork, etc.
+builder.Services.AddInfrastructure(builder.Configuration);
 
-// Services
-builder.Services.AddScoped<IApartmentService, ApartmentService>();
-builder.Services.AddScoped<IBookingService, BookingService>();
-
-// Helpers
-builder.Services.AddScoped<IUserRegistrationService, UserRegistrationService>();
-builder.Services.AddScoped<IExternalDataLoader, ExternalDataLoader>();
-
-// Database
-builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-
-// Database (Identity)
-builder.Services.AddIdentity<User, IdentityRole>(options =>
-{
-    options.Password.RequiredLength = 5;
-    options.Password.RequireNonAlphanumeric = false;
-    options.Password.RequireUppercase = false;
-    options.Password.RequireLowercase = false;
-})
-    .AddRoles<IdentityRole>()
-    .AddEntityFrameworkStores<ApplicationDbContext>()
-    .AddDefaultTokenProviders();
+// Services, Mapping, Validation, etc.
+builder.Services.AddApplication(builder.Configuration);
 
 // JWT
 builder.Services.AddAuthentication(options =>
-{
-    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-})
-.AddJwtBearer(options =>
-{
-    options.TokenValidationParameters = new TokenValidationParameters()
     {
-        ValidateActor = true,
-        ValidateIssuer = true,
-        ValidateAudience = true,
-        RequireExpirationTime = true,
-        ValidateIssuerSigningKey = true,
-        ValidIssuer = builder.Configuration["JWT:Issuer"],
-        ValidAudience = builder.Configuration["JWT:Audience"],
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT:Key"]))
-    };
-
-    options.Events = new JwtBearerEvents
+        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    })
+    .AddJwtBearer(options =>
     {
-        OnTokenValidated = context =>
+        options.TokenValidationParameters = new TokenValidationParameters()
         {
-            var hasNameIdentifier = context.Principal?.HasClaim(claim => claim.Type == ClaimTypes.NameIdentifier) ?? false;
-            if (!hasNameIdentifier)
+            ValidateActor = true,
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            RequireExpirationTime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = builder.Configuration["JWT:Issuer"],
+            ValidAudience = builder.Configuration["JWT:Audience"],
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT:Key"]))
+        };
+
+        options.Events = new JwtBearerEvents
+        {
+            OnTokenValidated = context =>
             {
-                context.Fail("Token is missing the required NameIdentifier claim.");
+                var hasNameIdentifier = context.Principal?.HasClaim(claim => claim.Type == ClaimTypes.NameIdentifier) ?? false;
+                if (!hasNameIdentifier)
+                {
+                    context.Fail("Token is missing the required NameIdentifier claim.");
+                }
+
+                return Task.CompletedTask;
             }
-
-            return Task.CompletedTask;
-        }
-    };
-});
-
-// Mapping
-TypeAdapterConfig.GlobalSettings.RequireExplicitMapping = true;
-var applicationAssembly = typeof(UserMappingConfig).Assembly;
-TypeAdapterConfig.GlobalSettings.Scan(applicationAssembly);
-builder.Services.AddMapster();
-
-// Fluent Validation
-builder.Services.AddValidatorsFromAssembly(typeof(UserLoginRequestValidator).Assembly);
-
-// Options
-builder.Services.AddOptions<JwtOptions>().BindConfiguration("JWT");
-builder.Services.AddOptions<DataFileOptions>().BindConfiguration("DataFile");
-builder.Services.AddOptions<DefaultUserOptions>().BindConfiguration("DefaultUserOptions");
+        };
+    });
 
 // Default
 builder.Services.AddControllers();
