@@ -2,10 +2,10 @@
 
 namespace Airbnb.Domain.Models;
 
-public class Booking : IEntity<Guid, Guid>
+public class Booking : IEntity<Guid, Guid?>
 {
     public Guid Id { get; set; }
-    public Guid ExternalId { get; set; }
+    public Guid? ExternalId { get; set; }
 
     public BookingStatus Status { get; set; } = BookingStatus.Pending;
     

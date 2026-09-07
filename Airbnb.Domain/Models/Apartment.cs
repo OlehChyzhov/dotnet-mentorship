@@ -2,10 +2,10 @@
 
 namespace Airbnb.Domain.Models;
 
-public class Apartment : IEntity<Guid, Guid>
+public class Apartment : IEntity<Guid, Guid?>
 {
     public Guid Id { get; set; }
-    public Guid ExternalId { get; set; }
+    public Guid? ExternalId { get; set; }
     
     // Listing info
     public string Title { get; set; } = string.Empty;

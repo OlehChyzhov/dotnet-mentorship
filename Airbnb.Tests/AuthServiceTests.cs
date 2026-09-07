@@ -1,6 +1,5 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using Airbnb.Application.Abstracts.Helpers;
 using Airbnb.Application.Abstracts.Services;
 using Airbnb.Application.DTOs.Authentication;
 using Airbnb.Application.Options;

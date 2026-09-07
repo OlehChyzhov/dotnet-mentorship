@@ -1,6 +1,6 @@
 ﻿using Airbnb.Domain;
 
-namespace Airbnb.Application.Abstracts.Helpers;
+namespace Airbnb.Application.Abstracts.Services;
 
 public interface IExternalDataLoader
 {

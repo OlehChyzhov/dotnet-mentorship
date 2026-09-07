@@ -1,5 +1,5 @@
 ﻿using Airbnb.Application;
-using Airbnb.Application.Abstracts.Helpers;
+using Airbnb.Application.Abstracts.Services;
 using Airbnb.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;

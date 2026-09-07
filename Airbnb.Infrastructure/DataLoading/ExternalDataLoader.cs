@@ -1,5 +1,4 @@
 using System.Text.Json;
-using Airbnb.Application.Abstracts.Helpers;
 using Airbnb.Application.Abstracts.Repositories;
 using Airbnb.Application.Abstracts.Services;
 using Airbnb.Application.DTOs.External;
@@ -11,7 +10,7 @@ using FluentValidation;
 using MapsterMapper;
 using Microsoft.Extensions.Options;
 
-namespace Airbnb.Application.Helpers;
+namespace Airbnb.Infrastructure.DataLoading;
 
 public class ExternalDataLoader : IExternalDataLoader
 {
