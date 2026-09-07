@@ -18,6 +18,8 @@ public static class Program
 
         var filePath = args[0];
 
+        Console.WriteLine($"Loading data from file {filePath}");
+
         var builder = Host.CreateApplicationBuilder(new HostApplicationBuilderSettings
         {
             Args = args,
@@ -29,6 +31,8 @@ public static class Program
         using var host = builder.Build();
         using var scope = host.Services.CreateScope();
         var dataLoader = scope.ServiceProvider.GetRequiredService<IExternalDataLoader>();
-        await dataLoader.LoadDataFromJsonFileAsync(filePath);
+        var result = await dataLoader.LoadDataFromJsonFileAsync(filePath);
+
+        Console.WriteLine(result.IsSuccessful ? result.Value : result.Message);
     }
 }
