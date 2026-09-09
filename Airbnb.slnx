@@ -1,6 +1,7 @@
 <Solution>
   <Project Path="Airbnb.API/Airbnb.API.csproj" />
   <Project Path="Airbnb.Application/Airbnb.Application.csproj" />
+  <Project Path="Airbnb.CLI/Airbnb.CLI.csproj" />
   <Project Path="Airbnb.Domain/Airbnb.Domain.csproj" />
   <Project Path="Airbnb.Infrastructure/Airbnb.Infrastructure.csproj" />
   <Project Path="Airbnb.Tests/Airbnb.Tests.csproj" />

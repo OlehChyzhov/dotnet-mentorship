@@ -34,6 +34,19 @@ public class ApartmentsController : ControllerBase
         return Ok(result.Value);
     }
     
+    [HttpGet("external/{apartmentId:guid}")]
+    [Authorize(Roles = $"{Roles.Client}, {Roles.Host}")]
+    public async Task<IActionResult> GetExternalApartmentById(Guid apartmentId)
+    {
+        var result = await _apartmentService.GetApartmentByExternalIdAsync(apartmentId);
+        if (!result.IsSuccessful)
+        {
+            return BadRequest(result.Message);
+        }
+        
+        return Ok(result.Value);
+    }
+    
     [HttpGet]
     [Authorize(Roles = $"{Roles.Client}, {Roles.Host}")]
     public async Task<IActionResult> GetAllApartments([FromQuery] ApartmentPagingParamters query)

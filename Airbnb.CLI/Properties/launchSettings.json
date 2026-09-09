@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "Airbnb.CLI": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    }
+  }
+}

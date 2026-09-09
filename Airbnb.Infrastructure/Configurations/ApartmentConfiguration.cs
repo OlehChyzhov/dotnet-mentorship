@@ -10,6 +10,7 @@ public class ApartmentConfiguration : IEntityTypeConfiguration<Apartment>
     {
         builder.ToTable("Apartments");
         builder.HasKey(apartment => apartment.Id);
+        builder.HasIndex(apartment => apartment.ExternalId).IsUnique();
 
         builder.HasOne(apartment => apartment.Owner)
             .WithMany()

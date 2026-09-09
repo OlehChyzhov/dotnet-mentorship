@@ -5,6 +5,7 @@ using Airbnb.Application.DTOs.Authentication;
 using Airbnb.Application.Options;
 using Airbnb.Application.Services;
 using Airbnb.Domain.Constants;
+using Airbnb.Domain.Models;
 using MapsterMapper;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
@@ -15,14 +16,14 @@ namespace Airbnb.Tests;
 
 public class AuthServiceTests
 {
-    private readonly Mock<IUserService> _userRepositoryMock;
+    private readonly Mock<IUserRegistrationService> _userRepositoryMock;
     private readonly IOptions<JwtOptions> _jwtOptions;
     private readonly Mock<IMapper> _mapperMock;
     private readonly AuthService _sut;
 
     public AuthServiceTests()
     {
-        _userRepositoryMock = new Mock<IUserService>();
+        _userRepositoryMock = new Mock<IUserRegistrationService>();
 
         _jwtOptions = Options.Create(new JwtOptions
         {
@@ -34,8 +35,8 @@ public class AuthServiceTests
 
         _mapperMock = new Mock<IMapper>();
         _mapperMock
-            .Setup(m => m.Map<UserRegisterDto, IdentityUser>(It.IsAny<UserRegisterDto>()))
-            .Returns((UserRegisterDto src) => new IdentityUser { Email = src.Email, UserName = src.Email });
+            .Setup(m => m.Map<UserRegisterDto, User>(It.IsAny<UserRegisterDto>()))
+            .Returns((UserRegisterDto src) => new User { Email = src.Email, UserName = src.Email });
 
         _sut = new AuthService(_userRepositoryMock.Object, _jwtOptions, _mapperMock.Object);
     }
@@ -63,7 +64,7 @@ public class AuthServiceTests
         result.Errors.ShouldContain(e => e.Code == "RoleNotFound");
 
         _userRepositoryMock.Verify(
-            m => m.CreateUserAsync(It.IsAny<IdentityUser>(), It.IsAny<string>()), Times.Never);
+            m => m.CreateUserAsync(It.IsAny<User>(), It.IsAny<string>()), Times.Never);
     }
 
     [Fact]
@@ -75,11 +76,11 @@ public class AuthServiceTests
             .ReturnsAsync(true);
 
         _userRepositoryMock
-            .Setup(m => m.CreateUserAsync(It.IsAny<IdentityUser>(), It.IsAny<string>()))
+            .Setup(m => m.CreateUserAsync(It.IsAny<User>(), It.IsAny<string>()))
             .ReturnsAsync(IdentityResult.Success);
 
         _userRepositoryMock
-            .Setup(m => m.AddUserToRoleAsync(It.IsAny<IdentityUser>(), It.IsAny<string>()))
+            .Setup(m => m.AddUserToRoleAsync(It.IsAny<User>(), It.IsAny<string>()))
             .ReturnsAsync(IdentityResult.Success);
 
         var request = new UserRegisterDto
@@ -97,12 +98,12 @@ public class AuthServiceTests
 
         _userRepositoryMock.Verify(
             m => m.CreateUserAsync(
-                It.Is<IdentityUser>(u => u.Email == "test@test.com"),
+                It.Is<User>(u => u.Email == "test@test.com"),
                 "Password123!"),
             Times.Once);
 
         _userRepositoryMock.Verify(
-            m => m.AddUserToRoleAsync(It.IsAny<IdentityUser>(), Roles.Client),
+            m => m.AddUserToRoleAsync(It.IsAny<User>(), Roles.Client),
             Times.Once);
     }
 
@@ -123,7 +124,7 @@ public class AuthServiceTests
     public async Task LoginUserAsync_WhenPasswordIsIncorrect_ReturnsFailure()
     {
         // Arrange
-        var identityUser = new IdentityUser { Email = "test@test.com" };
+        var identityUser = new User { Email = "test@test.com" };
         _userRepositoryMock.Setup(m => m.FindUserByEmailAsync("test@test.com")).ReturnsAsync(identityUser);
         _userRepositoryMock.Setup(m => m.CheckPasswordAsync(identityUser, "wrong")).ReturnsAsync(false);
 
@@ -141,7 +142,7 @@ public class AuthServiceTests
     public async Task LoginUserAsync_WhenCredentialsAreValid_ReturnsSuccess()
     {
         // Arrange
-        var identityUser = new IdentityUser { Email = "test@test.com" };
+        var identityUser = new User { Email = "test@test.com" };
         _userRepositoryMock.Setup(m => m.FindUserByEmailAsync("test@test.com")).ReturnsAsync(identityUser);
         _userRepositoryMock.Setup(m => m.CheckPasswordAsync(identityUser, "correct")).ReturnsAsync(true);
 
@@ -172,7 +173,7 @@ public class AuthServiceTests
     public async Task GenerateJwtTokenAsync_WhenUserExists_ReturnsNonEmptyToken()
     {
         // Arrange
-        var identityUser = new IdentityUser { Email = "test@test.com" };
+        var identityUser = new User { Email = "test@test.com" };
         _userRepositoryMock.Setup(m => m.FindUserByEmailAsync("test@test.com")).ReturnsAsync(identityUser);
         _userRepositoryMock.Setup(m => m.GetRolesAsync(identityUser)).ReturnsAsync(new List<string> { "Client" });
 
@@ -190,7 +191,7 @@ public class AuthServiceTests
     public async Task GenerateJwtTokenAsync_WhenUserExists_TokenContainsExpectedClaims()
     {
         // Arrange
-        var identityUser = new IdentityUser { Email = "test@test.com" };
+        var identityUser = new User { Email = "test@test.com" };
         _userRepositoryMock.Setup(m => m.FindUserByEmailAsync("test@test.com")).ReturnsAsync(identityUser);
         _userRepositoryMock.Setup(m => m.GetRolesAsync(identityUser)).ReturnsAsync(new List<string> { "Client", "Host" });
 

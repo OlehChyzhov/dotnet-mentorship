@@ -5,6 +5,7 @@ using Airbnb.Application.Abstracts.Services;
 using Airbnb.Application.DTOs.Authentication;
 using Airbnb.Application.Options;
 using Airbnb.Domain;
+using Airbnb.Domain.Models;
 using MapsterMapper;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
@@ -14,34 +15,34 @@ namespace Airbnb.Application.Services;
 
 public class AuthService : IAuthService
 {
-    private readonly IUserService _userService;
+    private readonly IUserRegistrationService _userRegistrationService;
     private readonly IOptions<JwtOptions> _jwtOptions;
     private readonly IMapper _mapper;
     
     public AuthService(
-        IUserService userService,
+        IUserRegistrationService userRegistrationService,
         IOptions<JwtOptions> jwtOptions,
         IMapper mapper)
     {
-        _userService = userService;
+        _userRegistrationService = userRegistrationService;
         _jwtOptions =  jwtOptions;
         _mapper = mapper;
     }
 
     public async Task<IdentityResult> RegisterUserAsync(UserRegisterDto user)
     {
-        IdentityUser identityUser = _mapper.Map<UserRegisterDto, IdentityUser>(user);
+        User identityUser = _mapper.Map<UserRegisterDto, User>(user);
         
-        bool roleExists = await _userService.RoleExistsAsync(user.Role);
+        bool roleExists = await _userRegistrationService.RoleExistsAsync(user.Role);
         if (roleExists)
         {
-            var result = await _userService.CreateUserAsync(identityUser, user.Password);
+            var result = await _userRegistrationService.CreateUserAsync(identityUser, user.Password);
             if (!result.Succeeded)
             {
                 return result;
             }
 
-            return await _userService.AddUserToRoleAsync(identityUser, user.Role);
+            return await _userRegistrationService.AddUserToRoleAsync(identityUser, user.Role);
         }
         
         return IdentityResult.Failed(new  IdentityError()
@@ -53,13 +54,13 @@ public class AuthService : IAuthService
 
     public async Task<Result<UserLoginDto>> LoginUserAsync(UserLoginDto user)
     {
-        IdentityUser? identityUser = await _userService.FindUserByEmailAsync(user.Email);
+        User? identityUser = await _userRegistrationService.FindUserByEmailAsync(user.Email);
         if (identityUser == null)
         {
             return "No user found";
         }
         
-        if (await _userService.CheckPasswordAsync(identityUser, user.Password))
+        if (await _userRegistrationService.CheckPasswordAsync(identityUser, user.Password))
         {
             return user;
         }
@@ -69,13 +70,13 @@ public class AuthService : IAuthService
 
     public async Task<string> GenerateJwtTokenAsync(UserLoginDto user)
     {
-        IdentityUser? identityUser = await _userService.FindUserByEmailAsync(user.Email);
+        User? identityUser = await _userRegistrationService.FindUserByEmailAsync(user.Email);
         if (identityUser == null)
         {
             return string.Empty;
         }
         
-        IList<string> userRoles = await _userService.GetRolesAsync(identityUser);
+        IList<string> userRoles = await _userRegistrationService.GetRolesAsync(identityUser);
 
         List<Claim> claims = new List<Claim>()
         {
