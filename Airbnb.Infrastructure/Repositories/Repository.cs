@@ -1,16 +1,24 @@
-﻿using System.Linq.Expressions;
+﻿using System.Data.Common;
+using System.Linq.Expressions;
 using Airbnb.Application.Abstracts.Repositories;
 using Airbnb.Domain.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace Airbnb.Infrastructure.Repositories;
 
-public class Repository<TEntity, TKey, TExternalKey> : IRepository<TEntity, TKey, TExternalKey> 
+public abstract class Repository<TEntity, TKey, TExternalKey> : IRepository<TEntity, TKey, TExternalKey> 
     where TEntity : class, IEntity<TKey, TExternalKey>
 {
+    protected readonly ApplicationDbContext _context;
     protected readonly DbSet<TEntity> _dbSet;
-    public Repository(ApplicationDbContext context)
+    
+    protected DbConnection Connection => _context.Database.GetDbConnection();
+    protected DbTransaction? Transaction => _context.Database.CurrentTransaction?.GetDbTransaction();
+    
+    protected Repository(ApplicationDbContext context)
     {
+        _context = context;
         _dbSet = context.Set<TEntity>();
     }
     

@@ -3,6 +3,8 @@ using Airbnb.Application.DTOs.Querying;
 using Airbnb.Application.DTOs.Querying.Filtering;
 using Airbnb.Domain.Enums;
 using Airbnb.Domain.Models;
+using Dapper;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 
 namespace Airbnb.Infrastructure.Repositories;
@@ -47,5 +49,18 @@ public class ApartmentRepository : Repository<Apartment, Guid, Guid?>, IApartmen
             .ToListAsync();
 
         return PagedList<Apartment>.ToPagedList(apartments, totalCount, query.PageNumber, query.PageSize);
+    }
+
+    public async Task<List<Apartment>> GetTopApartmentsByProfitAsync(int numOfApartments)
+    {
+        SqlConnection connection = new SqlConnection(Connection.ConnectionString);
+        
+        string query = """
+                       SELECT * FROM Apartments
+                       
+                       """;
+        var apartments = await connection.QueryAsync<Apartment>(query);
+        
+        return new List<Apartment>();
     }
 }
