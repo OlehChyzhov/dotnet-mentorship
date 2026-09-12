@@ -7,7 +7,7 @@ using Dapper;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 
-namespace Airbnb.Infrastructure.Repositories;
+namespace Airbnb.Infrastructure.Database.Repositories;
 
 public class ApartmentRepository : Repository<Apartment, Guid, Guid?>, IApartmentRepository
 {
@@ -53,13 +53,19 @@ public class ApartmentRepository : Repository<Apartment, Guid, Guid?>, IApartmen
 
     public async Task<List<Apartment>> GetTopApartmentsByProfitAsync(int numOfApartments)
     {
-        SqlConnection connection = new SqlConnection(Connection.ConnectionString);
+        await using SqlConnection connection = new SqlConnection(Connection.ConnectionString);
         
-        string query = """
-                       SELECT * FROM Apartments
-                       
+        string query = $"""
+                       SELECT TOP({numOfApartments}) 
+                            a.Title AS ApartmentTitle, 
+                            COUNT(*) AS NumberOfBookings, 
+                            SUM(BookedTotalPrice) AS TotalProfit
+                       FROM Apartments a
+                       LEFT JOIN Bookings b ON a.Id = b.ApartmentId
+                       GROUP BY a.Id, a.Title
+                       ORDER BY TotalProfit DESC
                        """;
-        var apartments = await connection.QueryAsync<Apartment>(query);
+        var apartments = await connection.QueryAsync(query);
         
         return new List<Apartment>();
     }

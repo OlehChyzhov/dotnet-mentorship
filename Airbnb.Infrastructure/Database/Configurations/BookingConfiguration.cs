@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Airbnb.Infrastructure.Configurations;
+namespace Airbnb.Infrastructure.Database.Configurations;
 
 public class BookingConfiguration : IEntityTypeConfiguration<Booking>
 {

@@ -1,8 +1,9 @@
 ﻿using Airbnb.Application.Abstracts.Repositories;
 using Airbnb.Application.Abstracts.Services;
 using Airbnb.Domain.Models;
+using Airbnb.Infrastructure.Database;
+using Airbnb.Infrastructure.Database.Repositories;
 using Airbnb.Infrastructure.DataLoading;
-using Airbnb.Infrastructure.Repositories;
 using Airbnb.Infrastructure.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;

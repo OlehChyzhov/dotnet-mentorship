@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Airbnb.Infrastructure.Configurations;
+namespace Airbnb.Infrastructure.Database.Configurations;
 
 public class IdentityRoleConfiguration : IEntityTypeConfiguration<IdentityRole>
 {

@@ -5,7 +5,7 @@ using Airbnb.Domain.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 
-namespace Airbnb.Infrastructure.Repositories;
+namespace Airbnb.Infrastructure.Database.Repositories;
 
 public abstract class Repository<TEntity, TKey, TExternalKey> : IRepository<TEntity, TKey, TExternalKey> 
     where TEntity : class, IEntity<TKey, TExternalKey>

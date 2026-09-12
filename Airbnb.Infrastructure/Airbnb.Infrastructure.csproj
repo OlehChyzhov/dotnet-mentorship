@@ -23,7 +23,11 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="DapperQueries\" />
+      <None Remove="DapperQueries\GetTopApartmentsByProfit.sql" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <EmbeddedResource Include="Database\Dapper\GetTopApartmentsByProfit.sql" />
     </ItemGroup>
 
 </Project>

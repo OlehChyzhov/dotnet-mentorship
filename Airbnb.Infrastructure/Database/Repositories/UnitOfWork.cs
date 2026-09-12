@@ -1,7 +1,7 @@
 ﻿using Airbnb.Application.Abstracts.Repositories;
 using Airbnb.Domain.Models;
 
-namespace Airbnb.Infrastructure.Repositories;
+namespace Airbnb.Infrastructure.Database.Repositories;
 
 public class UnitOfWork : IUnitOfWork
 {
