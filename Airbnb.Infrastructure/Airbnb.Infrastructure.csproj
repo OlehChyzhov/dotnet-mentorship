@@ -27,7 +27,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <EmbeddedResource Include="Database\Dapper\GetTopApartmentsByProfit.sql" />
+      <EmbeddedResource Include="Database\Dapper\Sql\GetTopApartmentsByProfit.sql" />
     </ItemGroup>
 
 </Project>

@@ -1,11 +1,15 @@
 ﻿using Airbnb.Application.Abstracts.Repositories;
+using Airbnb.Application.DTOs.Apartment;
 using Airbnb.Application.DTOs.Querying;
 using Airbnb.Application.DTOs.Querying.Filtering;
+using Airbnb.Domain;
 using Airbnb.Domain.Enums;
 using Airbnb.Domain.Models;
+using Airbnb.Infrastructure.Database.Dapper;
 using Dapper;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.SqlServer.Internal;
 
 namespace Airbnb.Infrastructure.Database.Repositories;
 
@@ -51,22 +55,15 @@ public class ApartmentRepository : Repository<Apartment, Guid, Guid?>, IApartmen
         return PagedList<Apartment>.ToPagedList(apartments, totalCount, query.PageNumber, query.PageSize);
     }
 
-    public async Task<List<Apartment>> GetTopApartmentsByProfitAsync(int numOfApartments)
+    public async Task<Result<List<ApartmentByProfitDto>>> GetTopApartmentsByProfitAsync(int numOfApartments)
     {
-        await using SqlConnection connection = new SqlConnection(Connection.ConnectionString);
+        string? query = QueryReader.GetQuery("GetTopApartmentsByProfit");
+        if (query == null)
+        {
+            return "No results found";
+        }
         
-        string query = $"""
-                       SELECT TOP({numOfApartments}) 
-                            a.Title AS ApartmentTitle, 
-                            COUNT(*) AS NumberOfBookings, 
-                            SUM(BookedTotalPrice) AS TotalProfit
-                       FROM Apartments a
-                       LEFT JOIN Bookings b ON a.Id = b.ApartmentId
-                       GROUP BY a.Id, a.Title
-                       ORDER BY TotalProfit DESC
-                       """;
-        var apartments = await connection.QueryAsync(query);
-        
-        return new List<Apartment>();
+        var apartments = await Connection.QueryAsync<ApartmentByProfitDto>(query, new { Count = numOfApartments });
+        return apartments.ToList();
     }
 }

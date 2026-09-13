@@ -84,12 +84,6 @@ if (app.Environment.IsDevelopment())
     });
 }
 
-using (var scope = app.Services.CreateScope())
-{
-    var services = scope.ServiceProvider.GetRequiredService<IApartmentRepository>();
-    await services.GetTopApartmentsByProfitAsync(5);
-}
-
 app.UseHttpsRedirection();
 
 app.UseAuthentication();

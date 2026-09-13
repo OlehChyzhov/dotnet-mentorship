@@ -68,4 +68,7 @@ public class ApartmentService : IApartmentService
         
         return createdApartmentDto;
     }
+
+    public async Task<Result<List<ApartmentByProfitDto>>> GetTopApartmentsByProfitAsync(int numOfApartments) => 
+        await _unitOfWork.Apartments.GetTopApartmentsByProfitAsync(numOfApartments);
 }

@@ -4,5 +4,5 @@ SELECT TOP(@Count)
     SUM(BookedTotalPrice) AS TotalProfit
 FROM Apartments a
 LEFT JOIN Bookings b ON a.Id = b.ApartmentId
-GROUP BY a.Id
+GROUP BY a.Title
 ORDER BY TotalProfit DESC
