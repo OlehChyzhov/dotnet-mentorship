@@ -1,13 +1,13 @@
 ﻿services:
+  airbnb.sqlserver:
+    image: mcr.microsoft.com/mssql/server:2025-latest
+    ports:
+      - "1433:1433"
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: ${MSSQL_SA_PASSWORD}
+
   airbnb.api:
-    image: airbnb.api
-    build:
-      context: .
-      dockerfile: Airbnb.API/Dockerfile
-
-  airbnb.infrastructure:
-    image: airbnb.infrastructure
-    build:
-      context: .
-      dockerfile: Airbnb.Application/Dockerfile
-
+    build: "./Airbnb.API"
+    ports:
+      - "5006:5006"
