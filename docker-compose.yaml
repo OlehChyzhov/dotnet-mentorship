@@ -1,0 +1,13 @@
+﻿services:
+  airbnb.api:
+    image: airbnb.api
+    build:
+      context: .
+      dockerfile: Airbnb.API/Dockerfile
+
+  airbnb.infrastructure:
+    image: airbnb.infrastructure
+    build:
+      context: .
+      dockerfile: Airbnb.Application/Dockerfile
+
