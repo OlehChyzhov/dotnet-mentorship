@@ -53,6 +53,23 @@ public class ApartmentRepository : Repository<Apartment, Guid, Guid?>, IApartmen
         return PagedList<Apartment>.ToPagedList(apartments, totalCount, query.PageNumber, query.PageSize);
     }
 
+    public async Task<Result<Apartment>> UpsertApartmentAsync(Apartment apartmentToUpsert)
+    {
+        string? query =  QueryReader.GetQuery("UpsertApartment");
+        if (query == null)
+        {
+            return"No query exists";
+        }
+
+        var apartment = await Connection.QueryAsync<Apartment>(query, apartmentToUpsert);
+        if (!apartment.Any())
+        {
+            return "Could not upsert the apartment";
+        }
+        
+        return apartment.First();
+    }
+
     public async Task<Result<List<ApartmentByProfitDto>>> GetTopApartmentsByProfitAsync(int numOfApartments)
     {
         string? query = QueryReader.GetQuery("GetTopApartmentsByProfit");

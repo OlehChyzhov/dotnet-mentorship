@@ -16,6 +16,8 @@ public interface IApartmentService
 
     Task<Result<ApartmentDto>> CreateApartmentAsync(CreateApartmentDto dto, string userId);
 
+    Task<Result<ApartmentDto>> UpsertApartmentAsync(UpsertApartmentDto dto, string userId);
+
     Task<Result<List<ApartmentByProfitDto>>> GetTopApartmentsByProfitAsync(int numOfApartments);
 
     Task<Result<List<ApartmentCityAveragesDto>>> GetAverageApartmentCountAndPricePerCityAsync(string city);

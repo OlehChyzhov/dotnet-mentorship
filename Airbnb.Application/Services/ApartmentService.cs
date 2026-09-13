@@ -5,6 +5,7 @@ using Airbnb.Application.DTOs.Querying;
 using Airbnb.Application.DTOs.Querying.Filtering;
 using Airbnb.Domain;
 using Airbnb.Domain.Enums;
+using Airbnb.Domain.Models;
 using MapsterMapper;
 
 namespace Airbnb.Application.Services;
@@ -68,6 +69,20 @@ public class ApartmentService : IApartmentService
         var createdApartmentDto = _mapper.Map<ApartmentDto>(createdApartment);
         
         return createdApartmentDto;
+    }
+
+    public async Task<Result<ApartmentDto>> UpsertApartmentAsync(UpsertApartmentDto dto, string userId)
+    {
+        var apartment = _mapper.Map<Apartment>(dto);
+        apartment.OwnerId = userId;
+
+        var upsertResult = await _unitOfWork.Apartments.UpsertApartmentAsync(apartment);
+        if (!upsertResult.IsSuccessful)
+        {
+            return upsertResult.Message!;
+        }
+
+        return _mapper.Map<ApartmentDto>(upsertResult.Value!);
     }
 
     public async Task<Result<List<ApartmentByProfitDto>>> GetTopApartmentsByProfitAsync(int numOfApartments) =>

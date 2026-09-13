@@ -11,6 +11,8 @@ public interface IApartmentRepository : IRepository<Apartment, Guid, Guid?>
 {
     Task<PagedList<Apartment>> GetApartmentsPagedAsync(ApartmentPagingParamters query);
 
+    Task<Result<Apartment>> UpsertApartmentAsync(Apartment apartmentToUpsert);
+
     Task<Result<List<ApartmentByProfitDto>>> GetTopApartmentsByProfitAsync(int numOfApartments);
 
     Task<Result<List<ApartmentCityAveragesDto>>> GetAverageApartmentCountAndPricePerCityAsync(string city);

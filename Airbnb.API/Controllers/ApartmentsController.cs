@@ -134,7 +134,7 @@ public class ApartmentsController : ControllerBase
     public async Task<IActionResult> CreateApartmentAsync([FromBody] CreateApartmentDto dto)
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
-        
+
         var result = await _apartmentService.CreateApartmentAsync(dto, userId);
         if (!result.IsSuccessful)
         {
@@ -143,5 +143,20 @@ public class ApartmentsController : ControllerBase
 
         var createdApartment = result.Value!;
         return CreatedAtAction(nameof(GetApartmentById), new { apartmentId = createdApartment.Id }, createdApartment);
+    }
+
+    [HttpPut]
+    [Authorize(Roles = $"{Roles.Host}")]
+    public async Task<IActionResult> UpsertApartmentAsync([FromBody] UpsertApartmentDto dto)
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
+
+        var result = await _apartmentService.UpsertApartmentAsync(dto, userId);
+        if (!result.IsSuccessful)
+        {
+            return BadRequest(result.Message);
+        }
+
+        return Ok(result.Value);
     }
 }
