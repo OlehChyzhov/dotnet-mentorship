@@ -17,12 +17,13 @@ WHEN MATCHED THEN
         LivingRooms = @LivingRooms,
         PricePerNight = @PricePerNight,
         IsListed = @IsListed,
-        OwnerId = @OwnerId
+        OwnerId = @OwnerId,
+        CustomData = @CustomData
 WHEN NOT MATCHED THEN
     INSERT (Id, ExternalId, Title, Description, Type, Country, City, Address,
             MaxGuests, Bedrooms, Bathrooms, Kitchens, LivingRooms, PricePerNight,
-            IsListed, CreatedAt, OwnerId)
+            IsListed, CreatedAt, OwnerId, CustomData)
     VALUES (@Id, @ExternalId, @Title, @Description, @Type, @Country, @City, @Address,
             @MaxGuests, @Bedrooms, @Bathrooms, @Kitchens, @LivingRooms, @PricePerNight,
-            @IsListed, @CreatedAt, @OwnerId)
+            @IsListed, @CreatedAt, @OwnerId, @CustomData)
 OUTPUT inserted.*;

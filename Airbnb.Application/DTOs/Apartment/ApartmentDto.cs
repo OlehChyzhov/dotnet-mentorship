@@ -25,4 +25,5 @@ public record ApartmentDto
     // Lifecycle & Ownership
     public bool IsListed { get; init; }
     public DateTime CreatedAt { get; init; }
+    public string? CustomData { get; init; }
 }

@@ -12,6 +12,9 @@ public class ApartmentConfiguration : IEntityTypeConfiguration<Apartment>
         builder.HasKey(apartment => apartment.Id);
         builder.HasIndex(apartment => apartment.ExternalId).IsUnique();
 
+        builder.Property(apartment => apartment.CustomData)
+            .HasColumnType("nvarchar(max)");
+
         builder.HasOne(apartment => apartment.Owner)
             .WithMany()
             .HasForeignKey(apartment => apartment.OwnerId)

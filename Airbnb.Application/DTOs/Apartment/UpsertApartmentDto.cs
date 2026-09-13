@@ -27,4 +27,5 @@ public record UpsertApartmentDto
 
     // Lifecycle
     public bool IsListed { get; init; }
+    public string? CustomData { get; init; }
 }

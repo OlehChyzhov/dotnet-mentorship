@@ -23,4 +23,5 @@ public record CreateApartmentDto
     
     // Lifecycle & Ownership
     public bool IsListed { get; init; }
+    public string? CustomData { get; init; }
 }

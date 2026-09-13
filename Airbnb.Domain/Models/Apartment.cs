@@ -31,7 +31,10 @@ public class Apartment : IEntity<Guid, Guid?>
     
     // Ownership
     public string OwnerId { get; set; } = string.Empty;
-    
+
+    // Custom JSON information
+    public string? CustomData { get; set; }
+
     // Navigation
     public User? Owner { get; set; }
     public ICollection<Booking> Bookings { get; set; } = new List<Booking>();
