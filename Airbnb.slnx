@@ -1,8 +1,8 @@
 <Solution>
   <Folder Name="/Solution Items/">
-    <File Path=".dockerignore" />
+    <File Path=".env" />
+    <File Path=".env.example" />
     <File Path="docker-compose.yaml" />
-    <File Path="Dockerfile" />
   </Folder>
   <Project Path="Airbnb.API/Airbnb.API.csproj" />
   <Project Path="Airbnb.Application/Airbnb.Application.csproj" />
