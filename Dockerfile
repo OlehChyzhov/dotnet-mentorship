@@ -14,18 +14,18 @@ WORKDIR /src
 COPY ["Airbnb.API/Airbnb.API.csproj", "Airbnb.API/"]
 COPY ["Airbnb.Infrastructure/Airbnb.Infrastructure.csproj", "Airbnb.Infrastructure/"]
 COPY ["Airbnb.Application/Airbnb.Application.csproj", "Airbnb.Application/"]
-COPY ["Airbnb.Domain/Domain.API.csproj", "Airbnb.Domain/"]
+COPY ["Airbnb.Domain/Airbnb.Domain.csproj", "Airbnb.Domain/"]
 RUN dotnet restore "Airbnb.API/Airbnb.API.csproj"
 
 # In here we copy the rest of the code, so on any change the execution of the build of 
 # the new image starts only from here
 COPY . .
 WORKDIR /src/Airbnb.API
-RUN dotnet build "Airbnb.API.csproj" -c BUILD_CONFIGURATION -o /app/build
+RUN dotnet build "Airbnb.API.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "Airbnb.API.csproj" -c BUILD_CONFIGURATION -o /app/publish
+RUN dotnet publish "Airbnb.API.csproj" -c $BUILD_CONFIGURATION -o /app/publish
 
 FROM base AS final
 WORKDIR /app
