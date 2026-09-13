@@ -28,6 +28,10 @@
 
     <ItemGroup>
       <EmbeddedResource Include="Database\Dapper\Sql\GetTopApartmentsByProfit.sql" />
+      <EmbeddedResource Include="Database\Dapper\Sql\GetAverageApartmentCountAndPricePerCity.sql" />
+      <EmbeddedResource Include="Database\Dapper\Sql\GetAverageApartmentPricePerType.sql" />
+      <EmbeddedResource Include="Database\Dapper\Sql\GetApartmentBookingCountAndAverageStayByType.sql" />
+      <EmbeddedResource Include="Database\Dapper\Sql\GetApartmentCountAndAveragePriceByBedrooms.sql" />
     </ItemGroup>
 
 </Project>

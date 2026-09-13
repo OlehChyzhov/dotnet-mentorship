@@ -7,9 +7,7 @@ using Airbnb.Domain.Enums;
 using Airbnb.Domain.Models;
 using Airbnb.Infrastructure.Database.Dapper;
 using Dapper;
-using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.SqlServer.Internal;
 
 namespace Airbnb.Infrastructure.Database.Repositories;
 
@@ -65,5 +63,53 @@ public class ApartmentRepository : Repository<Apartment, Guid, Guid?>, IApartmen
         
         var apartments = await Connection.QueryAsync<ApartmentByProfitDto>(query, new { Count = numOfApartments });
         return apartments.ToList();
+    }
+
+    public async Task<Result<List<ApartmentCityAveragesDto>>> GetAverageApartmentCountAndPricePerCityAsync(string city)
+    {
+        string? query = QueryReader.GetQuery("GetAverageApartmentCountAndPricePerCity");
+        if (query == null)
+        {
+            return "No results found";
+        }
+
+        var statistics = await Connection.QueryAsync<ApartmentCityAveragesDto>(query, new { City = city });
+        return statistics.ToList();
+    }
+
+    public async Task<Result<List<ApartmentTypeAveragesDto>>> GetAverageApartmentPricePerTypeAsync(ApartmentType type)
+    {
+        string? query = QueryReader.GetQuery("GetAverageApartmentPricePerType");
+        if (query == null)
+        {
+            return "No results found";
+        }
+
+        var statistics = await Connection.QueryAsync<ApartmentTypeAveragesDto>(query, new { Type = type });
+        return statistics.ToList();
+    }
+
+    public async Task<Result<List<ApartmentTypeBookingStatsDto>>> GetApartmentBookingCountAndAverageStayByTypeAsync(ApartmentType type)
+    {
+        string? query = QueryReader.GetQuery("GetApartmentBookingCountAndAverageStayByType");
+        if (query == null)
+        {
+            return "No results found";
+        }
+
+        var statistics = await Connection.QueryAsync<ApartmentTypeBookingStatsDto>(query, new { Type = type });
+        return statistics.ToList();
+    }
+
+    public async Task<Result<List<ApartmentBedroomsAveragesDto>>> GetApartmentCountAndAveragePriceByBedroomsAsync(int numOfBedrooms)
+    {
+        string? query = QueryReader.GetQuery("GetApartmentCountAndAveragePriceByBedrooms");
+        if (query == null)
+        {
+            return "No results found";
+        }
+
+        var statistics = await Connection.QueryAsync<ApartmentBedroomsAveragesDto>(query, new { NumOfBedrooms = numOfBedrooms });
+        return statistics.ToList();
     }
 }
