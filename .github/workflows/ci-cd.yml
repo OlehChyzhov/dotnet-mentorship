@@ -22,13 +22,13 @@ jobs:
         dotnet-version: "10.0.x"
 
     - name: Restore Dependencies
-      run: dotnet restore
+      run: dotnet restore Airbnb.API/Airbnb.API.csproj
 
     - name: Build Backend
-      run: dotnet build --configuration Release
+      run: dotnet build Airbnb.API/Airbnb.API.csproj --configuration Release
 
     - name: Test Backend
-      run: dotnet test --no-build --configuration Release
+      run: dotnet test Airbnb.Tests/Airbnb.Tests.csproj --no-build --configuration Release
 
   push-docker-image-and-deploy:
     runs-on: ubuntu-latest
