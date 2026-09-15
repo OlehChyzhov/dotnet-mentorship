@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Airbnb.Infrastructure.Configurations;
+namespace Airbnb.Infrastructure.Database.Configurations;
 
 public class ApartmentConfiguration : IEntityTypeConfiguration<Apartment>
 {
@@ -11,6 +11,9 @@ public class ApartmentConfiguration : IEntityTypeConfiguration<Apartment>
         builder.ToTable("Apartments");
         builder.HasKey(apartment => apartment.Id);
         builder.HasIndex(apartment => apartment.ExternalId).IsUnique();
+
+        builder.Property(apartment => apartment.CustomData)
+            .HasColumnType("nvarchar(max)");
 
         builder.HasOne(apartment => apartment.Owner)
             .WithMany()

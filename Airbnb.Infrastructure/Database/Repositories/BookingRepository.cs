@@ -6,7 +6,7 @@ using Airbnb.Domain.Enums;
 using Airbnb.Domain.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace Airbnb.Infrastructure.Repositories;
+namespace Airbnb.Infrastructure.Database.Repositories;
 
 public class BookingRepository : Repository<Booking, Guid, Guid?>, IBookingRepository
 {

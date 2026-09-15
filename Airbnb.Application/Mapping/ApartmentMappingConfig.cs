@@ -14,5 +14,8 @@ public class ApartmentMappingConfig : IRegister
         
         // CreateApartmentDto => Apartment
         config.NewConfig<CreateApartmentDto, Apartment>();
+
+        // UpsertApartmentDto => Apartment
+        config.NewConfig<UpsertApartmentDto, Apartment>();
     }
 }

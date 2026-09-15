@@ -4,6 +4,8 @@ using Airbnb.Application.DTOs.Apartment;
 using Airbnb.Application.DTOs.Querying;
 using Airbnb.Application.DTOs.Querying.Filtering;
 using Airbnb.Domain;
+using Airbnb.Domain.Enums;
+using Airbnb.Domain.Models;
 using MapsterMapper;
 
 namespace Airbnb.Application.Services;
@@ -68,4 +70,33 @@ public class ApartmentService : IApartmentService
         
         return createdApartmentDto;
     }
+
+    public async Task<Result<ApartmentDto>> UpsertApartmentAsync(UpsertApartmentDto dto, string userId)
+    {
+        var apartment = _mapper.Map<Apartment>(dto);
+        apartment.OwnerId = userId;
+
+        var upsertResult = await _unitOfWork.Apartments.UpsertApartmentAsync(apartment);
+        if (!upsertResult.IsSuccessful)
+        {
+            return upsertResult.Message!;
+        }
+
+        return _mapper.Map<ApartmentDto>(upsertResult.Value!);
+    }
+
+    public async Task<Result<List<ApartmentByProfitDto>>> GetTopApartmentsByProfitAsync(int numOfApartments) =>
+        await _unitOfWork.Apartments.GetTopApartmentsByProfitAsync(numOfApartments);
+
+    public async Task<Result<List<ApartmentCityAveragesDto>>> GetAverageApartmentCountAndPricePerCityAsync(string city) =>
+        await _unitOfWork.Apartments.GetAverageApartmentCountAndPricePerCityAsync(city);
+
+    public async Task<Result<List<ApartmentTypeAveragesDto>>> GetAverageApartmentPricePerTypeAsync(ApartmentType type) =>
+        await _unitOfWork.Apartments.GetAverageApartmentPricePerTypeAsync(type);
+
+    public async Task<Result<List<ApartmentTypeBookingStatsDto>>> GetApartmentBookingCountAndAverageStayByTypeAsync(ApartmentType type) =>
+        await _unitOfWork.Apartments.GetApartmentBookingCountAndAverageStayByTypeAsync(type);
+
+    public async Task<Result<List<ApartmentBedroomsAveragesDto>>> GetApartmentCountAndAveragePriceByBedroomsAsync(int numOfBedrooms) =>
+        await _unitOfWork.Apartments.GetApartmentCountAndAveragePriceByBedroomsAsync(numOfBedrooms);
 }

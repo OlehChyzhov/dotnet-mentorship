@@ -12,6 +12,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <PackageReference Include="Dapper" Version="2.1.79" />
       <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.3.11" />
       <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="10.0.10" />
       <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.10" />
@@ -20,6 +21,19 @@
         <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       </PackageReference>
       <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.10" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="DapperQueries\GetTopApartmentsByProfit.sql" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <EmbeddedResource Include="Database\Dapper\Sql\GetTopApartmentsByProfit.sql" />
+      <EmbeddedResource Include="Database\Dapper\Sql\UpsertApartment.sql" />
+      <EmbeddedResource Include="Database\Dapper\Sql\GetAverageApartmentCountAndPricePerCity.sql" />
+      <EmbeddedResource Include="Database\Dapper\Sql\GetAverageApartmentPricePerType.sql" />
+      <EmbeddedResource Include="Database\Dapper\Sql\GetApartmentBookingCountAndAverageStayByType.sql" />
+      <EmbeddedResource Include="Database\Dapper\Sql\GetApartmentCountAndAveragePriceByBedrooms.sql" />
     </ItemGroup>
 
 </Project>
