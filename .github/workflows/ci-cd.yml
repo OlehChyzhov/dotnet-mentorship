@@ -47,7 +47,7 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
     - name: Build the Docker image
-      run: docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/airbnb-api:latest .
+      run: docker build -f Airbnb.API/Dockerfile -t ${{ secrets.DOCKERHUB_USERNAME }}/airbnb-api:latest .
     
     - name: Push the Docker image
       run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/airbnb-api:latest
