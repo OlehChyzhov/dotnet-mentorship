@@ -28,7 +28,7 @@ jobs:
       run: dotnet build Airbnb.API/Airbnb.API.csproj --configuration Release
 
     - name: Test Backend
-      run: dotnet test Airbnb.Tests/Airbnb.Tests.csproj --no-build --configuration Release --logger "trx;LogFileName=test-results.trx" --results-directory ./TestResults
+      run: dotnet test Airbnb.Tests/Airbnb.Tests.csproj --configuration Release --logger "trx;LogFileName=test-results.trx" --results-directory ./TestResults
 
     - name: Publish Test Report
       uses: dorny/test-reporter@v1
