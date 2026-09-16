@@ -65,7 +65,7 @@ public class ApartmentsController : ControllerBase
     }
     
     [HttpGet("aggregation/top-by-profit/{count:int}")]
-    [Authorize(Roles = $"{Roles.Client}, {Roles.Host}")]
+    [Authorize(Roles = $"{Roles.Host}")]
     public async Task<IActionResult> GetTopApartmentsByProfit(int count)
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
