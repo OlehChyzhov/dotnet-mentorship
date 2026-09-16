@@ -70,7 +70,7 @@ public class ApartmentRepository : Repository<Apartment, Guid, Guid?>, IApartmen
         return apartment.First();
     }
 
-    public async Task<Result<List<ApartmentByProfitDto>>> GetTopApartmentsByProfitAsync(int numOfApartments)
+    public async Task<Result<List<ApartmentByProfitDto>>> GetTopApartmentsByProfitAsync(int numOfApartments, string userId)
     {
         string? query = QueryReader.GetQuery("GetTopApartmentsByProfit");
         if (query == null)
@@ -78,7 +78,7 @@ public class ApartmentRepository : Repository<Apartment, Guid, Guid?>, IApartmen
             return "No results found";
         }
         
-        var apartments = await Connection.QueryAsync<ApartmentByProfitDto>(query, new { Count = numOfApartments });
+        var apartments = await Connection.QueryAsync<ApartmentByProfitDto>(query, new { Count = numOfApartments, UserId = userId });
         return apartments.ToList();
     }
 

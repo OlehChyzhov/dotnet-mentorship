@@ -85,8 +85,8 @@ public class ApartmentService : IApartmentService
         return _mapper.Map<ApartmentDto>(upsertResult.Value!);
     }
 
-    public async Task<Result<List<ApartmentByProfitDto>>> GetTopApartmentsByProfitAsync(int numOfApartments) =>
-        await _unitOfWork.Apartments.GetTopApartmentsByProfitAsync(numOfApartments);
+    public async Task<Result<List<ApartmentByProfitDto>>> GetTopApartmentsByProfitAsync(int numOfApartments, string userId) =>
+        await _unitOfWork.Apartments.GetTopApartmentsByProfitAsync(numOfApartments, userId);
 
     public async Task<Result<List<ApartmentCityAveragesDto>>> GetAverageApartmentCountAndPricePerCityAsync(string city) =>
         await _unitOfWork.Apartments.GetAverageApartmentCountAndPricePerCityAsync(city);

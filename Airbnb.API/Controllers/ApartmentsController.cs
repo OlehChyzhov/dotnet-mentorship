@@ -68,7 +68,9 @@ public class ApartmentsController : ControllerBase
     [Authorize(Roles = $"{Roles.Client}, {Roles.Host}")]
     public async Task<IActionResult> GetTopApartmentsByProfit(int count)
     {
-        var result = await _apartmentService.GetTopApartmentsByProfitAsync(count);
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
+        
+        var result = await _apartmentService.GetTopApartmentsByProfitAsync(count, userId);
         if (!result.IsSuccessful)
         {
             return BadRequest(result.Message);

@@ -187,11 +187,12 @@ public class ApartmentServiceTests
     public async Task GetTopApartmentsByProfitAsync_ReturnsRepositoryResult()
     {
         // Arrange
+        const string userId = "owner-1";
         var expected = new List<ApartmentByProfitDto> { new() { ApartmentTitle = "Cozy flat", NumberOfBookings = 5, TotalProfit = 500 } };
-        _apartmentRepositoryMock.Setup(r => r.GetTopApartmentsByProfitAsync(3)).ReturnsAsync(expected);
+        _apartmentRepositoryMock.Setup(r => r.GetTopApartmentsByProfitAsync(3, userId)).ReturnsAsync(expected);
 
         // Act
-        var result = await _sut.GetTopApartmentsByProfitAsync(3);
+        var result = await _sut.GetTopApartmentsByProfitAsync(3, userId);
 
         // Assert
         result.IsSuccessful.ShouldBeTrue();

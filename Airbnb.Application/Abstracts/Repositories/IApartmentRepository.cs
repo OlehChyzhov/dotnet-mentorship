@@ -13,7 +13,7 @@ public interface IApartmentRepository : IRepository<Apartment, Guid, Guid?>
 
     Task<Result<Apartment>> UpsertApartmentAsync(Apartment apartmentToUpsert);
 
-    Task<Result<List<ApartmentByProfitDto>>> GetTopApartmentsByProfitAsync(int numOfApartments);
+    Task<Result<List<ApartmentByProfitDto>>> GetTopApartmentsByProfitAsync(int numOfApartments, string userId);
 
     Task<Result<List<ApartmentCityAveragesDto>>> GetAverageApartmentCountAndPricePerCityAsync(string city);
 
