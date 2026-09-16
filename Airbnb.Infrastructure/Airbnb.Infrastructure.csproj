@@ -27,12 +27,18 @@
     </ItemGroup>
 
     <ItemGroup>
-      <EmbeddedResource Include="Database\Dapper\Sql\GetTopApartmentsByProfit.sql" />
-      <EmbeddedResource Include="Database\Dapper\Sql\UpsertApartment.sql" />
-      <EmbeddedResource Include="Database\Dapper\Sql\GetAverageApartmentCountAndPricePerCity.sql" />
-      <EmbeddedResource Include="Database\Dapper\Sql\GetAverageApartmentPricePerType.sql" />
-      <EmbeddedResource Include="Database\Dapper\Sql\GetApartmentBookingCountAndAverageStayByType.sql" />
-      <EmbeddedResource Include="Database\Dapper\Sql\GetApartmentCountAndAveragePriceByBedrooms.sql" />
+      <EmbeddedResource Update="Database\Dapper\Queries.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>Queries.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Update="Database\Dapper\Queries.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>Queries.resx</DependentUpon>
+      </Compile>
     </ItemGroup>
 
 </Project>

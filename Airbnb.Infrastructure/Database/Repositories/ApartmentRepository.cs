@@ -55,78 +55,42 @@ public class ApartmentRepository : Repository<Apartment, Guid, Guid?>, IApartmen
 
     public async Task<Result<Apartment>> UpsertApartmentAsync(Apartment apartmentToUpsert)
     {
-        string? query =  QueryReader.GetQuery("UpsertApartment");
-        if (query == null)
-        {
-            return"No query exists";
-        }
-
-        var apartment = await Connection.QueryAsync<Apartment>(query, apartmentToUpsert, Transaction);
+        var apartment = await Connection.QueryAsync<Apartment>(Queries.UpsertApartment, apartmentToUpsert, Transaction);
         if (!apartment.Any())
         {
             return "Could not upsert the apartment";
         }
-        
+
         return apartment.First();
     }
 
     public async Task<Result<List<ApartmentByProfitDto>>> GetTopApartmentsByProfitAsync(int numOfApartments, string userId)
     {
-        string? query = QueryReader.GetQuery("GetTopApartmentsByProfit");
-        if (query == null)
-        {
-            return "No results found";
-        }
-        
-        var apartments = await Connection.QueryAsync<ApartmentByProfitDto>(query, new { Count = numOfApartments, UserId = userId }, Transaction);
+        var apartments = await Connection.QueryAsync<ApartmentByProfitDto>(Queries.GetTopApartmentsByProfit, new { Count = numOfApartments, UserId = userId }, Transaction);
         return apartments.ToList();
     }
 
     public async Task<Result<List<ApartmentCityAveragesDto>>> GetAverageApartmentCountAndPricePerCityAsync(string city)
     {
-        string? query = QueryReader.GetQuery("GetAverageApartmentCountAndPricePerCity");
-        if (query == null)
-        {
-            return "No results found";
-        }
-
-        var statistics = await Connection.QueryAsync<ApartmentCityAveragesDto>(query, new { City = city }, Transaction);
+        var statistics = await Connection.QueryAsync<ApartmentCityAveragesDto>(Queries.GetAverageApartmentCountAndPricePerCity, new { City = city }, Transaction);
         return statistics.ToList();
     }
 
     public async Task<Result<List<ApartmentTypeAveragesDto>>> GetAverageApartmentPricePerTypeAsync(ApartmentType type)
     {
-        string? query = QueryReader.GetQuery("GetAverageApartmentPricePerType");
-        if (query == null)
-        {
-            return "No results found";
-        }
-
-        var statistics = await Connection.QueryAsync<ApartmentTypeAveragesDto>(query, new { Type = type }, Transaction);
+        var statistics = await Connection.QueryAsync<ApartmentTypeAveragesDto>(Queries.GetAverageApartmentPricePerType, new { Type = type }, Transaction);
         return statistics.ToList();
     }
 
     public async Task<Result<List<ApartmentTypeBookingStatsDto>>> GetApartmentBookingCountAndAverageStayByTypeAsync(ApartmentType type)
     {
-        string? query = QueryReader.GetQuery("GetApartmentBookingCountAndAverageStayByType");
-        if (query == null)
-        {
-            return "No results found";
-        }
-
-        var statistics = await Connection.QueryAsync<ApartmentTypeBookingStatsDto>(query, new { Type = type }, Transaction);
+        var statistics = await Connection.QueryAsync<ApartmentTypeBookingStatsDto>(Queries.GetApartmentBookingCountAndAverageStayByType, new { Type = type }, Transaction);
         return statistics.ToList();
     }
 
     public async Task<Result<List<ApartmentBedroomsAveragesDto>>> GetApartmentCountAndAveragePriceByBedroomsAsync(int numOfBedrooms)
     {
-        string? query = QueryReader.GetQuery("GetApartmentCountAndAveragePriceByBedrooms");
-        if (query == null)
-        {
-            return "No results found";
-        }
-
-        var statistics = await Connection.QueryAsync<ApartmentBedroomsAveragesDto>(query, new { NumOfBedrooms = numOfBedrooms }, Transaction);
+        var statistics = await Connection.QueryAsync<ApartmentBedroomsAveragesDto>(Queries.GetApartmentCountAndAveragePriceByBedrooms, new { NumOfBedrooms = numOfBedrooms }, Transaction);
         return statistics.ToList();
     }
 }
