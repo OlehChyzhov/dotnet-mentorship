@@ -13,7 +13,7 @@ public class ApartmentConfiguration : IEntityTypeConfiguration<Apartment>
         builder.HasIndex(apartment => apartment.ExternalId).IsUnique();
 
         builder.Property(apartment => apartment.CustomData)
-            .HasColumnType("nvarchar(max)");
+            .HasColumnType("json");
 
         builder.HasOne(apartment => apartment.Owner)
             .WithMany()
