@@ -1,5 +1,5 @@
 SELECT
-    a.Type,
+    a.Type AS Type,
     COUNT(*) AS TotalBookings,
     AVG(CAST(DATEDIFF(day, b.CheckIn, b.CheckOut) AS float)) AS AverageStayNights
 FROM Apartments a

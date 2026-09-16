@@ -7,44 +7,44 @@ using Microsoft.EntityFrameworkCore.Storage;
 
 namespace Airbnb.Infrastructure.Database.Repositories;
 
-public abstract class Repository<TEntity, TKey, TExternalKey> : IRepository<TEntity, TKey, TExternalKey> 
+public abstract class Repository<TEntity, TKey, TExternalKey> : IRepository<TEntity, TKey, TExternalKey>
     where TEntity : class, IEntity<TKey, TExternalKey>
 {
-    protected readonly ApplicationDbContext _context;
-    protected readonly DbSet<TEntity> _dbSet;
-    
-    protected DbConnection Connection => _context.Database.GetDbConnection();
-    protected DbTransaction? Transaction => _context.Database.CurrentTransaction?.GetDbTransaction();
+    private readonly ApplicationDbContext _context;
     
     protected Repository(ApplicationDbContext context)
     {
         _context = context;
-        _dbSet = context.Set<TEntity>();
+        DbSet = context.Set<TEntity>();
     }
     
+    protected DbSet<TEntity> DbSet { get; }
+    protected DbConnection Connection => _context.Database.GetDbConnection();
+    protected DbTransaction? Transaction => _context.Database.CurrentTransaction?.GetDbTransaction();
+
     public async Task<TEntity> GetByIdAsync(TKey id)
     {
-        return await _dbSet.AsNoTracking().FirstAsync(entity => entity.Id!.Equals(id));
+        return await DbSet.AsNoTracking().FirstAsync(entity => entity.Id!.Equals(id));
     }
 
     public async Task<TEntity> GetByExternalIdAsync(TExternalKey externalId)
     {
-        return await _dbSet.AsNoTracking().FirstAsync(entity => entity.ExternalId!.Equals(externalId));
+        return await DbSet.AsNoTracking().FirstAsync(entity => entity.ExternalId!.Equals(externalId));
     }
 
     public async Task CreateAsync(TEntity entity)
     {
-        await _dbSet.AddAsync(entity);
+        await DbSet.AddAsync(entity);
     }
 
     public Task UpdateAsync(TEntity entity)
     {
-        _dbSet.Update(entity);
+        DbSet.Update(entity);
         return Task.CompletedTask;
     }
 
     protected async Task<IEnumerable<TEntity>> FindAsync(Expression<Func<TEntity, bool>> predicate)
     {
-        return await _dbSet.Where(predicate).AsNoTracking().ToListAsync();
+        return await DbSet.Where(predicate).AsNoTracking().ToListAsync();
     }
 }

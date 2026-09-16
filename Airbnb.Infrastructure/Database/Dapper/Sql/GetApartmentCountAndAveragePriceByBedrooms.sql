@@ -1,5 +1,5 @@
 SELECT
-    a.Bedrooms,
+    a.Bedrooms AS Bedrooms,
     COUNT(*) AS ApartmentCount,
     AVG(a.PricePerNight) AS AveragePricePerNight
 FROM Apartments a

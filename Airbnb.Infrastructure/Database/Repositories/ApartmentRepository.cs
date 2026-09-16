@@ -17,7 +17,7 @@ public class ApartmentRepository : Repository<Apartment, Guid, Guid?>, IApartmen
     
     public async Task<PagedList<Apartment>> GetApartmentsPagedAsync(ApartmentPagingParamters query)
     {
-        var apartmentsQuery = _dbSet.AsQueryable();
+        var apartmentsQuery = DbSet.AsQueryable();
 
         // All apartments where there are no pending or confirmed bookings for a time range in parameters
         if (query.StartDate != null && query.EndDate != null)
@@ -61,7 +61,7 @@ public class ApartmentRepository : Repository<Apartment, Guid, Guid?>, IApartmen
             return"No query exists";
         }
 
-        var apartment = await Connection.QueryAsync<Apartment>(query, apartmentToUpsert);
+        var apartment = await Connection.QueryAsync<Apartment>(query, apartmentToUpsert, Transaction);
         if (!apartment.Any())
         {
             return "Could not upsert the apartment";
@@ -78,7 +78,7 @@ public class ApartmentRepository : Repository<Apartment, Guid, Guid?>, IApartmen
             return "No results found";
         }
         
-        var apartments = await Connection.QueryAsync<ApartmentByProfitDto>(query, new { Count = numOfApartments, UserId = userId });
+        var apartments = await Connection.QueryAsync<ApartmentByProfitDto>(query, new { Count = numOfApartments, UserId = userId }, Transaction);
         return apartments.ToList();
     }
 
@@ -90,7 +90,7 @@ public class ApartmentRepository : Repository<Apartment, Guid, Guid?>, IApartmen
             return "No results found";
         }
 
-        var statistics = await Connection.QueryAsync<ApartmentCityAveragesDto>(query, new { City = city });
+        var statistics = await Connection.QueryAsync<ApartmentCityAveragesDto>(query, new { City = city }, Transaction);
         return statistics.ToList();
     }
 
@@ -102,7 +102,7 @@ public class ApartmentRepository : Repository<Apartment, Guid, Guid?>, IApartmen
             return "No results found";
         }
 
-        var statistics = await Connection.QueryAsync<ApartmentTypeAveragesDto>(query, new { Type = type });
+        var statistics = await Connection.QueryAsync<ApartmentTypeAveragesDto>(query, new { Type = type }, Transaction);
         return statistics.ToList();
     }
 
@@ -114,7 +114,7 @@ public class ApartmentRepository : Repository<Apartment, Guid, Guid?>, IApartmen
             return "No results found";
         }
 
-        var statistics = await Connection.QueryAsync<ApartmentTypeBookingStatsDto>(query, new { Type = type });
+        var statistics = await Connection.QueryAsync<ApartmentTypeBookingStatsDto>(query, new { Type = type }, Transaction);
         return statistics.ToList();
     }
 
@@ -126,7 +126,7 @@ public class ApartmentRepository : Repository<Apartment, Guid, Guid?>, IApartmen
             return "No results found";
         }
 
-        var statistics = await Connection.QueryAsync<ApartmentBedroomsAveragesDto>(query, new { NumOfBedrooms = numOfBedrooms });
+        var statistics = await Connection.QueryAsync<ApartmentBedroomsAveragesDto>(query, new { NumOfBedrooms = numOfBedrooms }, Transaction);
         return statistics.ToList();
     }
 }

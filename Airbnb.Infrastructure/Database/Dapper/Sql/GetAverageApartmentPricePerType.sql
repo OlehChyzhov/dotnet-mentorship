@@ -1,5 +1,5 @@
 SELECT
-    a.Type,
+    a.Type AS Type,
     COUNT(*) AS ApartmentCount,
     AVG(a.PricePerNight) AS AveragePricePerNight,
     MIN(a.PricePerNight) AS MinPricePerNight,

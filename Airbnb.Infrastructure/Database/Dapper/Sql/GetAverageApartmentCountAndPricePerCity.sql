@@ -1,6 +1,6 @@
 SELECT
-    a.Country,
-    a.City,
+    a.Country AS Country,
+    a.City AS City,
     COUNT(*) AS ApartmentCount,
     AVG(a.PricePerNight) AS AveragePricePerNight
 FROM Apartments a
