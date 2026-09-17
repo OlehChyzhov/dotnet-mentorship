@@ -89,10 +89,6 @@ if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
             .WithTheme(ScalarTheme.Default)
             .WithDefaultHttpClient(ScalarTarget.CSharp, ScalarClient.Http);
     });
-
-    using var scope = app.Services.CreateScope();
-    var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-    dbContext.Database.Migrate();
 }
 
 app.UseHttpsRedirection();
