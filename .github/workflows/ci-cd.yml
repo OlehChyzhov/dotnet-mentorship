@@ -70,7 +70,7 @@ jobs:
     - name: Download current task definition
       run: |
         aws ecs describe-task-definition \
-          --task-definition airbnb-api \
+          --task-definition dotnet-mentorship \
           --query taskDefinition > task-definition.json
 
     - name: Update the Container on AWS
