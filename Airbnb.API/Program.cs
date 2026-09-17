@@ -2,21 +2,9 @@ using System.Security.Claims;
 using System.Text;
 using Airbnb.API.Middleware;
 using Airbnb.Application;
-using Airbnb.Application.Abstracts.Repositories;
-using Airbnb.Application.Abstracts.Services;
-using Airbnb.Application.Mapping;
-using Airbnb.Application.Options;
-using Airbnb.Application.Services;
-using Airbnb.Application.Validators;
-using Airbnb.Domain.Models;
 using Airbnb.Infrastructure;
 using Airbnb.Infrastructure.Database;
-using Airbnb.Infrastructure.Database.Repositories;
-using Airbnb.Infrastructure.Services;
-using FluentValidation;
-using Mapster;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Scalar.AspNetCore;
@@ -72,12 +60,6 @@ builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 
 var app = builder.Build();
-
-using (var scope = app.Services.CreateScope())
-{
-    var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-    dbContext.Database.Migrate();
-}
 
 if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
 {
