@@ -59,3 +59,26 @@ jobs:
     
     - name: Push the Docker image
       run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/airbnb-api:latest
+
+    - name: Login to AWS
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: eu-central-1
+
+    - name: Update the Container on AWS
+      id: task-def
+      uses: aws-actions/amazon-ecs-render-task-definition@v1
+      with:
+        task-definition: .aws/task-definition.json
+        container-name: airbnb-api
+        image: ${{ secrets.DOCKERHUB_USERNAME }}/airbnb-api:latest
+
+    - name: Force Redeploy
+      uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+      with:
+        task-definition: ${{ steps.task-def.outputs.task-definition }}
+        service: dotnet-mentorship-api
+        cluster: dotnet-mentorship-cluster
+        wait-for-service-stability: true
