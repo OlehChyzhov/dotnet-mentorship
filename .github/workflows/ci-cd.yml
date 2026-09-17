@@ -71,7 +71,9 @@ jobs:
       run: |
         aws ecs describe-task-definition \
           --task-definition dotnet-mentorship \
-          --query taskDefinition > task-definition.json
+          --query taskDefinition \
+        | jq 'del(.taskDefinitionArn, .revision, .status, .requiresAttributes, .compatibilities, .registeredAt, .registeredBy, .enableFaultInjection)' \
+        > task-definition.json
 
     - name: Update the Container on AWS
       id: task-def
