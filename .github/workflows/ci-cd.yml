@@ -54,11 +54,21 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
+    - name: Set short SHA
+      id: vars
+      run: echo "sha_short=$(git rev-parse --short HEAD)" >> "$GITHUB_OUTPUT"
+      
     - name: Build the Docker image
-      run: docker build -f Airbnb.API/Dockerfile -t ${{ secrets.DOCKERHUB_USERNAME }}/airbnb-api:latest .
-    
+      run: |
+        docker build -f Airbnb.API/Dockerfile \
+          -t ${{ secrets.DOCKERHUB_USERNAME }}/airbnb-api:latest \
+          -t ${{ secrets.DOCKERHUB_USERNAME }}/airbnb-api:${{ steps.vars.outputs.sha_short }} \
+          .
+
     - name: Push the Docker image
-      run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/airbnb-api:latest
+      run: |
+        docker push ${{ secrets.DOCKERHUB_USERNAME }}/airbnb-api:latest
+        docker push ${{ secrets.DOCKERHUB_USERNAME }}/airbnb-api:${{ steps.vars.outputs.sha_short }}
 
     - name: Login to AWS
       uses: aws-actions/configure-aws-credentials@v4
