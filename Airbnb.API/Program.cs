@@ -10,6 +10,7 @@ using Airbnb.Application.Services;
 using Airbnb.Application.Validators;
 using Airbnb.Domain.Models;
 using Airbnb.Infrastructure;
+using Airbnb.Infrastructure.Database;
 using Airbnb.Infrastructure.Database.Repositories;
 using Airbnb.Infrastructure.Services;
 using FluentValidation;
@@ -88,6 +89,10 @@ if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
             .WithTheme(ScalarTheme.Default)
             .WithDefaultHttpClient(ScalarTarget.CSharp, ScalarClient.Http);
     });
+
+    using var scope = app.Services.CreateScope();
+    var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    dbContext.Database.Migrate();
 }
 
 app.UseHttpsRedirection();
