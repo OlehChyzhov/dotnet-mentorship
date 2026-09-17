@@ -1,10 +1,10 @@
 ﻿using Airbnb.Domain.Models;
-using Airbnb.Infrastructure.Configurations;
+using Airbnb.Infrastructure.Database.Configurations;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-namespace Airbnb.Infrastructure;
+namespace Airbnb.Infrastructure.Database;
 
 public class ApplicationDbContext : IdentityDbContext<User, IdentityRole, string>
 {

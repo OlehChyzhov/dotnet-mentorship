@@ -3,6 +3,7 @@ using Airbnb.Application.DTOs.Apartment;
 using Airbnb.Application.DTOs.Querying;
 using Airbnb.Application.DTOs.Querying.Filtering;
 using Airbnb.Application.Services;
+using Airbnb.Domain;
 using Airbnb.Domain.Enums;
 using Airbnb.Domain.Models;
 using MapsterMapper;
@@ -131,5 +132,137 @@ public class ApartmentServiceTests
 
         _apartmentRepositoryMock.Verify(r => r.CreateAsync(It.IsAny<Apartment>()), Times.Once);
         _unitOfWorkMock.Verify(u => u.SaveChangesAsync(), Times.Once);
+    }
+
+    [Fact]
+    public async Task UpsertApartmentAsync_SetsOwnerId_ReturnsMappedApartment()
+    {
+        // Arrange
+        var dto = new UpsertApartmentDto { Id = Guid.NewGuid(), Title = "Upserted place" };
+        const string userId = "owner-1";
+
+        var mappedApartment = new Apartment { Id = dto.Id, Title = dto.Title };
+        _mapperMock.Setup(m => m.Map<Apartment>(dto)).Returns(mappedApartment);
+
+        var upsertedApartment = CreateApartment(dto.Id);
+        _apartmentRepositoryMock
+            .Setup(r => r.UpsertApartmentAsync(mappedApartment))
+            .ReturnsAsync(upsertedApartment);
+
+        var expectedDto = new ApartmentDto { Id = dto.Id, Title = dto.Title };
+        _mapperMock.Setup(m => m.Map<ApartmentDto>(upsertedApartment)).Returns(expectedDto);
+
+        // Act
+        var result = await _sut.UpsertApartmentAsync(dto, userId);
+
+        // Assert
+        result.IsSuccessful.ShouldBeTrue();
+        result.Value.ShouldBe(expectedDto);
+        mappedApartment.OwnerId.ShouldBe(userId);
+    }
+
+    [Fact]
+    public async Task UpsertApartmentAsync_RepositoryFails_ReturnsFailureResult()
+    {
+        // Arrange
+        var dto = new UpsertApartmentDto { Id = Guid.NewGuid(), Title = "Upserted place" };
+        const string userId = "owner-1";
+
+        var mappedApartment = new Apartment { Id = dto.Id, Title = dto.Title };
+        _mapperMock.Setup(m => m.Map<Apartment>(dto)).Returns(mappedApartment);
+
+        _apartmentRepositoryMock
+            .Setup(r => r.UpsertApartmentAsync(mappedApartment))
+            .ReturnsAsync(Result<Apartment>.Fail("Could not upsert the apartment"));
+
+        // Act
+        var result = await _sut.UpsertApartmentAsync(dto, userId);
+
+        // Assert
+        result.IsSuccessful.ShouldBeFalse();
+        result.Message.ShouldBe("Could not upsert the apartment");
+    }
+
+    [Fact]
+    public async Task GetTopApartmentsByProfitAsync_ReturnsRepositoryResult()
+    {
+        // Arrange
+        const string userId = "owner-1";
+        var expected = new List<ApartmentByProfitDto> { new() { ApartmentTitle = "Cozy flat", NumberOfBookings = 5, TotalProfit = 500 } };
+        _apartmentRepositoryMock.Setup(r => r.GetTopApartmentsByProfitAsync(3, userId)).ReturnsAsync(expected);
+
+        // Act
+        var result = await _sut.GetTopApartmentsByProfitAsync(3, userId);
+
+        // Assert
+        result.IsSuccessful.ShouldBeTrue();
+        result.Value.ShouldBe(expected);
+    }
+
+    [Fact]
+    public async Task GetAverageApartmentCountAndPricePerCityAsync_ReturnsRepositoryResult()
+    {
+        // Arrange
+        const string city = "Kyiv";
+        var expected = new List<ApartmentCityAveragesDto> { new() { City = city, Country = "UA", ApartmentCount = 4, AveragePricePerNight = 60 } };
+        _apartmentRepositoryMock.Setup(r => r.GetAverageApartmentCountAndPricePerCityAsync(city)).ReturnsAsync(expected);
+
+        // Act
+        var result = await _sut.GetAverageApartmentCountAndPricePerCityAsync(city);
+
+        // Assert
+        result.IsSuccessful.ShouldBeTrue();
+        result.Value.ShouldBe(expected);
+    }
+
+    [Fact]
+    public async Task GetAverageApartmentPricePerTypeAsync_ReturnsRepositoryResult()
+    {
+        // Arrange
+        const ApartmentType type = ApartmentType.Villa;
+        var expected = new List<ApartmentTypeAveragesDto>
+        {
+            new() { Type = type, ApartmentCount = 2, AveragePricePerNight = 200, MinPricePerNight = 150, MaxPricePerNight = 250 }
+        };
+        _apartmentRepositoryMock.Setup(r => r.GetAverageApartmentPricePerTypeAsync(type)).ReturnsAsync(expected);
+
+        // Act
+        var result = await _sut.GetAverageApartmentPricePerTypeAsync(type);
+
+        // Assert
+        result.IsSuccessful.ShouldBeTrue();
+        result.Value.ShouldBe(expected);
+    }
+
+    [Fact]
+    public async Task GetApartmentBookingCountAndAverageStayByTypeAsync_ReturnsRepositoryResult()
+    {
+        // Arrange
+        const ApartmentType type = ApartmentType.House;
+        var expected = new List<ApartmentTypeBookingStatsDto> { new() { Type = type, TotalBookings = 10, AverageStayNights = 3.5 } };
+        _apartmentRepositoryMock.Setup(r => r.GetApartmentBookingCountAndAverageStayByTypeAsync(type)).ReturnsAsync(expected);
+
+        // Act
+        var result = await _sut.GetApartmentBookingCountAndAverageStayByTypeAsync(type);
+
+        // Assert
+        result.IsSuccessful.ShouldBeTrue();
+        result.Value.ShouldBe(expected);
+    }
+
+    [Fact]
+    public async Task GetApartmentCountAndAveragePriceByBedroomsAsync_ReturnsRepositoryResult()
+    {
+        // Arrange
+        const int numOfBedrooms = 2;
+        var expected = new List<ApartmentBedroomsAveragesDto> { new() { Bedrooms = numOfBedrooms, ApartmentCount = 7, AveragePricePerNight = 90 } };
+        _apartmentRepositoryMock.Setup(r => r.GetApartmentCountAndAveragePriceByBedroomsAsync(numOfBedrooms)).ReturnsAsync(expected);
+
+        // Act
+        var result = await _sut.GetApartmentCountAndAveragePriceByBedroomsAsync(numOfBedrooms);
+
+        // Assert
+        result.IsSuccessful.ShouldBeTrue();
+        result.Value.ShouldBe(expected);
     }
 }

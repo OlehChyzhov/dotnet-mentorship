@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Airbnb.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260907065443_AddNullable")]
-    partial class AddNullable
+    [Migration("20260916054828_AddJsonColumn")]
+    partial class AddJsonColumn
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -51,6 +51,9 @@ namespace Airbnb.Infrastructure.Migrations
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
+
+                    b.Property<string>("CustomData")
+                        .HasColumnType("json");
 
                     b.Property<string>("Description")
                         .IsRequired()

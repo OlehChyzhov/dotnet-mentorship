@@ -6,7 +6,7 @@ using Airbnb.Domain.Enums;
 using Airbnb.Domain.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace Airbnb.Infrastructure.Repositories;
+namespace Airbnb.Infrastructure.Database.Repositories;
 
 public class BookingRepository : Repository<Booking, Guid, Guid?>, IBookingRepository
 {
@@ -14,7 +14,7 @@ public class BookingRepository : Repository<Booking, Guid, Guid?>, IBookingRepos
 
     public async Task<PagedList<Booking>> GetBookingsPagedAsync(BookingPagingParameters query, string userId)
     {
-        var userBookings = _dbSet
+        var userBookings = DbSet
             .Where(booking => booking.ClientId == userId)
             .OrderBy(booking => booking.CheckIn);
 
@@ -30,7 +30,7 @@ public class BookingRepository : Repository<Booking, Guid, Guid?>, IBookingRepos
 
     public async Task<List<Booking>> GetConfirmedOrPendingBookingsInTimeRangeAsync(Guid apartmentId, DateTime from, DateTime to)
     {
-        return await _dbSet
+        return await DbSet
             .Where(booking => booking.Status == BookingStatus.Confirmed || booking.Status == BookingStatus.Pending)
             .Where(booking => booking.CheckIn < to && booking.CheckOut > from)
             .Where(booking => booking.ApartmentId == apartmentId)
