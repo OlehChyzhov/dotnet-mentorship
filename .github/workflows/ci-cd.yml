@@ -88,5 +88,5 @@ jobs:
       with:
         task-definition: ${{ steps.task-def.outputs.task-definition }}
         service: dotnet-mentorship-api
-        cluster: dotnet-mentorship-api
+        cluster: dotnet-mentorship-cluster
         wait-for-service-stability: true
