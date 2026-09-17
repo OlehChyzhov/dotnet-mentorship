@@ -5,3 +5,12 @@ obj/
 appsettings.Development.json
 riderModule.iml
 /_ReSharper.Caches/
+
+# Ігнорувати абсолютно всі файли з розширенням .env у будь-яких папках проекту
+*.env
+.env
+.env.*
+
+# ВИНЯТОК: дозволити коммітити безпечний шаблон конфігурації
+!.env.example
+

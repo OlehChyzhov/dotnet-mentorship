@@ -1,0 +1,31 @@
+﻿services:
+  airbnb.sqlserver:
+    container_name: "airbnb.sqlserver"
+    image: mcr.microsoft.com/mssql/server:2025-latest
+    ports:
+      - "1433:1433"
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: ${MSSQL_SA_PASSWORD}
+    volumes:
+      - "mssql_data:/var/opt/mssql"
+
+  airbnb.api:
+    container_name: "airbnb.api"
+    build:
+      context: .
+      dockerfile: "Airbnb.API/Dockerfile"
+    ports:
+      - "8080:8080"
+    environment:
+      JWT__Key: ${JWT_KEY}
+      JWT__Issuer: ${JWT_ISSUER}
+      JWT__Audience: ${JWT_Audience}
+      JWT__ExpirationMinutes: ${JWT_EXPIRATION_MINUTES}
+      ConnectionStrings__DefaultConnection: ${DB_CONNECTION_STRING}
+      DefaultUserOptions__DefaultPassword: ${DEFAULT_USER_PASSWORD}
+    depends_on:
+      - airbnb.sqlserver
+
+volumes:
+  mssql_data:

@@ -10,6 +10,7 @@ using Airbnb.Application.Services;
 using Airbnb.Application.Validators;
 using Airbnb.Domain.Models;
 using Airbnb.Infrastructure;
+using Airbnb.Infrastructure.Database;
 using Airbnb.Infrastructure.Database.Repositories;
 using Airbnb.Infrastructure.Services;
 using FluentValidation;
@@ -72,7 +73,13 @@ builder.Services.AddOpenApi();
 
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    dbContext.Database.Migrate();
+}
+
+if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
 {
     app.MapOpenApi();
     app.MapScalarApiReference(options =>
