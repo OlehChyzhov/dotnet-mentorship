@@ -1,9 +1,10 @@
 ﻿services:
+  # Application
   airbnb.sqlserver:
     container_name: "airbnb.sqlserver"
     image: mcr.microsoft.com/mssql/server:2025-latest
     ports:
-      - "1433:1433"
+      - "2000:1433"
     environment:
       ACCEPT_EULA: "Y"
       MSSQL_SA_PASSWORD: ${MSSQL_SA_PASSWORD}
@@ -13,10 +14,10 @@
   airbnb.api:
     container_name: "airbnb.api"
     build:
-      context: .
-      dockerfile: "Application/Airbnb.API/Dockerfile"
+      context: "./Application/"
+      dockerfile: "Airbnb.API/Dockerfile"
     ports:
-      - "8080:8080"
+      - "3000:8080"
     environment:
       JWT__Key: ${JWT_KEY}
       JWT__Issuer: ${JWT_ISSUER}
@@ -27,13 +28,31 @@
     depends_on:
       - airbnb.sqlserver
     
+    
+  # Audit
   airbnb.audit.mongodb:
     container_name: "airbnb.audit.mongodb"
-    
+    image: mongo:8.0.4
+    ports:
+      - "2001:27017"
+    environment:
+      MONGO_INITDB_DATABASE: airbnb-audit-db
+      MONGO_INITDB_ROOT_USERNAME: ${MONGODB_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGODB_PASSWORD}
+    volumes:
+      - "mongodb_data:/data/db"
+    restart: unless-stopped
+      
   airbnb.audit.api:
     container_name: "airbnb.audit.api"
+    build:
+      context: "./Audit/"
+      dockerfile: "Airbnb.Audit.API/Dockerfile"
+    ports:
+      - "3001:8080"
     depends_on:
       - airbnb.audit.mongodb
-
+  
 volumes:
   mssql_data:
+  mongodb_data:
