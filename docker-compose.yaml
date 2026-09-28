@@ -26,6 +26,14 @@
       DefaultUserOptions__DefaultPassword: ${DEFAULT_USER_PASSWORD}
     depends_on:
       - airbnb.sqlserver
+    
+  airbnb.audit.mongodb:
+    container_name: "airbnb.audit.mongodb"
+    
+  airbnb.audit.api:
+    container_name: "airbnb.audit.api"
+    depends_on:
+      - airbnb.audit.mongodb
 
 volumes:
   mssql_data:
