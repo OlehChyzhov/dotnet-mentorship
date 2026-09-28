@@ -1,4 +1,17 @@
 ﻿services:
+  # RabbitMQ
+  airbnb.broker.rabbitmq:
+    container_name: "airbnb.broker.rabbitmq"
+    image: rabbitmq:4.0-management
+    ports:
+      - "2100:5672"  # Producers/Consumers
+      - "2101:15672" # Management UI
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
+    volumes:
+      - "rabbitmq_data:/var/lib/rabbitmq"
+  
   # Application
   airbnb.sqlserver:
     container_name: "airbnb.sqlserver"
@@ -27,6 +40,7 @@
       DefaultUserOptions__DefaultPassword: ${DEFAULT_USER_PASSWORD}
     depends_on:
       - airbnb.sqlserver
+      - airbnb.broker.rabbitmq
     
     
   # Audit
@@ -52,7 +66,10 @@
       - "3001:8080"
     depends_on:
       - airbnb.audit.mongodb
+      - airbnb.broker.rabbitmq
+    
   
 volumes:
+  rabbitmq_data:
   mssql_data:
   mongodb_data:
