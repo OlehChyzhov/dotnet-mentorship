@@ -1,0 +1,6 @@
+@Airbnb.Audit.API_HostAddress = http://localhost:5081
+
+GET {{Airbnb.Audit.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
