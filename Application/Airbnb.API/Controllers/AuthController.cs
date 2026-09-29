@@ -1,4 +1,5 @@
-﻿using Airbnb.Application.Abstracts.Services;
+﻿using Airbnb.Application.Abstracts.Broker;
+using Airbnb.Application.Abstracts.Services;
 using Airbnb.Application.DTOs.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -10,10 +11,19 @@ namespace Airbnb.API.Controllers;
 public class AuthController : ControllerBase
 {
     private readonly IAuthService _authService;
+    private readonly IEventPublisher _eventPublisher;
     
-    public AuthController(IAuthService authService)
+    public AuthController(IAuthService authService, IEventPublisher eventPublisher)
     {
         _authService = authService;
+        _eventPublisher = eventPublisher;
+    }
+
+    [HttpGet("rabbitmq-test")]
+    public async Task<IActionResult> Test()
+    {
+        await _eventPublisher.PublishAsync<string>();
+        return Ok();
     }
     
     [HttpPost("register")]

@@ -9,6 +9,11 @@
     environment:
       RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
       RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
     volumes:
       - "rabbitmq_data:/var/lib/rabbitmq"
   
@@ -20,7 +25,7 @@
       - "2000:1433"
     environment:
       ACCEPT_EULA: "Y"
-      MSSQL_SA_PASSWORD: ${MSSQL_SA_PASSWORD}
+      MSSQL_SA_PASSWORD: ${APPLICATION_MSSQL_SA_PASSWORD}
     volumes:
       - "mssql_data:/var/opt/mssql"
 
@@ -32,15 +37,24 @@
     ports:
       - "3000:8080"
     environment:
-      JWT__Key: ${JWT_KEY}
-      JWT__Issuer: ${JWT_ISSUER}
-      JWT__Audience: ${JWT_Audience}
-      JWT__ExpirationMinutes: ${JWT_EXPIRATION_MINUTES}
-      ConnectionStrings__DefaultConnection: ${DB_CONNECTION_STRING}
-      DefaultUserOptions__DefaultPassword: ${DEFAULT_USER_PASSWORD}
+      JWT__Key: ${APPLICATION_JWT_KEY}
+      JWT__Issuer: ${APPLICATION_JWT_ISSUER}
+      JWT__Audience: ${APPLICATION_JWT_Audience}
+      JWT__ExpirationMinutes: ${APPLICATION_JWT_EXPIRATION_MINUTES}
+      ConnectionStrings__DefaultConnection: ${APPLICATION_DB_CONNECTION_STRING}
+      DefaultUserOptions__DefaultPassword: ${APPLICATION_DEFAULT_USER_PASSWORD}
+      RabbitMq__HostName: ${APPLICATION_RABBITMQ_HOSTNAME}
+      RabbitMq__Port: ${APPLICATION_RABBITMQ_PORT}
+      RabbitMq_UserName: ${APPLICATION_RABBITMQ_USERNAME}
+      RabbitMq_Password: ${APPLICATION_RABBITMQ_PASSWORD}
+      RabbitMq_Exchange: ${APPLICATION_RABBITMQ_EXCHANGE}
+      RabbitMq_Queue: ${APPLICATION_RABBITMQ_AUDIT_QUEUE}
+      RabbitMq_ClientProvidedName: ${APPLICATION_RABBITMQ_CLIENTPROVIDED_NAME}
     depends_on:
-      - airbnb.sqlserver
-      - airbnb.broker.rabbitmq
+      airbnb.sqlserver:
+        condition: service_started
+      airbnb.broker.rabbitmq:
+        condition: service_healthy
     
     
   # Audit
@@ -51,8 +65,8 @@
       - "2001:27017"
     environment:
       MONGO_INITDB_DATABASE: airbnb-audit-db
-      MONGO_INITDB_ROOT_USERNAME: ${MONGODB_USERNAME}
-      MONGO_INITDB_ROOT_PASSWORD: ${MONGODB_PASSWORD}
+      MONGO_INITDB_ROOT_USERNAME: ${AUDIT_MONGODB_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${AUDIT_MONGODB_PASSWORD}
     volumes:
       - "mongodb_data:/data/db"
     restart: unless-stopped

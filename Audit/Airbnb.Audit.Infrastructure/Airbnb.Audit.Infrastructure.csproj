@@ -10,4 +10,8 @@
       <ProjectReference Include="..\Airbnb.Audit.Application\Airbnb.Audit.Application.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="RabbitMQ.Client" Version="7.2.2" />
+    </ItemGroup>
+
 </Project>
