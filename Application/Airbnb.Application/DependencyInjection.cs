@@ -18,6 +18,7 @@ public static class DependencyInjection
         services.AddScoped<IApartmentService, ApartmentService>();
         services.AddScoped<IBookingService, BookingService>();
         services.AddScoped<IAuthService, AuthService>();
+        services.AddScoped<IUserService, UserService>();
 
         // Mapping
         TypeAdapterConfig.GlobalSettings.RequireExplicitMapping = true;

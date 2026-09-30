@@ -1,5 +1,6 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using Airbnb.Application.Abstracts.Identity;
 using Airbnb.Application.Abstracts.Services;
 using Airbnb.Application.DTOs.Authentication;
 using Airbnb.Application.Options;
@@ -16,14 +17,16 @@ namespace Airbnb.Tests;
 
 public class AuthServiceTests
 {
-    private readonly Mock<IUserManagementService> _userRepositoryMock;
+    private readonly Mock<IIdentityService> _identityServiceMock;
+    private readonly Mock<IUserService> _userServiceMock;
     private readonly IOptions<JwtOptions> _jwtOptions;
     private readonly Mock<IMapper> _mapperMock;
     private readonly AuthService _sut;
 
     public AuthServiceTests()
     {
-        _userRepositoryMock = new Mock<IUserManagementService>();
+        _identityServiceMock = new Mock<IIdentityService>();
+        _userServiceMock = new Mock<IUserService>();
 
         _jwtOptions = Options.Create(new JwtOptions
         {
@@ -38,49 +41,15 @@ public class AuthServiceTests
             .Setup(m => m.Map<UserRegisterDto, User>(It.IsAny<UserRegisterDto>()))
             .Returns((UserRegisterDto src) => new User { Email = src.Email, UserName = src.Email });
 
-        _sut = new AuthService(_userRepositoryMock.Object, _jwtOptions, _mapperMock.Object);
+        _sut = new AuthService(_identityServiceMock.Object, _userServiceMock.Object, _jwtOptions, _mapperMock.Object);
     }
 
     [Fact]
-    public async Task RegisterUserAsync_WhenRoleDoesNotExist_ReturnsFailedResult()
+    public async Task RegisterUserAsync_DelegatesToUserServiceWithMappedUser()
     {
         // Arrange
-        _userRepositoryMock
-            .Setup(m => m.RoleExistsAsync(It.IsAny<string>()))
-            .ReturnsAsync(false);
-
-        var request = new UserRegisterDto
-        {
-            Email = "test@test.com",
-            Password = "Password123!",
-            Role = Roles.Client
-        };
-
-        // Act
-        IdentityResult result = await _sut.RegisterUserAsync(request);
-
-        // Assert
-        result.Succeeded.ShouldBeFalse();
-        result.Errors.ShouldContain(e => e.Code == "RoleNotFound");
-
-        _userRepositoryMock.Verify(
-            m => m.CreateUserAsync(It.IsAny<User>(), It.IsAny<string>()), Times.Never);
-    }
-
-    [Fact]
-    public async Task RegisterUserAsync_WhenRoleExists_CreatesUserAndAddsRole()
-    {
-        // Arrange
-        _userRepositoryMock
-            .Setup(m => m.RoleExistsAsync(Roles.Client))
-            .ReturnsAsync(true);
-
-        _userRepositoryMock
-            .Setup(m => m.CreateUserAsync(It.IsAny<User>(), It.IsAny<string>()))
-            .ReturnsAsync(IdentityResult.Success);
-
-        _userRepositoryMock
-            .Setup(m => m.AddUserToRoleAsync(It.IsAny<User>(), It.IsAny<string>()))
+        _userServiceMock
+            .Setup(m => m.CreateUserAsync(It.IsAny<User>(), It.IsAny<string>(), It.IsAny<string>()))
             .ReturnsAsync(IdentityResult.Success);
 
         var request = new UserRegisterDto
@@ -96,14 +65,11 @@ public class AuthServiceTests
         // Assert
         result.Succeeded.ShouldBeTrue();
 
-        _userRepositoryMock.Verify(
+        _userServiceMock.Verify(
             m => m.CreateUserAsync(
                 It.Is<User>(u => u.Email == "test@test.com"),
-                "Password123!"),
-            Times.Once);
-
-        _userRepositoryMock.Verify(
-            m => m.AddUserToRoleAsync(It.IsAny<User>(), Roles.Client),
+                "Password123!",
+                Roles.Client),
             Times.Once);
     }
 
@@ -125,8 +91,8 @@ public class AuthServiceTests
     {
         // Arrange
         var identityUser = new User { Email = "test@test.com" };
-        _userRepositoryMock.Setup(m => m.FindUserByEmailAsync("test@test.com")).ReturnsAsync(identityUser);
-        _userRepositoryMock.Setup(m => m.CheckPasswordAsync(identityUser, "wrong")).ReturnsAsync(false);
+        _identityServiceMock.Setup(m => m.FindUserByEmailAsync("test@test.com")).ReturnsAsync(identityUser);
+        _identityServiceMock.Setup(m => m.CheckPasswordAsync(identityUser, "wrong")).ReturnsAsync(false);
 
         var request = new UserLoginDto { Email = "test@test.com", Password = "wrong" };
 
@@ -143,8 +109,8 @@ public class AuthServiceTests
     {
         // Arrange
         var identityUser = new User { Email = "test@test.com" };
-        _userRepositoryMock.Setup(m => m.FindUserByEmailAsync("test@test.com")).ReturnsAsync(identityUser);
-        _userRepositoryMock.Setup(m => m.CheckPasswordAsync(identityUser, "correct")).ReturnsAsync(true);
+        _identityServiceMock.Setup(m => m.FindUserByEmailAsync("test@test.com")).ReturnsAsync(identityUser);
+        _identityServiceMock.Setup(m => m.CheckPasswordAsync(identityUser, "correct")).ReturnsAsync(true);
 
         var request = new UserLoginDto { Email = "test@test.com", Password = "correct" };
 
@@ -174,8 +140,8 @@ public class AuthServiceTests
     {
         // Arrange
         var identityUser = new User { Email = "test@test.com" };
-        _userRepositoryMock.Setup(m => m.FindUserByEmailAsync("test@test.com")).ReturnsAsync(identityUser);
-        _userRepositoryMock.Setup(m => m.GetRolesAsync(identityUser)).ReturnsAsync(new List<string> { "Client" });
+        _identityServiceMock.Setup(m => m.FindUserByEmailAsync("test@test.com")).ReturnsAsync(identityUser);
+        _identityServiceMock.Setup(m => m.GetRolesAsync(identityUser)).ReturnsAsync(new List<string> { "Client" });
 
         var request = new UserLoginDto { Email = "test@test.com", Password = "correct" };
 
@@ -192,8 +158,8 @@ public class AuthServiceTests
     {
         // Arrange
         var identityUser = new User { Email = "test@test.com" };
-        _userRepositoryMock.Setup(m => m.FindUserByEmailAsync("test@test.com")).ReturnsAsync(identityUser);
-        _userRepositoryMock.Setup(m => m.GetRolesAsync(identityUser)).ReturnsAsync(new List<string> { "Client", "Host" });
+        _identityServiceMock.Setup(m => m.FindUserByEmailAsync("test@test.com")).ReturnsAsync(identityUser);
+        _identityServiceMock.Setup(m => m.GetRolesAsync(identityUser)).ReturnsAsync(new List<string> { "Client", "Host" });
 
         var request = new UserLoginDto { Email = "test@test.com", Password = "correct" };
 

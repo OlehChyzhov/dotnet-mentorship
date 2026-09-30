@@ -1,4 +1,5 @@
 using System.Text.Json;
+using Airbnb.Application.Abstracts.Identity;
 using Airbnb.Application.Abstracts.Repositories;
 using Airbnb.Application.Abstracts.Services;
 using Airbnb.Application.DTOs.External;
@@ -19,7 +20,8 @@ namespace Airbnb.Tests;
 public class ExternalDataLoaderTests : IDisposable
 {
     private readonly Mock<IValidator<ExternalHostDto>> _validatorMock;
-    private readonly Mock<IUserManagementService> _userHelperMock;
+    private readonly Mock<IIdentityService> _identityServiceMock;
+    private readonly Mock<IUserService> _userServiceMock;
     private readonly Mock<IUnitOfWork> _unitOfWorkMock;
     private readonly Mock<IApartmentRepository> _apartmentRepositoryMock;
     private readonly Mock<IMapper> _mapperMock;
@@ -30,7 +32,8 @@ public class ExternalDataLoaderTests : IDisposable
     public ExternalDataLoaderTests()
     {
         _validatorMock = new Mock<IValidator<ExternalHostDto>>();
-        _userHelperMock = new Mock<IUserManagementService>();
+        _identityServiceMock = new Mock<IIdentityService>();
+        _userServiceMock = new Mock<IUserService>();
 
         _apartmentRepositoryMock = new Mock<IApartmentRepository>();
         _unitOfWorkMock = new Mock<IUnitOfWork>();
@@ -43,7 +46,8 @@ public class ExternalDataLoaderTests : IDisposable
         _sut = new ExternalDataLoader(
             Options.Create(defaultUserOptions),
             _validatorMock.Object,
-            _userHelperMock.Object,
+            _identityServiceMock.Object,
+            _userServiceMock.Object,
             _unitOfWorkMock.Object,
             _mapperMock.Object);
     }
@@ -142,11 +146,8 @@ public class ExternalDataLoaderTests : IDisposable
             .Setup(m => m.Map<Apartment>(It.IsAny<ExternalApartmentDto>()))
             .Returns(apartment);
 
-        _userHelperMock
-            .Setup(h => h.CreateUserAsync(user, "P@ssword1"))
-            .ReturnsAsync(IdentityResult.Success);
-        _userHelperMock
-            .Setup(h => h.AddUserToRoleAsync(user, Roles.Host))
+        _userServiceMock
+            .Setup(h => h.CreateUserAsync(user, "P@ssword1", Roles.Host))
             .ReturnsAsync(IdentityResult.Success);
 
         // Act
@@ -157,8 +158,7 @@ public class ExternalDataLoaderTests : IDisposable
 
         apartment.OwnerId.ShouldBe(user.Id);
 
-        _userHelperMock.Verify(h => h.CreateUserAsync(user, "P@ssword1"), Times.Once);
-        _userHelperMock.Verify(h => h.AddUserToRoleAsync(user, Roles.Host), Times.Once);
+        _userServiceMock.Verify(h => h.CreateUserAsync(user, "P@ssword1", Roles.Host), Times.Once);
         _apartmentRepositoryMock.Verify(r => r.CreateAsync(apartment), Times.Once);
 
         _unitOfWorkMock.Verify(u => u.StartTransactionAsync(), Times.Once);
@@ -185,7 +185,7 @@ public class ExternalDataLoaderTests : IDisposable
         // Assert
         result.IsSuccessful.ShouldBeFalse();
 
-        _userHelperMock.Verify(h => h.CreateUserAsync(It.IsAny<User>(), It.IsAny<string>()), Times.Never);
+        _userServiceMock.Verify(h => h.CreateUserAsync(It.IsAny<User>(), It.IsAny<string>(), It.IsAny<string>()), Times.Never);
         _apartmentRepositoryMock.Verify(r => r.CreateAsync(It.IsAny<Apartment>()), Times.Never);
 
         _unitOfWorkMock.Verify(u => u.RollbackTransactionAsync(), Times.Once);
@@ -207,8 +207,8 @@ public class ExternalDataLoaderTests : IDisposable
         _mapperMock.Setup(m => m.Map<User>(MatchingHost(hostDto))).Returns(user);
 
         var identityError = new IdentityError { Description = "Email already taken" };
-        _userHelperMock
-            .Setup(h => h.CreateUserAsync(user, "P@ssword1"))
+        _userServiceMock
+            .Setup(h => h.CreateUserAsync(user, "P@ssword1", Roles.Host))
             .ReturnsAsync(IdentityResult.Failed(identityError));
 
         // Act
@@ -217,43 +217,6 @@ public class ExternalDataLoaderTests : IDisposable
         // Assert
         result.IsSuccessful.ShouldBeFalse();
         result.Message.ShouldContain("Email already taken");
-
-        _userHelperMock.Verify(h => h.AddUserToRoleAsync(It.IsAny<User>(), It.IsAny<string>()), Times.Never);
-        _apartmentRepositoryMock.Verify(r => r.CreateAsync(It.IsAny<Apartment>()), Times.Never);
-
-        _unitOfWorkMock.Verify(u => u.RollbackTransactionAsync(), Times.Once);
-        _unitOfWorkMock.Verify(u => u.CommitTransactionAsync(), Times.Never);
-    }
-
-    [Fact]
-    public async Task LoadDataFromJsonFileAsync_WhenRoleAssignmentFails_RollsBackAndReturnsFailure()
-    {
-        // Arrange
-        ExternalHostDto hostDto = CreateHostDto();
-        string filePath = WriteHostsFile(hostDto);
-
-        _validatorMock
-            .Setup(v => v.ValidateAsync(MatchingHost(hostDto), default))
-            .ReturnsAsync(new ValidationResult());
-
-        var user = new User { Id = "generated-user-id", Email = hostDto.Email };
-        _mapperMock.Setup(m => m.Map<User>(MatchingHost(hostDto))).Returns(user);
-
-        _userHelperMock
-            .Setup(h => h.CreateUserAsync(user, "P@ssword1"))
-            .ReturnsAsync(IdentityResult.Success);
-
-        var identityError = new IdentityError { Description = "Role does not exist" };
-        _userHelperMock
-            .Setup(h => h.AddUserToRoleAsync(user, Roles.Host))
-            .ReturnsAsync(IdentityResult.Failed(identityError));
-
-        // Act
-        var result = await _sut.LoadDataFromJsonFileAsync(filePath);
-
-        // Assert
-        result.IsSuccessful.ShouldBeFalse();
-        result.Message.ShouldContain("Role does not exist");
 
         _apartmentRepositoryMock.Verify(r => r.CreateAsync(It.IsAny<Apartment>()), Times.Never);
 
@@ -280,11 +243,8 @@ public class ExternalDataLoaderTests : IDisposable
         _mapperMock.Setup(m => m.Map<User>(MatchingHost(secondHost))).Returns(secondUser);
         _mapperMock.Setup(m => m.Map<Apartment>(It.IsAny<ExternalApartmentDto>())).Returns(() => new Apartment());
 
-        _userHelperMock
-            .Setup(h => h.CreateUserAsync(It.IsAny<User>(), "P@ssword1"))
-            .ReturnsAsync(IdentityResult.Success);
-        _userHelperMock
-            .Setup(h => h.AddUserToRoleAsync(It.IsAny<User>(), Roles.Host))
+        _userServiceMock
+            .Setup(h => h.CreateUserAsync(It.IsAny<User>(), "P@ssword1", Roles.Host))
             .ReturnsAsync(IdentityResult.Success);
 
         // Act
@@ -293,8 +253,8 @@ public class ExternalDataLoaderTests : IDisposable
         // Assert
         result.IsSuccessful.ShouldBeTrue();
 
-        _userHelperMock.Verify(h => h.CreateUserAsync(firstUser, "P@ssword1"), Times.Once);
-        _userHelperMock.Verify(h => h.CreateUserAsync(secondUser, "P@ssword1"), Times.Once);
+        _userServiceMock.Verify(h => h.CreateUserAsync(firstUser, "P@ssword1", Roles.Host), Times.Once);
+        _userServiceMock.Verify(h => h.CreateUserAsync(secondUser, "P@ssword1", Roles.Host), Times.Once);
 
         _unitOfWorkMock.Verify(u => u.StartTransactionAsync(), Times.Once);
         _unitOfWorkMock.Verify(u => u.CommitTransactionAsync(), Times.Once);
@@ -313,7 +273,7 @@ public class ExternalDataLoaderTests : IDisposable
             .ReturnsAsync(new ValidationResult());
 
         var existingHost = new User { Id = "existing-user-id", Email = hostDto.Email };
-        _userHelperMock
+        _identityServiceMock
             .Setup(h => h.FindUserByEmailAsync(hostDto.Email))
             .ReturnsAsync(existingHost);
 
@@ -333,7 +293,7 @@ public class ExternalDataLoaderTests : IDisposable
         // Assert
         result.IsSuccessful.ShouldBeTrue();
 
-        _userHelperMock.Verify(h => h.CreateUserAsync(It.IsAny<User>(), It.IsAny<string>()), Times.Never);
+        _userServiceMock.Verify(h => h.CreateUserAsync(It.IsAny<User>(), It.IsAny<string>(), It.IsAny<string>()), Times.Never);
         _apartmentRepositoryMock.Verify(r => r.CreateAsync(It.IsAny<Apartment>()), Times.Never);
 
         _mapperMock.Verify(

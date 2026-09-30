@@ -1,4 +1,5 @@
 using System.Text.Json;
+using Airbnb.Application.Abstracts.Identity;
 using Airbnb.Application.Abstracts.Repositories;
 using Airbnb.Application.Abstracts.Services;
 using Airbnb.Application.DTOs.External;
@@ -16,20 +17,23 @@ public class ExternalDataLoader : IExternalDataLoader
 {
     private readonly IOptions<DefaultUserOptions> _defaultUserOptions;
     private readonly IValidator<ExternalHostDto> _validator;
-    private readonly IUserManagementService _userManagementService;
+    private readonly IIdentityService _identityService;
+    private readonly IUserService _userService;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
 
     public ExternalDataLoader(
         IOptions<DefaultUserOptions> defaultUserOptions,
         IValidator<ExternalHostDto> validator,
-        IUserManagementService userManagementService,
+        IIdentityService identityService,
+        IUserService userService,
         IUnitOfWork unitOfWork,
         IMapper mapper)
     {
         _defaultUserOptions = defaultUserOptions;
         _unitOfWork = unitOfWork;
-        _userManagementService = userManagementService;
+        _identityService = identityService;
+        _userService = userService;
         _validator = validator;
         _mapper = mapper;
     }
@@ -99,7 +103,7 @@ public class ExternalDataLoader : IExternalDataLoader
 
     private async Task<Result<User>> UpsertHostAsync(ExternalHostDto hostDto)
     {
-        User? existingHost = await _userManagementService.FindUserByEmailAsync(hostDto.Email);
+        User? existingHost = await _identityService.FindUserByEmailAsync(hostDto.Email);
         if (existingHost is not null)
         {
             return existingHost;
@@ -107,18 +111,11 @@ public class ExternalDataLoader : IExternalDataLoader
 
         User host = _mapper.Map<User>(hostDto);
 
-        var createResult = await _userManagementService.CreateUserAsync(host, _defaultUserOptions.Value.DefaultPassword);
+        var createResult = await _userService.CreateUserAsync(host, _defaultUserOptions.Value.DefaultPassword, Roles.Host);
         if (!createResult.Succeeded)
         {
             var errors = string.Join(", ", createResult.Errors.Select(e => e.Description));
             return $"Failed to create host '{host.Email}': {errors}";
-        }
-
-        var roleResult = await _userManagementService.AddUserToRoleAsync(host, Roles.Host);
-        if (!roleResult.Succeeded)
-        {
-            var errors = string.Join(", ", roleResult.Errors.Select(e => e.Description));
-            return $"Failed to assign role '{Roles.Host}' to host '{host.Email}': {errors}";
         }
 
         return host;

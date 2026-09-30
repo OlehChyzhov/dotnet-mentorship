@@ -1,4 +1,5 @@
 ﻿using Airbnb.Application.Abstracts.Broker;
+using Airbnb.Application.Abstracts.Identity;
 using Airbnb.Application.Abstracts.Repositories;
 using Airbnb.Application.Abstracts.Services;
 using Airbnb.Application.Options;
@@ -7,7 +8,7 @@ using Airbnb.Infrastructure.Broker;
 using Airbnb.Infrastructure.Database;
 using Airbnb.Infrastructure.Database.Repositories;
 using Airbnb.Infrastructure.DataLoading;
-using Airbnb.Infrastructure.Services;
+using Airbnb.Infrastructure.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -53,7 +54,7 @@ public static class DependencyInjection
         services.AddScoped<IBookingRepository, BookingRepository>();
         
         // Services
-        services.AddScoped<IUserManagementService, UserManagementService>();
+        services.AddScoped<IIdentityService, IdentityService>();
         
         // Helpers
         services.AddScoped<IExternalDataLoader, ExternalDataLoader>();
