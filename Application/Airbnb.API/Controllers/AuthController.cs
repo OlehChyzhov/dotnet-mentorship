@@ -11,19 +11,10 @@ namespace Airbnb.API.Controllers;
 public class AuthController : ControllerBase
 {
     private readonly IAuthService _authService;
-    private readonly IEventPublisher _eventPublisher;
     
-    public AuthController(IAuthService authService, IEventPublisher eventPublisher)
+    public AuthController(IAuthService authService)
     {
         _authService = authService;
-        _eventPublisher = eventPublisher;
-    }
-
-    [HttpGet("rabbitmq-test")]
-    public async Task<IActionResult> Test()
-    {
-        await _eventPublisher.PublishAsync<string>();
-        return Ok();
     }
     
     [HttpPost("register")]

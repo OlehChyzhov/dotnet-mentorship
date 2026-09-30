@@ -19,7 +19,7 @@ namespace Airbnb.Tests;
 public class ExternalDataLoaderTests : IDisposable
 {
     private readonly Mock<IValidator<ExternalHostDto>> _validatorMock;
-    private readonly Mock<IUserRegistrationService> _userHelperMock;
+    private readonly Mock<IUserManagementService> _userHelperMock;
     private readonly Mock<IUnitOfWork> _unitOfWorkMock;
     private readonly Mock<IApartmentRepository> _apartmentRepositoryMock;
     private readonly Mock<IMapper> _mapperMock;
@@ -30,7 +30,7 @@ public class ExternalDataLoaderTests : IDisposable
     public ExternalDataLoaderTests()
     {
         _validatorMock = new Mock<IValidator<ExternalHostDto>>();
-        _userHelperMock = new Mock<IUserRegistrationService>();
+        _userHelperMock = new Mock<IUserManagementService>();
 
         _apartmentRepositoryMock = new Mock<IApartmentRepository>();
         _unitOfWorkMock = new Mock<IUnitOfWork>();

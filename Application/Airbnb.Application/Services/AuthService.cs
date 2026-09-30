@@ -15,16 +15,16 @@ namespace Airbnb.Application.Services;
 
 public class AuthService : IAuthService
 {
-    private readonly IUserRegistrationService _userRegistrationService;
+    private readonly IUserManagementService _userManagementService;
     private readonly IOptions<JwtOptions> _jwtOptions;
     private readonly IMapper _mapper;
     
     public AuthService(
-        IUserRegistrationService userRegistrationService,
+        IUserManagementService userManagementService,
         IOptions<JwtOptions> jwtOptions,
         IMapper mapper)
     {
-        _userRegistrationService = userRegistrationService;
+        _userManagementService = userManagementService;
         _jwtOptions =  jwtOptions;
         _mapper = mapper;
     }
@@ -33,16 +33,16 @@ public class AuthService : IAuthService
     {
         User identityUser = _mapper.Map<UserRegisterDto, User>(user);
         
-        bool roleExists = await _userRegistrationService.RoleExistsAsync(user.Role);
+        bool roleExists = await _userManagementService.RoleExistsAsync(user.Role);
         if (roleExists)
         {
-            var result = await _userRegistrationService.CreateUserAsync(identityUser, user.Password);
+            var result = await _userManagementService.CreateUserAsync(identityUser, user.Password);
             if (!result.Succeeded)
             {
                 return result;
             }
 
-            return await _userRegistrationService.AddUserToRoleAsync(identityUser, user.Role);
+            return await _userManagementService.AddUserToRoleAsync(identityUser, user.Role);
         }
         
         return IdentityResult.Failed(new  IdentityError()
@@ -54,13 +54,13 @@ public class AuthService : IAuthService
 
     public async Task<Result<UserLoginDto>> LoginUserAsync(UserLoginDto user)
     {
-        User? identityUser = await _userRegistrationService.FindUserByEmailAsync(user.Email);
+        User? identityUser = await _userManagementService.FindUserByEmailAsync(user.Email);
         if (identityUser == null)
         {
             return "No user found";
         }
         
-        if (await _userRegistrationService.CheckPasswordAsync(identityUser, user.Password))
+        if (await _userManagementService.CheckPasswordAsync(identityUser, user.Password))
         {
             return user;
         }
@@ -70,13 +70,13 @@ public class AuthService : IAuthService
 
     public async Task<string> GenerateJwtTokenAsync(UserLoginDto user)
     {
-        User? identityUser = await _userRegistrationService.FindUserByEmailAsync(user.Email);
+        User? identityUser = await _userManagementService.FindUserByEmailAsync(user.Email);
         if (identityUser == null)
         {
             return string.Empty;
         }
         
-        IList<string> userRoles = await _userRegistrationService.GetRolesAsync(identityUser);
+        IList<string> userRoles = await _userManagementService.GetRolesAsync(identityUser);
 
         List<Claim> claims = new List<Claim>()
         {

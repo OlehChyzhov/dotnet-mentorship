@@ -16,20 +16,20 @@ public class ExternalDataLoader : IExternalDataLoader
 {
     private readonly IOptions<DefaultUserOptions> _defaultUserOptions;
     private readonly IValidator<ExternalHostDto> _validator;
-    private readonly IUserRegistrationService _userRegistrationService;
+    private readonly IUserManagementService _userManagementService;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
 
     public ExternalDataLoader(
         IOptions<DefaultUserOptions> defaultUserOptions,
         IValidator<ExternalHostDto> validator,
-        IUserRegistrationService userRegistrationService,
+        IUserManagementService userManagementService,
         IUnitOfWork unitOfWork,
         IMapper mapper)
     {
         _defaultUserOptions = defaultUserOptions;
         _unitOfWork = unitOfWork;
-        _userRegistrationService = userRegistrationService;
+        _userManagementService = userManagementService;
         _validator = validator;
         _mapper = mapper;
     }
@@ -99,7 +99,7 @@ public class ExternalDataLoader : IExternalDataLoader
 
     private async Task<Result<User>> UpsertHostAsync(ExternalHostDto hostDto)
     {
-        User? existingHost = await _userRegistrationService.FindUserByEmailAsync(hostDto.Email);
+        User? existingHost = await _userManagementService.FindUserByEmailAsync(hostDto.Email);
         if (existingHost is not null)
         {
             return existingHost;
@@ -107,14 +107,14 @@ public class ExternalDataLoader : IExternalDataLoader
 
         User host = _mapper.Map<User>(hostDto);
 
-        var createResult = await _userRegistrationService.CreateUserAsync(host, _defaultUserOptions.Value.DefaultPassword);
+        var createResult = await _userManagementService.CreateUserAsync(host, _defaultUserOptions.Value.DefaultPassword);
         if (!createResult.Succeeded)
         {
             var errors = string.Join(", ", createResult.Errors.Select(e => e.Description));
             return $"Failed to create host '{host.Email}': {errors}";
         }
 
-        var roleResult = await _userRegistrationService.AddUserToRoleAsync(host, Roles.Host);
+        var roleResult = await _userManagementService.AddUserToRoleAsync(host, Roles.Host);
         if (!roleResult.Succeeded)
         {
             var errors = string.Join(", ", roleResult.Errors.Select(e => e.Description));

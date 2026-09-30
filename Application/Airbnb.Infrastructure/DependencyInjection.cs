@@ -38,7 +38,7 @@ public static class DependencyInjection
         var channel = await connection.CreateChannelAsync();
         await channel.QueueDeclareAsync(
             queue: rabbitmqOptions.Queue,
-            durable: true,
+            durable: false,
             exclusive: false,
             autoDelete: false,
             arguments: null);
@@ -53,7 +53,7 @@ public static class DependencyInjection
         services.AddScoped<IBookingRepository, BookingRepository>();
         
         // Services
-        services.AddScoped<IUserRegistrationService, UserRegistrationService>();
+        services.AddScoped<IUserManagementService, UserManagementService>();
         
         // Helpers
         services.AddScoped<IExternalDataLoader, ExternalDataLoader>();

@@ -1,4 +1,5 @@
 using System.Text;
+using System.Text.Json;
 using Airbnb.Application.Abstracts.Broker;
 using Airbnb.Application.Options;
 using Microsoft.Extensions.Options;
@@ -17,17 +18,22 @@ public class RabbitMqPublisher : IEventPublisher
         _options = options.Value;
     }
 
-    public async Task PublishAsync<TMessage>()
+    public async Task PublishAsync<TMessage>(TMessage message)
     {
-        var message = "Test";
-        var body = Encoding.UTF8.GetBytes(message);
+        var body = JsonSerializer.SerializeToUtf8Bytes(message);
 
+        var props = new BasicProperties()
+        {
+            Persistent = false,
+            ContentType = "application/json",
+            Type = typeof(TMessage).Name
+        };
+        
         await _channel.BasicPublishAsync(
             exchange: string.Empty, 
             routingKey: _options.Queue, 
             mandatory: true, 
-            basicProperties: 
-            new BasicProperties() { Persistent = true }, 
+            basicProperties: props,
             body: body);
     }
 }
