@@ -38,4 +38,18 @@ public class UserController : ControllerBase
 
         return BadRequest(result.Errors);
     }
+
+    [HttpDelete("delete")]
+    public async Task<IActionResult> DeleteUserAsync()
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
+        var result = await _userService.DeleteUserAsync(userId);
+
+        if (result.Succeeded)
+        {
+            return Ok("User deleted!");
+        }
+        
+        return BadRequest(result.Errors);
+    }
 }
