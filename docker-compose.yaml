@@ -45,11 +45,11 @@
       DefaultUserOptions__DefaultPassword: ${APPLICATION_DEFAULT_USER_PASSWORD}
       RabbitMq__HostName: ${APPLICATION_RABBITMQ_HOSTNAME}
       RabbitMq__Port: ${APPLICATION_RABBITMQ_PORT}
-      RabbitMq_UserName: ${APPLICATION_RABBITMQ_USERNAME}
-      RabbitMq_Password: ${APPLICATION_RABBITMQ_PASSWORD}
-      RabbitMq_Exchange: ${APPLICATION_RABBITMQ_EXCHANGE}
-      RabbitMq_Queue: ${APPLICATION_RABBITMQ_AUDIT_QUEUE}
-      RabbitMq_ClientProvidedName: ${APPLICATION_RABBITMQ_CLIENTPROVIDED_NAME}
+      RabbitMq__UserName: ${APPLICATION_RABBITMQ_USERNAME}
+      RabbitMq__Password: ${APPLICATION_RABBITMQ_PASSWORD}
+      RabbitMq__Exchange: ${APPLICATION_RABBITMQ_EXCHANGE}
+      RabbitMq__Queue: ${APPLICATION_RABBITMQ_AUDIT_QUEUE}
+      RabbitMq__ClientProvidedName: "user-service"
     depends_on:
       airbnb.sqlserver:
         condition: service_started
@@ -78,9 +78,19 @@
       dockerfile: "Airbnb.Audit.API/Dockerfile"
     ports:
       - "3001:8080"
+    environment:
+      RabbitMq__HostName: ${APPLICATION_RABBITMQ_HOSTNAME}
+      RabbitMq__Port: ${APPLICATION_RABBITMQ_PORT}
+      RabbitMq__UserName: ${APPLICATION_RABBITMQ_USERNAME}
+      RabbitMq__Password: ${APPLICATION_RABBITMQ_PASSWORD}
+      RabbitMq__Exchange: ${APPLICATION_RABBITMQ_EXCHANGE}
+      RabbitMq__Queue: ${APPLICATION_RABBITMQ_AUDIT_QUEUE}
+      RabbitMq__ClientProvidedName: "audit_service"
     depends_on:
-      - airbnb.audit.mongodb
-      - airbnb.broker.rabbitmq
+      airbnb.audit.mongodb:
+        condition: service_started
+      airbnb.broker.rabbitmq:
+        condition: service_healthy
     
   
 volumes:
