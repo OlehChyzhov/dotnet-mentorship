@@ -3,6 +3,7 @@ using Airbnb.Application.Abstracts.Identity;
 using Airbnb.Application.Services;
 using Airbnb.Domain.Constants;
 using Airbnb.Domain.Messages;
+using Airbnb.Domain.Messages.User;
 using Airbnb.Domain.Models;
 using Microsoft.AspNetCore.Identity;
 using Moq;
@@ -44,7 +45,7 @@ public class UserServiceTests
         _identityServiceMock.Verify(
             m => m.CreateUserAsync(It.IsAny<User>(), It.IsAny<string>()), Times.Never);
         _eventPublisherMock.Verify(
-            m => m.PublishAsync(It.IsAny<UserCreatedMessage>()), Times.Never);
+            m => m.PublishAsync(It.IsAny<UserCreated>()), Times.Never);
     }
 
     [Fact]
@@ -70,7 +71,7 @@ public class UserServiceTests
         _identityServiceMock.Verify(m => m.CreateUserAsync(user, "Password123!"), Times.Once);
         _identityServiceMock.Verify(m => m.AddUserToRoleAsync(user, Roles.Client), Times.Once);
         _eventPublisherMock.Verify(
-            m => m.PublishAsync(It.Is<UserCreatedMessage>(msg => msg.Id == "user-id" && msg.Email == "test@test.com")),
+            m => m.PublishAsync(It.Is<UserCreated>(msg => msg.UserId == "user-id" && msg.Email == "test@test.com")),
             Times.Once);
     }
 
@@ -94,7 +95,7 @@ public class UserServiceTests
         // Assert
         result.Succeeded.ShouldBeFalse();
         _eventPublisherMock.Verify(
-            m => m.PublishAsync(It.IsAny<UserCreatedMessage>()), Times.Never);
+            m => m.PublishAsync(It.IsAny<UserCreated>()), Times.Never);
     }
 
     [Fact]
@@ -127,8 +128,8 @@ public class UserServiceTests
         // Assert
         result.Succeeded.ShouldBeTrue();
         _eventPublisherMock.Verify(
-            m => m.PublishAsync(It.Is<UserEmailChangedMessage>(msg =>
-                msg.Id == "user-id" && msg.OldEmail == "old@test.com" && msg.NewEmail == "new@test.com")),
+            m => m.PublishAsync(It.Is<UserEmailChanged>(msg =>
+                msg.UserId == "user-id" && msg.OldEmail == "old@test.com" && msg.NewEmail == "new@test.com")),
             Times.Once);
     }
 
@@ -148,7 +149,7 @@ public class UserServiceTests
         // Assert
         result.Succeeded.ShouldBeFalse();
         _eventPublisherMock.Verify(
-            m => m.PublishAsync(It.IsAny<UserEmailChangedMessage>()), Times.Never);
+            m => m.PublishAsync(It.IsAny<UserEmailChanged>()), Times.Never);
     }
 
     [Fact]
@@ -165,7 +166,7 @@ public class UserServiceTests
         // Assert
         result.Succeeded.ShouldBeTrue();
         _eventPublisherMock.Verify(
-            m => m.PublishAsync(It.Is<UserDeletedMessage>(msg => msg.Id == "user-id" && msg.Email == "test@test.com")),
+            m => m.PublishAsync(It.Is<UserDeleted>(msg => msg.UserId == "user-id" && msg.Email == "test@test.com")),
             Times.Once);
     }
 }

@@ -10,4 +10,12 @@
       <ProjectReference Include="..\Airbnb.Audit.Domain\Airbnb.Audit.Domain.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Abstracts\Repositories\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Mapster.DependencyInjection" Version="10.1.0-pre02" />
+    </ItemGroup>
+
 </Project>

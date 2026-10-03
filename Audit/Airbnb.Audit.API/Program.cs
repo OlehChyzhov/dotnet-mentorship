@@ -1,4 +1,5 @@
 using Airbnb.Audit.Application.Abstracts;
+using Airbnb.Audit.Application.Abstracts.Broker;
 using Airbnb.Audit.Infrastructure;
 using Scalar.AspNetCore;
 

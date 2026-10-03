@@ -1,8 +1,10 @@
 using Airbnb.Audit.Application.Abstracts;
+using Airbnb.Audit.Application.Abstracts.Broker;
 using Airbnb.Audit.Application.Options;
 using Airbnb.Audit.Infrastructure.Broker;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using MongoDB.Driver;
 using RabbitMQ.Client;
 
 namespace Airbnb.Audit.Infrastructure;
@@ -37,6 +39,13 @@ public static class DependencyInjection
         services.AddSingleton<IConnection>(connection);
         services.AddSingleton<IChannel>(channel);
         services.AddSingleton<IEventConsumer, RabbitMqConsumer>();
+        
+        // MongoDB
+        services.AddOptions<MongoDbOptions>().Bind(configuration.GetSection("MongoDb"));
+        services.AddScoped<MongoClient>(config =>
+        {
+            return new MongoClient(configuration.GetConnectionString("MongoDb"));
+        });
         
         return services;
     }

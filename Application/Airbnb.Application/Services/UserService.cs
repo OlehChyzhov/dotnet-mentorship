@@ -2,6 +2,7 @@ using Airbnb.Application.Abstracts.Broker;
 using Airbnb.Application.Abstracts.Identity;
 using Airbnb.Application.Abstracts.Services;
 using Airbnb.Domain.Messages;
+using Airbnb.Domain.Messages.User;
 using Airbnb.Domain.Models;
 using Microsoft.AspNetCore.Identity;
 
@@ -37,10 +38,9 @@ public class UserService : IUserService
         result = await _identityService.AddUserToRoleAsync(user, role);
         if (!result.Succeeded) return result;
 
-        await _eventPublisher.PublishAsync(new UserCreatedMessage()
+        await _eventPublisher.PublishAsync(new UserCreated()
         {
-            Id = user.Id,
-            Name = user.UserName,
+            UserId = user.Id,
             Email = user.Email,
             OccuredOn = DateTime.UtcNow,
         });
@@ -58,10 +58,9 @@ public class UserService : IUserService
         var result = await _identityService.ChangeEmailAsync(user, newEmail);
         if (!result.Succeeded) return result;
 
-        await _eventPublisher.PublishAsync(new UserEmailChangedMessage()
+        await _eventPublisher.PublishAsync(new UserEmailChanged()
         {
-            Id = user.Id,
-            Name = user.UserName,
+            UserId = user.Id,
             OccuredOn = DateTime.UtcNow,
             OldEmail = oldEmail,
             NewEmail = newEmail,
@@ -78,10 +77,9 @@ public class UserService : IUserService
         var result = await _identityService.DeleteUserAsync(user);
         if (!result.Succeeded) return result;
 
-        await _eventPublisher.PublishAsync(new UserDeletedMessage()
+        await _eventPublisher.PublishAsync(new UserDeleted()
         {
-            Id = user.Id,
-            Name = user.UserName,
+            UserId = user.Id,
             Email = user.Email,
             OccuredOn = DateTime.UtcNow,
         });
