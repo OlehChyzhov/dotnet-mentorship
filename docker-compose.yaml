@@ -44,12 +44,12 @@
       ConnectionStrings__DefaultConnection: ${APPLICATION_DB_CONNECTION_STRING}
       DefaultUserOptions__DefaultPassword: ${APPLICATION_DEFAULT_USER_PASSWORD}
       
-      RabbitMq__HostName: ${APPLICATION_RABBITMQ_HOSTNAME}
-      RabbitMq__Port: ${APPLICATION_RABBITMQ_PORT}
-      RabbitMq__UserName: ${APPLICATION_RABBITMQ_USERNAME}
-      RabbitMq__Password: ${APPLICATION_RABBITMQ_PASSWORD}
-      RabbitMq__Exchange: ${APPLICATION_RABBITMQ_EXCHANGE}
-      RabbitMq__Queue: ${APPLICATION_RABBITMQ_AUDIT_QUEUE}
+      RabbitMq__HostName: ${RABBITMQ_HOSTNAME}
+      RabbitMq__Port: ${RABBITMQ_PORT}
+      RabbitMq__UserName: ${RABBITMQ_USER}
+      RabbitMq__Password: ${RABBITMQ_PASSWORD}
+      RabbitMq__Exchange: ${RABBITMQ_EXCHANGE}
+      RabbitMq__Queue: ${RABBITMQ_AUDIT_QUEUE}
       RabbitMq__ClientProvidedName: "user-service"
     depends_on:
       airbnb.sqlserver:
@@ -84,12 +84,12 @@
       MongoDB__UserAuditsCollectionName: ${AUDIT_MONGODB_USER_AUDITS_COLLECTION_NAME}
       CConnectionStrings__MongoDB: ${AUDIT_MONGODB_DB_CONNECTION_STRING}
       
-      RabbitMq__HostName: ${APPLICATION_RABBITMQ_HOSTNAME}
-      RabbitMq__Port: ${APPLICATION_RABBITMQ_PORT}
-      RabbitMq__UserName: ${APPLICATION_RABBITMQ_USERNAME}
-      RabbitMq__Password: ${APPLICATION_RABBITMQ_PASSWORD}
-      RabbitMq__Exchange: ${APPLICATION_RABBITMQ_EXCHANGE}
-      RabbitMq__Queue: ${APPLICATION_RABBITMQ_AUDIT_QUEUE}
+      RabbitMq__HostName: ${RABBITMQ_HOSTNAME}
+      RabbitMq__Port: ${RABBITMQ_PORT}
+      RabbitMq__UserName: ${RABBITMQ_USER}
+      RabbitMq__Password: ${RABBITMQ_PASSWORD}
+      RabbitMq__Exchange: ${RABBITMQ_EXCHANGE}
+      RabbitMq__Queue: ${RABBITMQ_AUDIT_QUEUE}
       RabbitMq__ClientProvidedName: "audit_service"
     depends_on:
       airbnb.audit.mongodb:
