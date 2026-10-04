@@ -2,6 +2,7 @@ using Airbnb.Audit.Application.Abstracts;
 using Airbnb.Audit.Application.Abstracts.Broker;
 using Airbnb.Audit.Application.Options;
 using Airbnb.Audit.Infrastructure.Broker;
+using Airbnb.Audit.Infrastructure.Database;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using MongoDB.Driver;
@@ -42,10 +43,12 @@ public static class DependencyInjection
         
         // MongoDB
         services.AddOptions<MongoDbOptions>().Bind(configuration.GetSection("MongoDb"));
-        services.AddScoped<MongoClient>(config =>
+        services.AddSingleton<IMongoClient>(config =>
         {
             return new MongoClient(configuration.GetConnectionString("MongoDb"));
         });
+        
+        services.AddScoped<MongoDbContext>();
         
         return services;
     }
