@@ -1,12 +1,16 @@
 using Airbnb.Audit.Application.Abstracts;
 using Airbnb.Audit.Application.Abstracts.Broker;
 using Airbnb.Audit.Infrastructure;
+using Airbnb.Messaging;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // DbContext, Repositories, UnitOfWork, etc.
 await builder.Services.AddInfrastructureAsync(builder.Configuration);
+
+// Message Broker
+await builder.Services.AddMessaging(builder.Configuration);
 
 // Default
 builder.Services.AddControllers();

@@ -32,8 +32,8 @@
   airbnb.api:
     container_name: "airbnb.api"
     build:
-      context: "./Application/"
-      dockerfile: "Airbnb.API/Dockerfile"
+      context: "."
+      dockerfile: "Monolith/Airbnb.API/Dockerfile"
     ports:
       - "3000:8080"
     environment:
@@ -75,8 +75,8 @@
   airbnb.audit.api:
     container_name: "airbnb.audit.api"
     build:
-      context: "./Audit/"
-      dockerfile: "Airbnb.Audit.API/Dockerfile"
+      context: "."
+      dockerfile: "Audit/Airbnb.Audit.API/Dockerfile"
     ports:
       - "3001:8080"
     environment:

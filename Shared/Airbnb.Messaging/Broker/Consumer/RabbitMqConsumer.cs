@@ -1,13 +1,11 @@
 using System.Text;
-using Airbnb.Audit.Application.Abstracts;
 using Airbnb.Audit.Application.Abstracts.Broker;
-using Airbnb.Audit.Infrastructure.Database;
-using Airbnb.Audit.Infrastructure.Options;
+using Airbnb.Messaging.Options;
 using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 
-namespace Airbnb.Audit.Infrastructure.Broker;
+namespace Airbnb.Messaging.Broker.Consumer;
 
 public class RabbitMqConsumer : IEventConsumer, IAsyncDisposable
 {

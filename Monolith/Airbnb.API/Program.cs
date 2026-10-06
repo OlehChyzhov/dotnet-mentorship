@@ -4,6 +4,7 @@ using Airbnb.API.Middleware;
 using Airbnb.Application;
 using Airbnb.Infrastructure;
 using Airbnb.Infrastructure.Database;
+using Airbnb.Messaging;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -16,6 +17,9 @@ builder.Services.AddTransient<ValidationMiddleware>();
 
 // DbContext, Repositories, UnitOfWork, etc.
 await builder.Services.AddInfrastructureAsync(builder.Configuration);
+
+// Message Broker
+await builder.Services.AddMessaging(builder.Configuration);
 
 // Services, Mapping, Validation, etc.
 builder.Services.AddApplication(builder.Configuration);

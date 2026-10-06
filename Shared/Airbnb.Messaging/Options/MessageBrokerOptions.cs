@@ -1,4 +1,4 @@
-namespace Airbnb.Audit.Infrastructure.Options;
+namespace Airbnb.Messaging.Options;
 
 public class MessageBrokerOptions
 {
