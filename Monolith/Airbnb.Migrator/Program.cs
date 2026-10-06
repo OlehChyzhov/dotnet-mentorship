@@ -12,7 +12,7 @@ public static class Program
     {
         if (args.Length == 0)
         {
-            await Console.Error.WriteLineAsync("Usage: dotnet run --project Airbnb.CLI -- <path-to-file>.json");
+            await Console.Error.WriteLineAsync("Usage: dotnet run --project Airbnb.Migrator -- <path-to-file>.json");
             return;
         }
 
