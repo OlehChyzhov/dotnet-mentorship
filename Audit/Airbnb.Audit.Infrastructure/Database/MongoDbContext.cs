@@ -1,5 +1,5 @@
-using Airbnb.Audit.Application.Options;
 using Airbnb.Audit.Domain.Models.User;
+using Airbnb.Audit.Infrastructure.Options;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 

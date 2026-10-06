@@ -1,8 +1,8 @@
 using Airbnb.Audit.Application.Abstracts;
 using Airbnb.Audit.Application.Abstracts.Broker;
-using Airbnb.Audit.Application.Options;
 using Airbnb.Audit.Infrastructure.Broker;
 using Airbnb.Audit.Infrastructure.Database;
+using Airbnb.Audit.Infrastructure.Options;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using MongoDB.Driver;

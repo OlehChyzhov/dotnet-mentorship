@@ -1,4 +1,4 @@
-namespace Airbnb.Audit.Application.Options;
+namespace Airbnb.Audit.Infrastructure.Options;
 
 public class MongoDbOptions
 {
