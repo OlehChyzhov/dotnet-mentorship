@@ -42,7 +42,7 @@ public class UserService : IUserService
         {
             UserId = user.Id,
             Email = user.Email,
-            OccuredOn = DateTime.UtcNow,
+            CreatedAt = DateTime.UtcNow,
         });
 
         return result;
@@ -61,7 +61,7 @@ public class UserService : IUserService
         await _eventPublisher.PublishAsync(new UserEmailChanged()
         {
             UserId = user.Id,
-            OccuredOn = DateTime.UtcNow,
+            CreatedAt = DateTime.UtcNow,
             OldEmail = oldEmail,
             NewEmail = newEmail,
         });
@@ -81,7 +81,7 @@ public class UserService : IUserService
         {
             UserId = user.Id,
             Email = user.Email,
-            OccuredOn = DateTime.UtcNow,
+            CreatedAt = DateTime.UtcNow,
         });
 
         return result;
