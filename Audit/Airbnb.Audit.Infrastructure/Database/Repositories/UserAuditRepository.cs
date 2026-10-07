@@ -6,8 +6,6 @@ namespace Airbnb.Audit.Infrastructure.Database.Repositories;
 
 public class UserAuditRepository : MongoRepository<UserAuditChangeEntity>, IUserAuditRepository
 {
-    public UserAuditRepository(IMongoDatabase db, FilterDefinitionBuilder<UserAuditChangeEntity> builder) : base(db, builder)
-    {
-        
-    }
+    public UserAuditRepository(IMongoDatabase db)
+        : base(database: db, collectionName: "user_audits") { }
 }

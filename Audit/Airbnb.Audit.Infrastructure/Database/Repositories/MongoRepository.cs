@@ -3,15 +3,15 @@ using MongoDB.Driver;
 
 namespace Airbnb.Audit.Infrastructure.Database.Repositories;
 
-public class MongoRepository<T> : IRepository<T>
+public abstract class MongoRepository<T> : IRepository<T>
 {
     private readonly FilterDefinitionBuilder<T> _filterBuilder;
     private readonly IMongoCollection<T> _collection;
     
-    protected MongoRepository(IMongoDatabase database, FilterDefinitionBuilder<T> filterBuilder)
+    protected MongoRepository(IMongoDatabase database, string collectionName)
     {
-        _collection = database.GetCollection<T>(name: nameof(T));
-        _filterBuilder = filterBuilder;
+        _collection = database.GetCollection<T>(name: collectionName);
+        _filterBuilder = Builders<T>.Filter;
     }
     
     public async Task<T> GetByIdAsync(string id)

@@ -82,7 +82,7 @@
     environment:
       MongoDB__DatabaseName: ${AUDIT_MONGODB_DATABASE_NAME}
       MongoDB__UserAuditsCollectionName: ${AUDIT_MONGODB_USER_AUDITS_COLLECTION_NAME}
-      CConnectionStrings__MongoDB: ${AUDIT_MONGODB_DB_CONNECTION_STRING}
+      ConnectionStrings__MongoDB: ${AUDIT_MONGODB_DB_CONNECTION_STRING}
       
       RabbitMq__HostName: ${RABBITMQ_HOSTNAME}
       RabbitMq__Port: ${RABBITMQ_PORT}

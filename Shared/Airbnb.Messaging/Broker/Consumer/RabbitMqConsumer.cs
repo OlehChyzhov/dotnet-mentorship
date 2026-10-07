@@ -1,5 +1,6 @@
 using System.Text;
 using Airbnb.Messaging.Options;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
@@ -12,7 +13,9 @@ public class RabbitMqConsumer : IEventConsumer, IAsyncDisposable
     private readonly IChannel _channel;
     private string? _consumerTag;
     
-    public RabbitMqConsumer(IChannel channel, IOptions<MessageBrokerOptions> options)
+    public RabbitMqConsumer(
+        IOptions<MessageBrokerOptions> options,
+        IChannel channel)
     {
         _options = options.Value;
         _channel = channel;

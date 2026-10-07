@@ -15,11 +15,11 @@ var builder = WebApplication.CreateBuilder(args);
 // Middlewares
 builder.Services.AddTransient<ValidationMiddleware>();
 
-// DbContext, Repositories, UnitOfWork, etc.
-await builder.Services.AddInfrastructureAsync(builder.Configuration);
-
 // Message Broker
 await builder.Services.AddMessaging(builder.Configuration);
+
+// DbContext, Repositories, UnitOfWork, etc.
+await builder.Services.AddInfrastructureAsync(builder.Configuration);
 
 // Services, Mapping, Validation, etc.
 builder.Services.AddApplication(builder.Configuration);

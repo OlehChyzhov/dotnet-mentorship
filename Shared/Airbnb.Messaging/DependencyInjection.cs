@@ -1,3 +1,4 @@
+using Airbnb.Messaging.Broker.Consumer;
 using Airbnb.Messaging.Broker.Publisher;
 using Airbnb.Messaging.Options;
 using Microsoft.Extensions.Configuration;
@@ -49,6 +50,7 @@ public static class DependencyInjection
         services.AddSingleton<IConnection>(connection);
         services.AddSingleton<IChannel>(channel);
         services.AddSingleton<IEventPublisher, RabbitMqPublisher>();
+        services.AddSingleton<IEventConsumer, RabbitMqConsumer>();
         
         return services;
     }

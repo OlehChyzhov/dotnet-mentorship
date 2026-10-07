@@ -2,6 +2,7 @@ using Airbnb.Audit.Application.Abstractions.Repositories;
 using Airbnb.Audit.Infrastructure.Database;
 using Airbnb.Audit.Infrastructure.Database.Repositories;
 using Airbnb.Audit.Infrastructure.Options;
+using Airbnb.Messaging;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using MongoDB.Driver;
