@@ -1,5 +1,4 @@
 using System.Text;
-using Airbnb.Audit.Application.Abstracts.Broker;
 using Airbnb.Messaging.Options;
 using Microsoft.Extensions.Options;
 using RabbitMQ.Client;

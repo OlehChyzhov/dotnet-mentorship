@@ -1,4 +1,3 @@
-using Airbnb.Application.Abstracts.Broker;
 using Airbnb.Messaging.Broker.Publisher;
 using Airbnb.Messaging.Options;
 using Microsoft.Extensions.Configuration;
@@ -28,12 +27,24 @@ public static class DependencyInjection
         
         IConnection connection = await factory.CreateConnectionAsync();
         var channel = await connection.CreateChannelAsync();
+
+        await channel.ExchangeDeclareAsync(
+            exchange: rabbitmqOptions.Exchange,
+            type: ExchangeType.Topic,
+            durable: false,
+            autoDelete: false);
+        
         await channel.QueueDeclareAsync(
             queue: rabbitmqOptions.Queue,
             durable: false,
             exclusive: false,
             autoDelete: false,
             arguments: null);
+
+        await channel.QueueBindAsync(
+            queue: rabbitmqOptions.Queue, 
+            exchange: rabbitmqOptions.Exchange,
+            routingKey: "user.#");
         
         services.AddSingleton<IConnection>(connection);
         services.AddSingleton<IChannel>(channel);

@@ -1,7 +1,7 @@
-using Airbnb.Application.Abstracts.Broker;
 using Airbnb.Application.Abstracts.Identity;
 using Airbnb.Application.Abstracts.Services;
 using Airbnb.Domain.Models;
+using Airbnb.Messaging.Broker.Publisher;
 using Airbnb.Messaging.Messages;
 using Microsoft.AspNetCore.Identity;
 

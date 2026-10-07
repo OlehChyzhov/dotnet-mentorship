@@ -1,4 +1,4 @@
-namespace Airbnb.Audit.Application.Abstracts.Broker;
+namespace Airbnb.Messaging.Broker.Consumer;
 
 public interface IEventConsumer
 {
