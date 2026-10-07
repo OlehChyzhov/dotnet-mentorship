@@ -21,4 +21,6 @@
 	<s:Boolean x:Key="/Default/ResxEditorPersonal/CheckedGroups/=Airbnb_002EInfrastructure_002FDatabase_002FDapper_002FDapperQueries/@EntryIndexRemoved">True</s:Boolean>
 	<s:Boolean x:Key="/Default/ResxEditorPersonal/CheckedGroups/=Airbnb_002EInfrastructure_002FDatabase_002FDapper_002FQueries/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/ResxEditorPersonal/Initialized/@EntryValue">True</s:Boolean>
+	
+	
 	</wpf:ResourceDictionary>
