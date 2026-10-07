@@ -7,7 +7,7 @@ using Scalar.AspNetCore;
 var builder = WebApplication.CreateBuilder(args);
 
 // Message Broker
-await builder.Services.AddMessaging(builder.Configuration);
+await builder.Services.AddConsumer(builder.Configuration);
 
 // DbContext, Repositories, UnitOfWork, etc.
 await builder.Services.AddInfrastructureAsync(builder.Configuration);

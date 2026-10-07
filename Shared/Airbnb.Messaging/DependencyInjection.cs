@@ -9,7 +9,21 @@ namespace Airbnb.Messaging;
 
 public static class DependencyInjection
 {
-    public static async Task<IServiceCollection> AddMessaging(this IServiceCollection services, IConfiguration configuration)
+    public static async Task<IServiceCollection> AddPublisher(this IServiceCollection services, IConfiguration configuration)
+    {
+        await ConfigureRabbitMqAsync(services, configuration);
+        services.AddSingleton<IEventPublisher, RabbitMqPublisher>();
+        return services;
+    }
+
+    public static async Task<IServiceCollection> AddConsumer(this IServiceCollection services, IConfiguration configuration)
+    {
+        await ConfigureRabbitMqAsync(services, configuration);
+        services.AddSingleton<IEventConsumer, RabbitMqConsumer>();
+        return services;
+    }
+
+    private static async Task<IServiceCollection> ConfigureRabbitMqAsync(this IServiceCollection services, IConfiguration configuration)
     {
         // Message Broker (RabbitMQ)
         var rabbitmqSection = configuration.GetSection("RabbitMq");
@@ -49,8 +63,6 @@ public static class DependencyInjection
         
         services.AddSingleton<IConnection>(connection);
         services.AddSingleton<IChannel>(channel);
-        services.AddSingleton<IEventPublisher, RabbitMqPublisher>();
-        services.AddSingleton<IEventConsumer, RabbitMqConsumer>();
         
         return services;
     }
