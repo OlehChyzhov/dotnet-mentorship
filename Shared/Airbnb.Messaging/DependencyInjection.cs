@@ -1,5 +1,5 @@
-using Airbnb.Messaging.Broker.Consumer;
-using Airbnb.Messaging.Broker.Publisher;
+using Airbnb.Contracts.Broker;
+using Airbnb.Messaging.Broker;
 using Airbnb.Messaging.Options;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;

@@ -1,11 +1,11 @@
 using System.Text;
+using Airbnb.Contracts.Broker;
 using Airbnb.Messaging.Options;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 
-namespace Airbnb.Messaging.Broker.Consumer;
+namespace Airbnb.Messaging.Broker;
 
 public class RabbitMqConsumer : IEventConsumer, IAsyncDisposable
 {

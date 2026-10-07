@@ -1,6 +1,6 @@
-namespace Airbnb.Messaging.Messages;
+namespace Airbnb.Contracts.Messages;
 
-public class UserCreated
+public class UserDeleted
 {
     public string? UserId { get; set; }
     public string? UserName { get; set; }

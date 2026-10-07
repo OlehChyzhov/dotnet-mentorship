@@ -1,4 +1,4 @@
-namespace Airbnb.Messaging.Broker.Publisher;
+namespace Airbnb.Contracts.Broker;
 
 public interface IEventPublisher
 { 

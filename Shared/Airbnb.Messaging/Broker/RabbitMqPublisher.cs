@@ -1,9 +1,10 @@
 using System.Text.Json;
+using Airbnb.Contracts.Broker;
 using Airbnb.Messaging.Options;
 using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
 
-namespace Airbnb.Messaging.Broker.Publisher;
+namespace Airbnb.Messaging.Broker;
 
 public class RabbitMqPublisher : IEventPublisher
 {

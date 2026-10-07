@@ -1,6 +1,6 @@
 using Airbnb.Audit.Infrastructure;
+using Airbnb.Contracts.Broker;
 using Airbnb.Messaging;
-using Airbnb.Messaging.Broker.Consumer;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);

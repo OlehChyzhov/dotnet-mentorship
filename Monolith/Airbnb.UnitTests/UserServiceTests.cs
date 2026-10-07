@@ -1,9 +1,9 @@
 using Airbnb.Application.Abstracts.Identity;
 using Airbnb.Application.Services;
+using Airbnb.Contracts.Broker;
+using Airbnb.Contracts.Messages;
 using Airbnb.Domain.Constants;
 using Airbnb.Domain.Models;
-using Airbnb.Messaging.Broker.Publisher;
-using Airbnb.Messaging.Messages;
 using Microsoft.AspNetCore.Identity;
 using Moq;
 using Shouldly;

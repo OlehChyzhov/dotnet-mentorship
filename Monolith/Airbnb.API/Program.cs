@@ -3,10 +3,8 @@ using System.Text;
 using Airbnb.API.Middleware;
 using Airbnb.Application;
 using Airbnb.Infrastructure;
-using Airbnb.Infrastructure.Database;
 using Airbnb.Messaging;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Scalar.AspNetCore;
 
