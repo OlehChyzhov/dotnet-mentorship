@@ -1,3 +1,4 @@
+using Airbnb.Audit.Application;
 using Airbnb.Audit.Infrastructure;
 using Airbnb.Contracts.Broker;
 using Airbnb.Messaging;
@@ -10,6 +11,9 @@ await builder.Services.AddMessaging(builder.Configuration);
 
 // DbContext, Repositories, UnitOfWork, etc.
 await builder.Services.AddInfrastructureAsync(builder.Configuration);
+
+// Services, Mapping, Validation
+builder.Services.AddApplication();
 
 // Default
 builder.Services.AddControllers();
