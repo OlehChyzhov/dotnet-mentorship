@@ -4,6 +4,7 @@ using Airbnb.Application.Abstracts.Repositories;
 using Airbnb.Application.Abstracts.Services;
 using Airbnb.Application.DTOs.External;
 using Airbnb.Application.Options;
+using Airbnb.Contracts;
 using Airbnb.Domain;
 using Airbnb.Domain.Constants;
 using Airbnb.Domain.Models;

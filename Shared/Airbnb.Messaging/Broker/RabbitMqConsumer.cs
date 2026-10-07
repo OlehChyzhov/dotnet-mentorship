@@ -1,7 +1,6 @@
 using System.Text;
 using System.Text.Json;
 using Airbnb.Contracts.Broker;
-using Airbnb.Contracts.MessageHandlers;
 using Airbnb.Contracts.Messages;
 using Airbnb.Messaging.Options;
 using Microsoft.Extensions.DependencyInjection;
@@ -53,7 +52,7 @@ public class RabbitMqConsumer : IEventConsumer, IAsyncDisposable
             var message = JsonSerializer.Deserialize(eventArgs.Body.Span, messageType);
             
             await using var scope = _scopeFactory.CreateAsyncScope();
-            var handlerType = typeof(IMessageHandler<>).MakeGenericType(messageType);
+            var handlerType = typeof(IMessageService<>).MakeGenericType(messageType);
             var handler = scope.ServiceProvider.GetRequiredService(handlerType);
             
             await (Task)handlerType.GetMethod("HandleAsync")!.Invoke(handler, [message])!;

@@ -1,4 +1,5 @@
 ﻿using Airbnb.Application.DTOs.Authentication;
+using Airbnb.Contracts;
 using Airbnb.Domain;
 using Microsoft.AspNetCore.Identity;
 

@@ -1,6 +1,7 @@
 ﻿using Airbnb.Application.DTOs.Booking;
 using Airbnb.Application.DTOs.Querying;
 using Airbnb.Application.DTOs.Querying.Filtering;
+using Airbnb.Contracts;
 using Airbnb.Domain;
 
 namespace Airbnb.Application.Abstracts.Services;

@@ -1,5 +1,5 @@
 using Airbnb.Audit.Application.Services;
-using Airbnb.Contracts.MessageHandlers;
+using Airbnb.Contracts.Broker;
 using Airbnb.Contracts.Messages;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -9,9 +9,9 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddApplication(this IServiceCollection services)
     {
-        services.AddScoped<IMessageHandler<UserCreated>, UserAuditMessageHandler>();
-        services.AddScoped<IMessageHandler<UserDeleted>, UserAuditMessageHandler>();
-        services.AddScoped<IMessageHandler<UserEmailChanged>, UserAuditMessageHandler>();
+        services.AddScoped<IMessageService<UserCreated>, UserAuditService<UserCreated>>();
+        services.AddScoped<IMessageService<UserDeleted>, UserAuditService<UserDeleted>>();
+        services.AddScoped<IMessageService<UserEmailChanged>, UserAuditService<UserEmailChanged>>();
         
         return services;
     }

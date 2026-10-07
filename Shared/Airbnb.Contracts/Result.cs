@@ -1,4 +1,4 @@
-﻿namespace Airbnb.Domain;
+﻿namespace Airbnb.Contracts;
 
 public class Result<T>
 {

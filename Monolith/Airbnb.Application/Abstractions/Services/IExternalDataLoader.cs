@@ -1,4 +1,5 @@
-﻿using Airbnb.Domain;
+﻿using Airbnb.Contracts;
+using Airbnb.Domain;
 
 namespace Airbnb.Application.Abstracts.Services;
 
