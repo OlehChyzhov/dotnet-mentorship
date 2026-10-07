@@ -81,7 +81,6 @@
       - "3001:8080"
     environment:
       MongoDB__DatabaseName: ${AUDIT_MONGODB_DATABASE_NAME}
-      MongoDB__UserAuditsCollectionName: ${AUDIT_MONGODB_USER_AUDITS_COLLECTION_NAME}
       ConnectionStrings__MongoDB: ${AUDIT_MONGODB_DB_CONNECTION_STRING}
       
       RabbitMq__HostName: ${RABBITMQ_HOSTNAME}
