@@ -4,7 +4,7 @@
     <Project Path="Audit/Airbnb.Audit.Application/Airbnb.Audit.Application.csproj" />
     <Project Path="Audit/Airbnb.Audit.Domain/Airbnb.Audit.Domain.csproj" />
     <Project Path="Audit/Airbnb.Audit.Infrastructure/Airbnb.Audit.Infrastructure.csproj" />
-    <Project Path="Audit/Airbnb.Audit.Tests/Airbnb.Audit.Tests.csproj" />
+    <Project Path="Audit\Airbnb.Audit.UnitTests\Airbnb.Audit.UnitTests.csproj" />
   </Folder>
   <Folder Name="/Monolith/">
     <Project Path="Monolith/Airbnb.API/Airbnb.API.csproj" />
