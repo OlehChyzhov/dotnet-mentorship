@@ -1,12 +1,13 @@
-using Airbnb.Audit.Application.Abstracts;
-using Airbnb.Audit.Application.Abstracts.Broker;
-using Airbnb.Audit.Application.Options;
-using Airbnb.Audit.Infrastructure.Broker;
-using Airbnb.Audit.Infrastructure.Database;
+using Airbnb.Audit.Application.Abstractions.Repositories;
+using Airbnb.Audit.Domain.Enums;
+using Airbnb.Audit.Domain.Models;
+using Airbnb.Audit.Infrastructure.Database.Configurations;
+using Airbnb.Audit.Infrastructure.Database.Repositories;
+using Airbnb.Audit.Infrastructure.Options;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using MongoDB.Bson.Serialization;
 using MongoDB.Driver;
-using RabbitMQ.Client;
 
 namespace Airbnb.Audit.Infrastructure;
 
@@ -14,41 +15,22 @@ public static class DependencyInjection
 {
     public static async Task<IServiceCollection> AddInfrastructureAsync(this IServiceCollection services, IConfiguration configuration)
     {
-        // Message Broker (RabbitMQ)
-        var rabbitmqSection = configuration.GetSection("RabbitMq");
-        services.Configure<MessageBrokerOptions>(rabbitmqSection);
-        var rabbitmqOptions = rabbitmqSection.Get<MessageBrokerOptions>()!;
-
-        var factory = new ConnectionFactory()
-        {
-            HostName = rabbitmqOptions.HostName,
-            Port = rabbitmqOptions.Port,
-            UserName = rabbitmqOptions.UserName,
-            Password = rabbitmqOptions.Password,
-            ClientProvidedName = rabbitmqOptions.ClientProvidedName
-        };
-        
-        IConnection connection = await factory.CreateConnectionAsync();
-        var channel = await connection.CreateChannelAsync();
-        await channel.QueueDeclareAsync(
-            queue: rabbitmqOptions.Queue,
-            durable: false,
-            exclusive: false,
-            autoDelete: false,
-            arguments: null);
-        
-        services.AddSingleton<IConnection>(connection);
-        services.AddSingleton<IChannel>(channel);
-        services.AddSingleton<IEventConsumer, RabbitMqConsumer>();
-        
         // MongoDB
-        services.AddOptions<MongoDbOptions>().Bind(configuration.GetSection("MongoDb"));
+        var mongoOptions = configuration.GetSection("MongoDb").Get<MongoDbOptions>()!;
         services.AddSingleton<IMongoClient>(config =>
         {
-            return new MongoClient(configuration.GetConnectionString("MongoDb"));
+            return new MongoClient(configuration.GetConnectionString(name: "MongoDb"));
         });
         
-        services.AddScoped<MongoDbContext>();
+        services.AddScoped<IMongoDatabase>(sp =>
+        {
+            var mongoClient = sp.GetRequiredService<IMongoClient>();
+            return mongoClient.GetDatabase(mongoOptions.DatabaseName);
+        });
+        
+        BsonClassMap.RegisterClassMap(new UserAuditChangeEntityMap());
+        
+        services.AddScoped<IUserAuditRepository, UserAuditRepository>();
         
         return services;
     }

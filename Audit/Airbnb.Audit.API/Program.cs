@@ -1,15 +1,27 @@
-using Airbnb.Audit.Application.Abstracts;
-using Airbnb.Audit.Application.Abstracts.Broker;
+using System.Text.Json.Serialization;
+using Airbnb.Audit.Application;
 using Airbnb.Audit.Infrastructure;
+using Airbnb.Contracts.Broker;
+using Airbnb.Messaging;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Message Broker
+await builder.Services.AddConsumers(builder.Configuration);
+
 // DbContext, Repositories, UnitOfWork, etc.
 await builder.Services.AddInfrastructureAsync(builder.Configuration);
 
+// Services, Mapping, Validation
+builder.Services.AddApplication();
+
 // Default
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddJsonOptions(options =>
+{
+    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+});
+
 builder.Services.AddOpenApi();
 
 var app = builder.Build();
@@ -33,6 +45,10 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-await app.Services.GetRequiredService<IEventConsumer>().StartAsync();
+var allConsumers = app.Services.GetServices<IEventConsumer>();
+foreach (var consumer in allConsumers)
+{
+    await consumer.StartAsync();
+}
 
 app.Run();

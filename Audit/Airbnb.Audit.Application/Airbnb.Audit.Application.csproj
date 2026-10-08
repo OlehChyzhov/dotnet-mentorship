@@ -7,15 +7,17 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\..\Shared\Airbnb.Contracts\Airbnb.Contracts.csproj" />
       <ProjectReference Include="..\Airbnb.Audit.Domain\Airbnb.Audit.Domain.csproj" />
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Abstracts\Repositories\" />
+      <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.1.1" />
+      <PackageReference Include="Mapster.DependencyInjection" Version="10.1.0-pre02" />
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="Mapster.DependencyInjection" Version="10.1.0-pre02" />
+      <Folder Include="Validation\" />
     </ItemGroup>
 
 </Project>

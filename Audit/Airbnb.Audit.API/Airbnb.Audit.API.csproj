@@ -13,6 +13,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\..\Shared\Airbnb.Messaging\Airbnb.Messaging.csproj" />
       <ProjectReference Include="..\Airbnb.Audit.Application\Airbnb.Audit.Application.csproj" />
       <ProjectReference Include="..\Airbnb.Audit.Infrastructure\Airbnb.Audit.Infrastructure.csproj" />
     </ItemGroup>
