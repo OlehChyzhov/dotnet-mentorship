@@ -1,16 +1,14 @@
-using System.Text;
 using System.Text.Json;
 using Airbnb.Contracts.Broker;
-using Airbnb.Contracts.Messages;
 using Airbnb.Messaging.Options;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 
-namespace Airbnb.Messaging.Broker;
+namespace Airbnb.Messaging.Broker.Consumers;
 
-public class RabbitMqConsumer : IEventConsumer, IAsyncDisposable
+public class RabbitMqConsumer<TMessage> : IEventConsumer
 {
     private readonly IServiceScopeFactory _scopeFactory;
     private readonly MessageBrokerOptions _options;
@@ -34,11 +32,17 @@ public class RabbitMqConsumer : IEventConsumer, IAsyncDisposable
             return;
         }
         
+        var routingKey = RoutingKeys.For<TMessage>();
+        var queue = $"{_options.Queue}.{routingKey}";
+
+        await _channel.QueueDeclareAsync(queue, durable: false, exclusive: false, autoDelete: false);
+        await _channel.QueueBindAsync(queue, _options.Exchange, routingKey);
+        
         var consumer = new AsyncEventingBasicConsumer(_channel);
         consumer.ReceivedAsync += OnMessageReceived;
         
         _consumerTag = await _channel.BasicConsumeAsync(
-            queue: _options.Queue,
+            queue: queue,
             autoAck: false,
             consumer: consumer);
     }
@@ -47,20 +51,25 @@ public class RabbitMqConsumer : IEventConsumer, IAsyncDisposable
     {
         try
         {
-            var messageNamespace = $"{typeof(UserCreated).Namespace}.{eventArgs.BasicProperties.Type}";
-            var messageType = typeof(UserCreated).Assembly.GetType(messageNamespace, throwOnError: true)!;
-            var message = JsonSerializer.Deserialize(eventArgs.Body.Span, messageType);
-            
+            var message = JsonSerializer.Deserialize<TMessage>(eventArgs.Body.Span);
             await using var scope = _scopeFactory.CreateAsyncScope();
-            var handlerType = typeof(IMessageService<>).MakeGenericType(messageType);
-            var handler = scope.ServiceProvider.GetRequiredService(handlerType);
-            
-            await (Task)handlerType.GetMethod("HandleAsync")!.Invoke(handler, [message])!;
-            await _channel.BasicAckAsync(eventArgs.DeliveryTag, multiple: false);
+            var handler = scope.ServiceProvider.GetRequiredService<IMessageService<TMessage>>();
+
+            var result = await handler.HandleAsync(message);
+
+            if (result.IsSuccessful)
+            {
+                await _channel.BasicAckAsync(eventArgs.DeliveryTag, multiple: false);
+            }
+            else
+            {
+                Console.WriteLine($"Handler rejected '{typeof(TMessage).Name}'");
+                await _channel.BasicNackAsync(eventArgs.DeliveryTag, multiple: false, requeue: false);
+            }
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Failed to handle '{eventArgs.BasicProperties.Type}': {ex}");
+            Console.WriteLine($"Failed to handle '{typeof(TMessage).Name}': {ex}");
             await _channel.BasicNackAsync(eventArgs.DeliveryTag, multiple: false, requeue: false);
         }
     }

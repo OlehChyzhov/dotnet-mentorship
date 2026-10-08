@@ -1,5 +1,7 @@
 using Airbnb.Contracts.Broker;
+using Airbnb.Contracts.Messages;
 using Airbnb.Messaging.Broker;
+using Airbnb.Messaging.Broker.Consumers;
 using Airbnb.Messaging.Options;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -16,10 +18,14 @@ public static class DependencyInjection
         return services;
     }
 
-    public static async Task<IServiceCollection> AddConsumer(this IServiceCollection services, IConfiguration configuration)
+    public static async Task<IServiceCollection> AddConsumers(this IServiceCollection services, IConfiguration configuration)
     {
         await ConfigureRabbitMqAsync(services, configuration);
-        services.AddSingleton<IEventConsumer, RabbitMqConsumer>();
+        
+        services.AddSingleton<IEventConsumer, RabbitMqConsumer<UserCreated>>();
+        services.AddSingleton<IEventConsumer, RabbitMqConsumer<UserDeleted>>();
+        services.AddSingleton<IEventConsumer, RabbitMqConsumer<UserEmailChanged>>();
+        
         return services;
     }
 
@@ -48,18 +54,6 @@ public static class DependencyInjection
             type: ExchangeType.Topic,
             durable: false,
             autoDelete: false);
-        
-        await channel.QueueDeclareAsync(
-            queue: rabbitmqOptions.Queue,
-            durable: false,
-            exclusive: false,
-            autoDelete: false,
-            arguments: null);
-
-        await channel.QueueBindAsync(
-            queue: rabbitmqOptions.Queue, 
-            exchange: rabbitmqOptions.Exchange,
-            routingKey: "user.#");
         
         services.AddSingleton<IConnection>(connection);
         services.AddSingleton<IChannel>(channel);

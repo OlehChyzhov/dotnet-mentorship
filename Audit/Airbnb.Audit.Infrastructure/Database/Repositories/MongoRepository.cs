@@ -20,6 +20,12 @@ public abstract class MongoRepository<T> : IRepository<T>
         return await _collection.Find(filter).FirstOrDefaultAsync();
     }
 
+    public async Task<IEnumerable<T>> GetAllAsync()
+    {
+        var audits = await _collection.FindAsync(_ => true);
+        return audits.ToList();
+    }
+
     public async Task CreateAsync(T entity)
     {
         await _collection.InsertOneAsync(entity);

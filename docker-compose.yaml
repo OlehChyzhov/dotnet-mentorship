@@ -49,7 +49,6 @@
       RabbitMq__UserName: ${RABBITMQ_USER}
       RabbitMq__Password: ${RABBITMQ_PASSWORD}
       RabbitMq__Exchange: ${RABBITMQ_EXCHANGE}
-      RabbitMq__Queue: ${RABBITMQ_AUDIT_QUEUE}
       RabbitMq__ClientProvidedName: "user-service"
     depends_on:
       airbnb.sqlserver:
@@ -88,7 +87,6 @@
       RabbitMq__UserName: ${RABBITMQ_USER}
       RabbitMq__Password: ${RABBITMQ_PASSWORD}
       RabbitMq__Exchange: ${RABBITMQ_EXCHANGE}
-      RabbitMq__Queue: ${RABBITMQ_AUDIT_QUEUE}
       RabbitMq__ClientProvidedName: "audit_service"
     depends_on:
       airbnb.audit.mongodb:

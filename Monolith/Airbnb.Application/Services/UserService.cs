@@ -40,6 +40,7 @@ public class UserService : IUserService
         await _eventPublisher.PublishAsync(new UserCreated()
         {
             UserId = user.Id,
+            UserName = user.UserName,
             Email = user.Email,
             CreatedAt = DateTime.UtcNow,
         });
@@ -60,6 +61,7 @@ public class UserService : IUserService
         await _eventPublisher.PublishAsync(new UserEmailChanged()
         {
             UserId = user.Id,
+            UserName = user.UserName,
             CreatedAt = DateTime.UtcNow,
             OldEmail = oldEmail,
             NewEmail = newEmail,
@@ -79,6 +81,7 @@ public class UserService : IUserService
         await _eventPublisher.PublishAsync(new UserDeleted()
         {
             UserId = user.Id,
+            UserName = user.UserName,
             Email = user.Email,
             CreatedAt = DateTime.UtcNow,
         });
