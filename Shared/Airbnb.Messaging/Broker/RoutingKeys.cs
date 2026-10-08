@@ -1,4 +1,4 @@
-using Airbnb.Contracts.Messages;
+using Airbnb.Contracts.Broker.Messages.User;
 
 namespace Airbnb.Messaging.Broker;
 

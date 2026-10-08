@@ -1,4 +1,4 @@
-namespace Airbnb.Contracts.Messages;
+namespace Airbnb.Contracts.Broker.Messages.User;
 
 public class UserEmailChanged
 {

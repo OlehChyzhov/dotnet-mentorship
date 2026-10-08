@@ -1,11 +1,11 @@
-using Airbnb.Contracts.Messages;
+using Airbnb.Contracts.Broker.Messages.User;
 using FluentValidation;
 
-namespace Airbnb.Audit.Application.Validation;
+namespace Airbnb.Audit.Application.Broker.Validation;
 
-public class UserDeletedMessageValidator : AbstractValidator<UserDeleted>
+public class UserCreatedMessageValidator : AbstractValidator<UserCreated>
 {
-    public UserDeletedMessageValidator()
+    public UserCreatedMessageValidator()
     {
         RuleFor(user => user.UserId)
             .NotEmpty();

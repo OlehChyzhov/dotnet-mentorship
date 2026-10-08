@@ -1,7 +1,11 @@
 using System.Reflection;
+using Airbnb.Audit.Application.Abstractions.Services;
+using Airbnb.Audit.Application.Broker;
+using Airbnb.Audit.Application.Broker.Services;
 using Airbnb.Audit.Application.Services;
 using Airbnb.Contracts.Broker;
-using Airbnb.Contracts.Messages;
+using Airbnb.Contracts.Broker.Messages;
+using Airbnb.Contracts.Broker.Messages.User;
 using FluentValidation;
 using Mapster;
 using MapsterMapper;
@@ -15,17 +19,23 @@ public static class DependencyInjection
     {
         var assembly = Assembly.GetExecutingAssembly();
 
+        // Validation
         services.AddValidatorsFromAssembly(assembly);
 
+        // Mapper
         var mapsterConfig = TypeAdapterConfig.GlobalSettings;
         mapsterConfig.Scan(assembly);
         services.AddSingleton(mapsterConfig);
         services.AddScoped<IMapper, ServiceMapper>();
 
-        services.AddScoped<IMessageService<UserCreated>, UserAuditService<UserCreated>>();
-        services.AddScoped<IMessageService<UserDeleted>, UserAuditService<UserDeleted>>();
-        services.AddScoped<IMessageService<UserEmailChanged>, UserAuditService<UserEmailChanged>>();
+        // Message handlers
+        services.AddScoped<IMessageSaver<UserCreated>, UserAuditMessageSaver<UserCreated>>();
+        services.AddScoped<IMessageSaver<UserDeleted>, UserAuditMessageSaver<UserDeleted>>();
+        services.AddScoped<IMessageSaver<UserEmailChanged>, UserAuditMessageSaver<UserEmailChanged>>();
 
+        // Services
+        services.AddScoped<IUserAuditService, UserAuditService>();
+        
         return services;
     }
 }

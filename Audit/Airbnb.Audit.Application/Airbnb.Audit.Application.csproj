@@ -16,4 +16,8 @@
       <PackageReference Include="Mapster.DependencyInjection" Version="10.1.0-pre02" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Validation\" />
+    </ItemGroup>
+
 </Project>

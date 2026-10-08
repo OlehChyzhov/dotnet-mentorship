@@ -1,7 +1,7 @@
+using System.Text.Json.Serialization;
 using Airbnb.Audit.Application;
 using Airbnb.Audit.Infrastructure;
 using Airbnb.Contracts.Broker;
-using Airbnb.Contracts.Messages;
 using Airbnb.Messaging;
 using Scalar.AspNetCore;
 
@@ -17,7 +17,11 @@ await builder.Services.AddInfrastructureAsync(builder.Configuration);
 builder.Services.AddApplication();
 
 // Default
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddJsonOptions(options =>
+{
+    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+});
+
 builder.Services.AddOpenApi();
 
 var app = builder.Build();

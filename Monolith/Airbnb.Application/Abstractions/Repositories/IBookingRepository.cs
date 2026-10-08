@@ -1,5 +1,5 @@
 ﻿using Airbnb.Application.DTOs.Querying;
-using Airbnb.Application.DTOs.Querying.Filtering;
+using Airbnb.Contracts.Paging;
 using Airbnb.Domain.Models;
 
 namespace Airbnb.Application.Abstracts.Repositories;

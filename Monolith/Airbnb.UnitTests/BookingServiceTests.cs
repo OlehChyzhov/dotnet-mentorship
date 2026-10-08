@@ -1,8 +1,8 @@
 using Airbnb.Application.Abstracts.Repositories;
 using Airbnb.Application.DTOs.Booking;
 using Airbnb.Application.DTOs.Querying;
-using Airbnb.Application.DTOs.Querying.Filtering;
 using Airbnb.Application.Services;
+using Airbnb.Contracts.Paging;
 using Airbnb.Domain.Enums;
 using Airbnb.Domain.Models;
 using MapsterMapper;

@@ -1,39 +1,49 @@
 using Airbnb.Audit.Application.Abstractions.Repositories;
-using Airbnb.Audit.Domain.Models;
+using Airbnb.Audit.Application.Abstractions.Services;
+using Airbnb.Audit.Application.DTOs;
+using Airbnb.Audit.Application.Querying;
 using Airbnb.Contracts;
-using Airbnb.Contracts.Broker;
-using FluentValidation;
+using Airbnb.Contracts.Paging;
 using MapsterMapper;
 
 namespace Airbnb.Audit.Application.Services;
 
-public class UserAuditService<TMessage> : IMessageService<TMessage>
+public class UserAuditService : IUserAuditService
 {
-    private readonly IUserAuditRepository _userAuditRepository;
-    private readonly IValidator<TMessage> _validator;
+    private readonly IUserAuditRepository _auditRepository;
     private readonly IMapper _mapper;
     
-    public UserAuditService(
-        IUserAuditRepository userAuditRepository, 
-        IValidator<TMessage> validator, 
-        IMapper mapper)
+    public UserAuditService(IUserAuditRepository auditRepository, IMapper mapper)
     {
-        _userAuditRepository = userAuditRepository;
-        _validator = validator;
+        _auditRepository = auditRepository;
         _mapper = mapper;
     }
-    
-    public async Task<Result<bool>> HandleAsync(TMessage message)
-    {
-        var result = await _validator.ValidateAsync(message);
-        if (!result.IsValid)
-        {
-            return "Validation Failed";
-        }
-        
-        var entity = _mapper.Map<UserAuditChangeEntity>(message);
-        await _userAuditRepository.CreateAsync(entity);
 
-        return true;
+    public async Task<Result<UserAuditDto>> GetAuditByIdAsync(string id)
+    {
+        var audit = await _auditRepository.GetByIdAsync(id);
+        if (!audit.IsSuccessful)
+        {
+            return $"Failed to retrieve an audit with id '{id}': {audit.Message}";
+        }
+
+        var auditDto = _mapper.Map<UserAuditDto>(audit.Value!);
+        return auditDto;
+    }
+
+    public async  Task<Result<PagedList<UserAuditDto>>> GetAuditsPaged(UserAuditPagingParameters parameters)
+    {
+        var auditsPaged = await _auditRepository.GetAllAuditsPaged(parameters);
+
+        var pagingMetaData = auditsPaged.MetaData;
+        var auditsDto = _mapper.Map<List<UserAuditDto>>(auditsPaged);
+        
+        var auditResult = PagedList<UserAuditDto>.ToPagedList(
+            source: auditsDto, 
+            totalCount: pagingMetaData.TotalCount, 
+            pageNumber: pagingMetaData.CurrentPage, 
+            pageSize: pagingMetaData.PageSize);
+
+        return auditResult;
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace Airbnb.Application.DTOs.Querying;
+﻿namespace Airbnb.Contracts.Paging;
 
 public record PagingMetaData
 {

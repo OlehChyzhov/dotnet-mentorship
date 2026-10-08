@@ -1,4 +1,6 @@
-﻿namespace Airbnb.Application.DTOs.Querying.Filtering;
+﻿using Airbnb.Contracts.Paging;
+
+namespace Airbnb.Application.DTOs.Querying;
 
 public record ApartmentPagingParamters : PagingParametersBase
 {

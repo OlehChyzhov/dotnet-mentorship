@@ -2,8 +2,8 @@
 using Airbnb.Application.Abstracts.Services;
 using Airbnb.Application.DTOs.Apartment;
 using Airbnb.Application.DTOs.Querying;
-using Airbnb.Application.DTOs.Querying.Filtering;
 using Airbnb.Contracts;
+using Airbnb.Contracts.Paging;
 using Airbnb.Domain;
 using Airbnb.Domain.Enums;
 using Airbnb.Domain.Models;

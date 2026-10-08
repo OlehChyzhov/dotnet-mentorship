@@ -1,4 +1,7 @@
+using System.Text.Json;
 using Airbnb.Audit.Application.Abstractions.Repositories;
+using Airbnb.Audit.Application.Abstractions.Services;
+using Airbnb.Audit.Application.Querying;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Airbnb.Audit.API.Controllers;
@@ -7,16 +10,36 @@ namespace Airbnb.Audit.API.Controllers;
 [ApiController]
 public class UserAuditsController : ControllerBase
 {
-    private readonly IUserAuditRepository _repository;
+    private readonly IUserAuditService _userAuditService;
     
-    public UserAuditsController(IUserAuditRepository repository)
+    public UserAuditsController(IUserAuditService service)
     {
-        _repository = repository;
+        _userAuditService = service;
+    }
+
+    [HttpGet("{auditId}")]
+    public async Task<IActionResult> GetAuditByIdAsync(string auditId)
+    {
+        var result = await _userAuditService.GetAuditByIdAsync(auditId);
+        if (!result.IsSuccessful)
+        {
+            return BadRequest(result.Message);
+        }
+        
+        return Ok(result.Value);
     }
     
     [HttpGet("all")]
-    public async Task<IActionResult> GetAllAudits()
+    public async Task<IActionResult> GetAllAuditsAsync([FromQuery] UserAuditPagingParameters parameters)
     {
-        return Ok(await _repository.GetAllAsync());
+        var result = await _userAuditService.GetAuditsPaged(parameters);
+        if (!result.IsSuccessful)
+        {
+            return BadRequest(result.Message);
+        }
+        
+        Response.Headers.Append("X-Pagination", JsonSerializer.Serialize(result.Value!.MetaData));
+        
+        return Ok(result.Value);
     }
 }

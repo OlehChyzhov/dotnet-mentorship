@@ -3,7 +3,7 @@ using System.Text.Json;
 using Airbnb.Application.Abstracts.Services;
 using Airbnb.Application.DTOs.Apartment;
 using Airbnb.Application.DTOs.Querying;
-using Airbnb.Application.DTOs.Querying.Filtering;
+using Airbnb.Contracts.Paging;
 using Airbnb.Domain.Constants;
 using Airbnb.Domain.Enums;
 using Microsoft.AspNetCore.Authorization;

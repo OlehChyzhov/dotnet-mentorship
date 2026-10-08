@@ -1,5 +1,5 @@
 using Airbnb.Contracts.Broker;
-using Airbnb.Contracts.Messages;
+using Airbnb.Contracts.Broker.Messages.User;
 using Airbnb.Messaging.Broker;
 using Airbnb.Messaging.Broker.Consumers;
 using Airbnb.Messaging.Options;
