@@ -16,16 +16,16 @@ public static class DependencyInjection
     public static async Task<IServiceCollection> AddInfrastructureAsync(this IServiceCollection services, IConfiguration configuration)
     {
         // MongoDB
-        var mongoOptions = configuration.GetSection("MongoDb").Get<MongoDbOptions>()!;
+        var mongoUrl = MongoUrl.Create(configuration.GetConnectionString("MongoDb"));
         services.AddSingleton<IMongoClient>(config =>
         {
-            return new MongoClient(configuration.GetConnectionString(name: "MongoDb"));
+            return new MongoClient(mongoUrl);
         });
         
         services.AddScoped<IMongoDatabase>(sp =>
         {
             var mongoClient = sp.GetRequiredService<IMongoClient>();
-            return mongoClient.GetDatabase(mongoOptions.DatabaseName);
+            return mongoClient.GetDatabase(mongoUrl.DatabaseName);
         });
         
         BsonClassMap.RegisterClassMap(new UserAuditChangeEntityMap());
