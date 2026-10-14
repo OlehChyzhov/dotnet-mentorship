@@ -1,4 +1,5 @@
-﻿using Airbnb.Application.Abstracts.Repositories;
+﻿using Airbnb.Application.Abstractions.Repositories;
+using Airbnb.Application.Abstracts.Repositories;
 using Airbnb.Application.DTOs;
 using Airbnb.Application.DTOs.Querying;
 using Airbnb.Contracts.Paging;
@@ -12,7 +13,7 @@ public class BookingRepository : Repository<Booking, Guid, Guid?>, IBookingRepos
 {
     public BookingRepository(ApplicationDbContext context) : base(context) {}
 
-    public async Task<PagedList<Booking>> GetBookingsPagedAsync(BookingPagingParameters query, string userId)
+    public async Task<PagedResult<Booking>> GetBookingsPagedAsync(BookingPagingParameters query, string userId)
     {
         var userBookings = DbSet
             .Where(booking => booking.ClientId == userId)
@@ -25,7 +26,7 @@ public class BookingRepository : Repository<Booking, Guid, Guid?>, IBookingRepos
             .Take(query.PageSize)
             .ToListAsync();
 
-        return PagedList<Booking>.ToPagedList(bookings, totalCount, query.PageNumber, query.PageSize);
+        return new PagedResult<Booking>(bookings, totalCount, query.PageNumber, query.PageSize);
     }
 
     public async Task<List<Booking>> GetConfirmedOrPendingBookingsInTimeRangeAsync(Guid apartmentId, DateTime from, DateTime to)

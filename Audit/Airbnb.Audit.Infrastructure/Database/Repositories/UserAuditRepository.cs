@@ -11,7 +11,7 @@ public class UserAuditRepository : MongoRepository<UserAuditChangeEntity>, IUser
 {
     public UserAuditRepository(IMongoDatabase db): base(database: db, collectionName: "user_audits") { }
 
-    public async Task<PagedList<UserAuditChangeEntity>> GetAllAuditsPaged(UserAuditPagingParameters parameters)
+    public async Task<PagedResult<UserAuditChangeEntity>> GetAllAuditsPaged(UserAuditPagingParameters parameters)
     {
         var filter = _filterBuilder.Empty;
 
@@ -38,7 +38,11 @@ public class UserAuditRepository : MongoRepository<UserAuditChangeEntity>, IUser
             .Limit(parameters.PageSize)
             .ToListAsync();
 
-        return PagedList<UserAuditChangeEntity>.ToPagedList(
-            audits, (int)totalCount, parameters.PageNumber, parameters.PageSize);
+        return new PagedResult<UserAuditChangeEntity>(
+            items: audits, 
+            totalCount: (int)totalCount, 
+            pageNumber: parameters.PageNumber, 
+            pageSize: parameters.PageSize
+        );
     }
 }

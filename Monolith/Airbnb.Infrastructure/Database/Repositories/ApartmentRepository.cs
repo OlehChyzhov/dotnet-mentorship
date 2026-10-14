@@ -1,4 +1,5 @@
-﻿using Airbnb.Application.Abstracts.Repositories;
+﻿using Airbnb.Application.Abstractions.Repositories;
+using Airbnb.Application.Abstracts.Repositories;
 using Airbnb.Application.DTOs.Apartment;
 using Airbnb.Application.DTOs.Querying;
 using Airbnb.Contracts;
@@ -16,7 +17,7 @@ public class ApartmentRepository : Repository<Apartment, Guid, Guid?>, IApartmen
 {
     public ApartmentRepository(ApplicationDbContext context) : base(context) {}
     
-    public async Task<PagedList<Apartment>> GetApartmentsPagedAsync(ApartmentPagingParamters query)
+    public async Task<PagedResult<Apartment>> GetApartmentsPagedAsync(ApartmentPagingParamters query)
     {
         var apartmentsQuery = DbSet.AsQueryable();
 
@@ -51,7 +52,7 @@ public class ApartmentRepository : Repository<Apartment, Guid, Guid?>, IApartmen
             .Take(query.PageSize)
             .ToListAsync();
 
-        return PagedList<Apartment>.ToPagedList(apartments, totalCount, query.PageNumber, query.PageSize);
+        return new PagedResult<Apartment>(apartments, totalCount, query.PageNumber, query.PageSize);
     }
 
     public async Task<Result<Apartment>> UpsertApartmentAsync(Apartment apartmentToUpsert)

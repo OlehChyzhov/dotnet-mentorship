@@ -1,3 +1,4 @@
+using Airbnb.Application.Abstractions.Repositories;
 using Airbnb.Application.Abstracts.Repositories;
 using Airbnb.Application.DTOs.Booking;
 using Airbnb.Application.DTOs.Querying;
@@ -80,20 +81,20 @@ public class BookingServiceTests
         var query = new BookingPagingParameters { PageNumber = 1, PageSize = 10 };
 
         var bookings = new List<Booking> { CreateBooking(Guid.NewGuid(), Guid.NewGuid()) };
-        var pagedBookings = PagedList<Booking>.ToPagedList(bookings, totalCount: 1, pageNumber: 1, pageSize: 10);
+        var pagedBookings = new PagedResult<Booking>(bookings, totalCount: 1, pageNumber: 1, pageSize: 10);
 
         var bookingDtos = bookings.Select(b => new BookingDto { Id = b.Id }).ToList();
 
         _bookingRepositoryMock.Setup(r => r.GetBookingsPagedAsync(query, userId)).ReturnsAsync(pagedBookings);
-        _mapperMock.Setup(m => m.Map<List<BookingDto>>(pagedBookings)).Returns(bookingDtos);
+        _mapperMock.Setup(m => m.Map<List<BookingDto>>(pagedBookings.Items)).Returns(bookingDtos);
 
         // Act
         var result = await _sut.GetBookingsAsync(query, userId);
 
         // Assert
         result.IsSuccessful.ShouldBeTrue();
-        result.Value!.ShouldBe(bookingDtos);
-        result.Value!.MetaData.TotalCount.ShouldBe(1);
+        result.Value!.Items.ShouldBe(bookingDtos);
+        result.Value!.Metadata.TotalCount.ShouldBe(1);
     }
 
     [Fact]

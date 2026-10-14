@@ -79,7 +79,6 @@
     ports:
       - "3001:8080"
     environment:
-      MongoDB__DatabaseName: ${AUDIT_MONGODB_DATABASE_NAME}
       ConnectionStrings__MongoDB: ${AUDIT_MONGODB_DB_CONNECTION_STRING}
       
       RabbitMq__HostName: ${RABBITMQ_HOSTNAME}

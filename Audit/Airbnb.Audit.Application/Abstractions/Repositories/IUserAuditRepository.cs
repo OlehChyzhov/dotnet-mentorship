@@ -7,5 +7,5 @@ namespace Airbnb.Audit.Application.Abstractions.Repositories;
 
 public interface IUserAuditRepository : IRepository<UserAuditChangeEntity>
 {
-    public Task<PagedList<UserAuditChangeEntity>> GetAllAuditsPaged(UserAuditPagingParameters parameters);
+    public Task<PagedResult<UserAuditChangeEntity>> GetAllAuditsPaged(UserAuditPagingParameters parameters);
 }

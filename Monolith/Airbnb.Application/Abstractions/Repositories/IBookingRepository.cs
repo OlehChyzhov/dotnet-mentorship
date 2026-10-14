@@ -1,12 +1,13 @@
-﻿using Airbnb.Application.DTOs.Querying;
+﻿using Airbnb.Application.Abstracts.Repositories;
+using Airbnb.Application.DTOs.Querying;
 using Airbnb.Contracts.Paging;
 using Airbnb.Domain.Models;
 
-namespace Airbnb.Application.Abstracts.Repositories;
+namespace Airbnb.Application.Abstractions.Repositories;
 
 public interface IBookingRepository : IRepository<Booking, Guid, Guid?>
 {
-    Task<PagedList<Booking>> GetBookingsPagedAsync(BookingPagingParameters query, string userId);
+    Task<PagedResult<Booking>> GetBookingsPagedAsync(BookingPagingParameters query, string userId);
     
     Task<List<Booking>> GetConfirmedOrPendingBookingsInTimeRangeAsync(Guid apartmentId, DateTime from, DateTime to);
 }

@@ -1,4 +1,5 @@
-﻿using Airbnb.Application.Abstracts.Repositories;
+﻿using Airbnb.Application.Abstractions.Repositories;
+using Airbnb.Application.Abstracts.Repositories;
 using Airbnb.Domain.Models;
 
 namespace Airbnb.Infrastructure.Database.Repositories;

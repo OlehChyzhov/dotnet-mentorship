@@ -9,5 +9,5 @@ public interface IUserAuditService
 {
     public Task<Result<UserAuditDto>> GetAuditByIdAsync(string id);
 
-    Task<Result<PagedList<UserAuditDto>>> GetAuditsPaged(UserAuditPagingParameters parameters);
+    Task<Result<PagedResult<UserAuditDto>>> GetAuditsPaged(UserAuditPagingParameters parameters);
 }

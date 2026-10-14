@@ -1,3 +1,4 @@
+using Airbnb.Application.Abstractions.Repositories;
 using Airbnb.Application.Abstracts.Repositories;
 using Airbnb.Application.DTOs.Apartment;
 using Airbnb.Application.DTOs.Querying;
@@ -77,24 +78,24 @@ public class ApartmentServiceTests
         var query = new ApartmentPagingParamters { PageNumber = 1, PageSize = 10 };
 
         var apartments = new List<Apartment> { CreateApartment(Guid.NewGuid()), CreateApartment(Guid.NewGuid()) };
-        var pagedApartments = PagedList<Apartment>.ToPagedList(apartments, totalCount: 2, pageNumber: 1, pageSize: 10);
+        var pagedApartments = new PagedResult<Apartment>(apartments, totalCount: 2, pageNumber: 1, pageSize: 10);
 
         var apartmentDtos = apartments
             .Select(a => new ApartmentDto { Id = a.Id, Title = a.Title })
             .ToList();
 
         _apartmentRepositoryMock.Setup(r => r.GetApartmentsPagedAsync(query)).ReturnsAsync(pagedApartments);
-        _mapperMock.Setup(m => m.Map<List<ApartmentDto>>(pagedApartments)).Returns(apartmentDtos);
+        _mapperMock.Setup(m => m.Map<List<ApartmentDto>>(pagedApartments.Items)).Returns(apartmentDtos);
 
         // Act
         var result = await _sut.GetApartmentsAsync(query);
 
         // Assert
         result.IsSuccessful.ShouldBeTrue();
-        result.Value!.ShouldBe(apartmentDtos);
-        result.Value!.MetaData.TotalCount.ShouldBe(2);
-        result.Value!.MetaData.CurrentPage.ShouldBe(1);
-        result.Value!.MetaData.PageSize.ShouldBe(10);
+        result.Value!.Items.ShouldBe(apartmentDtos);
+        result.Value!.Metadata.TotalCount.ShouldBe(2);
+        result.Value!.Metadata.CurrentPage.ShouldBe(1);
+        result.Value!.Metadata.PageSize.ShouldBe(10);
     }
 
     [Fact]

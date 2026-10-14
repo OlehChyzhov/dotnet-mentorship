@@ -38,8 +38,6 @@ public class UserAuditsController : ControllerBase
             return BadRequest(result.Message);
         }
         
-        Response.Headers.Append("X-Pagination", JsonSerializer.Serialize(result.Value!.MetaData));
-        
         return Ok(result.Value);
     }
 }

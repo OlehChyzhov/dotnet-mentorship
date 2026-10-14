@@ -1,5 +1,6 @@
 ﻿using System.Security.Claims;
 using System.Text.Json;
+using Airbnb.Application.Abstractions.Services;
 using Airbnb.Application.Abstracts.Services;
 using Airbnb.Application.DTOs.Apartment;
 using Airbnb.Application.DTOs.Querying;
@@ -58,10 +59,7 @@ public class ApartmentsController : ControllerBase
             return BadRequest(result.Message);
         }
         
-        PagedList<ApartmentDto> pagedList = result.Value!;
-        Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(pagedList.MetaData));
-        
-        return Ok(pagedList);
+        return Ok(result.Value);
     }
     
     [HttpGet("aggregation/top-by-profit/{count:int}")]

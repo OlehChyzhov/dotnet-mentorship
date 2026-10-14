@@ -1,4 +1,6 @@
-﻿namespace Airbnb.Application.Abstracts.Repositories;
+﻿using Airbnb.Application.Abstractions.Repositories;
+
+namespace Airbnb.Application.Abstracts.Repositories;
 
 public interface IUnitOfWork : IDisposable
 {

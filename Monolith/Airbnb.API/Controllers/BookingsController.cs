@@ -1,5 +1,6 @@
 ﻿using System.Security.Claims;
 using System.Text.Json;
+using Airbnb.Application.Abstractions.Services;
 using Airbnb.Application.Abstracts.Services;
 using Airbnb.Application.DTOs.Booking;
 using Airbnb.Application.DTOs.Querying;
@@ -43,8 +44,6 @@ public class BookingsController : ControllerBase
         {
             return BadRequest(result.Message);
         }
-        
-        Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(result.Value!.MetaData));
         
         return Ok(result.Value);
     }

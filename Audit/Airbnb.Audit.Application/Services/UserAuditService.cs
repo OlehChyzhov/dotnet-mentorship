@@ -31,18 +31,16 @@ public class UserAuditService : IUserAuditService
         return auditDto;
     }
 
-    public async  Task<Result<PagedList<UserAuditDto>>> GetAuditsPaged(UserAuditPagingParameters parameters)
+    public async  Task<Result<PagedResult<UserAuditDto>>> GetAuditsPaged(UserAuditPagingParameters parameters)
     {
         var auditsPaged = await _auditRepository.GetAllAuditsPaged(parameters);
-
-        var pagingMetaData = auditsPaged.MetaData;
-        var auditsDto = _mapper.Map<List<UserAuditDto>>(auditsPaged);
+        var auditsDto = _mapper.Map<List<UserAuditDto>>(auditsPaged.Items);
         
-        var auditResult = PagedList<UserAuditDto>.ToPagedList(
-            source: auditsDto, 
-            totalCount: pagingMetaData.TotalCount, 
-            pageNumber: pagingMetaData.CurrentPage, 
-            pageSize: pagingMetaData.PageSize);
+        var auditResult = new PagedResult<UserAuditDto>(
+            items: auditsDto, 
+            totalCount: auditsPaged.Metadata.TotalCount, 
+            pageNumber: auditsPaged.Metadata.CurrentPage, 
+            pageSize: auditsPaged.Metadata.PageSize);
 
         return auditResult;
     }
