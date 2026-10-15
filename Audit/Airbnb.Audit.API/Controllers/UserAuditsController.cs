@@ -30,7 +30,7 @@ public class UserAuditsController : ControllerBase
     }
     
     [HttpGet("all")]
-    public async Task<IActionResult> GetAllAuditsAsync([FromQuery] UserAuditPagingParameters parameters)
+    public async Task<IActionResult> GetAllAuditsAsync([FromQuery] UserAuditFilter parameters)
     {
         var result = await _userAuditService.GetAuditsPaged(parameters);
         if (!result.IsSuccessful)

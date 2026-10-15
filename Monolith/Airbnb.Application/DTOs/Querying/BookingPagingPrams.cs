@@ -2,4 +2,4 @@
 
 namespace Airbnb.Application.DTOs.Querying;
 
-public record BookingPagingParameters : PagingParametersBase { }
+public record BookingPagingPrams : PagingPramsBase { }

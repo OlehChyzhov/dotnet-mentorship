@@ -9,7 +9,7 @@ public interface IBookingService
 {
     Task<Result<BookingDto>> GetBookingByIdAsync(Guid bookingId);
     
-    Task<Result<PagedResult<BookingDto>>> GetBookingsAsync(BookingPagingParameters query, string userId);
+    Task<Result<PagedResult<BookingDto>>> GetBookingsAsync(BookingPagingPrams query, string userId);
 
     Task<Result<BookingDto>> CreateBookingAsync(CreateBookingDto dto, string userId);
 }

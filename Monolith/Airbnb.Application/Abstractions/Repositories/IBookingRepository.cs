@@ -7,7 +7,7 @@ namespace Airbnb.Application.Abstractions.Repositories;
 
 public interface IBookingRepository : IRepository<Booking, Guid, Guid?>
 {
-    Task<PagedResult<Booking>> GetBookingsPagedAsync(BookingPagingParameters query, string userId);
+    Task<PagedResult<Booking>> GetBookingsPagedAsync(BookingPagingPrams query, string userId);
     
     Task<List<Booking>> GetConfirmedOrPendingBookingsInTimeRangeAsync(Guid apartmentId, DateTime from, DateTime to);
 }

@@ -13,7 +13,7 @@ public class BookingRepository : Repository<Booking, Guid, Guid?>, IBookingRepos
 {
     public BookingRepository(ApplicationDbContext context) : base(context) {}
 
-    public async Task<PagedResult<Booking>> GetBookingsPagedAsync(BookingPagingParameters query, string userId)
+    public async Task<PagedResult<Booking>> GetBookingsPagedAsync(BookingPagingPrams query, string userId)
     {
         var userBookings = DbSet
             .Where(booking => booking.ClientId == userId)

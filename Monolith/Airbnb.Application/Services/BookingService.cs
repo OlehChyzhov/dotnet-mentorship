@@ -29,7 +29,7 @@ public class BookingService : IBookingService
         return bookingDto;
     }
     
-    public async Task<Result<PagedResult<BookingDto>>> GetBookingsAsync(BookingPagingParameters query, string userId)
+    public async Task<Result<PagedResult<BookingDto>>> GetBookingsAsync(BookingPagingPrams query, string userId)
     {
         var bookingsWithMetaData = await _unitOfWork.Bookings.GetBookingsPagedAsync(query, userId);
         var bookingsDto = _mapper.Map<List<BookingDto>>(bookingsWithMetaData.Items);

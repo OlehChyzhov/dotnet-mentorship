@@ -78,7 +78,7 @@ public class BookingServiceTests
     {
         // Arrange
         const string userId = "client-1";
-        var query = new BookingPagingParameters { PageNumber = 1, PageSize = 10 };
+        var query = new BookingPagingPrams { PageNumber = 1, PageSize = 10 };
 
         var bookings = new List<Booking> { CreateBooking(Guid.NewGuid(), Guid.NewGuid()) };
         var pagedBookings = new PagedResult<Booking>(bookings, totalCount: 1, pageNumber: 1, pageSize: 10);

@@ -11,7 +11,7 @@ public class UserAuditRepository : MongoRepository<UserAuditChangeEntity>, IUser
 {
     public UserAuditRepository(IMongoDatabase db): base(database: db, collectionName: "user_audits") { }
 
-    public async Task<PagedResult<UserAuditChangeEntity>> GetAllAuditsPaged(UserAuditPagingParameters parameters)
+    public async Task<PagedResult<UserAuditChangeEntity>> GetAllAuditsPaged(UserAuditFilter parameters)
     {
         var filter = _filterBuilder.Empty;
 

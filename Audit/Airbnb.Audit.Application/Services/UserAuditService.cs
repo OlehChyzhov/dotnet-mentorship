@@ -31,7 +31,7 @@ public class UserAuditService : IUserAuditService
         return auditDto;
     }
 
-    public async  Task<Result<PagedResult<UserAuditDto>>> GetAuditsPaged(UserAuditPagingParameters parameters)
+    public async  Task<Result<PagedResult<UserAuditDto>>> GetAuditsPaged(UserAuditFilter parameters)
     {
         var auditsPaged = await _auditRepository.GetAllAuditsPaged(parameters);
         var auditsDto = _mapper.Map<List<UserAuditDto>>(auditsPaged.Items);
