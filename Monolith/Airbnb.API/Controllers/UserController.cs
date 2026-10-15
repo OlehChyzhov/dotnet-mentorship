@@ -1,6 +1,6 @@
 using System.Security.Claims;
 using Airbnb.Application;
-using Airbnb.Application.Abstracts.Services;
+using Airbnb.Application.Abstractions.Services;
 using Airbnb.Application.DTOs.Users;
 using Airbnb.Domain.Constants;
 using Microsoft.AspNetCore.Authorization;

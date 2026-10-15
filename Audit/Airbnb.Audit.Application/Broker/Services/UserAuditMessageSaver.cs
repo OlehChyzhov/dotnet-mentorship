@@ -11,30 +11,27 @@ namespace Airbnb.Audit.Application.Broker.Services;
 public class UserAuditMessageSaver<TMessage> : IMessageSaver<TMessage>
 {
     private readonly IUserAuditRepository _userAuditRepository;
-    private readonly IValidator<TMessage> _validator;
     private readonly IMapper _mapper;
     
     public UserAuditMessageSaver(
         IUserAuditRepository userAuditRepository, 
-        IValidator<TMessage> validator, 
         IMapper mapper)
     {
         _userAuditRepository = userAuditRepository;
-        _validator = validator;
         _mapper = mapper;
     }
     
     public async Task<Result<bool>> HandleAsync(TMessage message)
     {
-        var result = await _validator.ValidateAsync(message);
-        if (!result.IsValid)
+        try
         {
-            return "Validation Failed";
+            var entity = _mapper.Map<UserAuditChangeEntity>(message);
+            await _userAuditRepository.CreateAsync(entity);
+            return true;
         }
-        
-        var entity = _mapper.Map<UserAuditChangeEntity>(message);
-        await _userAuditRepository.CreateAsync(entity);
-
-        return true;
+        catch (Exception ex)
+        {
+            return "Exception: " + ex.Message;
+        }
     }
 }

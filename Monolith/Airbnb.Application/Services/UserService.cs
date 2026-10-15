@@ -1,5 +1,5 @@
+using Airbnb.Application.Abstractions.Services;
 using Airbnb.Application.Abstracts.Identity;
-using Airbnb.Application.Abstracts.Services;
 using Airbnb.Contracts.Broker;
 using Airbnb.Contracts.Broker.Messages.User;
 using Airbnb.Domain.Models;
@@ -30,7 +30,7 @@ public class UserService : IUserService
                 Description = $"The role '{role}' does not exist"
             });
         }
-
+        
         var result = await _identityService.CreateUserAsync(user, password);
         if (!result.Succeeded) return result;
 
@@ -44,7 +44,7 @@ public class UserService : IUserService
             Email = user.Email,
             CreatedAt = DateTime.UtcNow,
         });
-
+        
         return result;
     }
 

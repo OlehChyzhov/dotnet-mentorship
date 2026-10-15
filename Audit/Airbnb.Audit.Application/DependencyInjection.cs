@@ -19,9 +19,6 @@ public static class DependencyInjection
     {
         var assembly = Assembly.GetExecutingAssembly();
 
-        // Validation
-        services.AddValidatorsFromAssembly(assembly);
-
         // Mapper
         var mapsterConfig = TypeAdapterConfig.GlobalSettings;
         mapsterConfig.Scan(assembly);

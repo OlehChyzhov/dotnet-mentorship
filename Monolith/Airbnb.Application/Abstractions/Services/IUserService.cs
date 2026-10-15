@@ -1,7 +1,7 @@
 using Airbnb.Domain.Models;
 using Microsoft.AspNetCore.Identity;
 
-namespace Airbnb.Application.Abstracts.Services;
+namespace Airbnb.Application.Abstractions.Services;
 
 public interface IUserService
 {
