@@ -13,11 +13,12 @@ public class UserAuditRepository : MongoRepository<UserAuditChangeEntity>, IUser
 
     public async Task<PagedResult<UserAuditChangeEntity>> GetAllAuditsPaged(UserAuditFilter parameters)
     {
-        var filter = _filterBuilder.Empty;
-
+        var filterBuilder = Builders<UserAuditChangeEntity>.Filter;
+        var filter = filterBuilder.Empty;
+        
         if (parameters.UserId != null)
         {
-            filter &= _filterBuilder.Eq(audit => audit.UserId, parameters.UserId);
+            filter &= filterBuilder.Eq(audit => audit.UserId, parameters.UserId);
         }
 
         if (parameters.Date != null)
@@ -25,13 +26,13 @@ public class UserAuditRepository : MongoRepository<UserAuditChangeEntity>, IUser
             var dayStart = DateTime.SpecifyKind(parameters.Date.Value.Date, DateTimeKind.Utc);
             var dayEnd = dayStart.AddDays(1);
 
-            filter &= _filterBuilder.Gte(audit => audit.CreatedAt, dayStart)
-                      & _filterBuilder.Lt(audit => audit.CreatedAt, dayEnd);
+            filter &= filterBuilder.Gte(audit => audit.CreatedAt, dayStart)
+                      & filterBuilder.Lt(audit => audit.CreatedAt, dayEnd);
         }
 
-        var totalCount = await _collection.CountDocumentsAsync(filter);
+        var totalCount = await Collection.CountDocumentsAsync(filter);
 
-        var audits = await _collection
+        var audits = await Collection
             .Find(filter)
             .SortByDescending(audit => audit.CreatedAt)
             .Skip((parameters.PageNumber - 1) * parameters.PageSize)
