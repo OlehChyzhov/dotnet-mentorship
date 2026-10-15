@@ -1,18 +1,22 @@
 <Solution>
-  <Folder Name="/Application/">
-    <Project Path="Application/Airbnb.API/Airbnb.API.csproj" />
-    <Project Path="Application/Airbnb.Application/Airbnb.Application.csproj" />
-    <Project Path="Application/Airbnb.CLI/Airbnb.CLI.csproj" />
-    <Project Path="Application/Airbnb.Domain/Airbnb.Domain.csproj" />
-    <Project Path="Application/Airbnb.Infrastructure/Airbnb.Infrastructure.csproj" />
-    <Project Path="Application/Airbnb.Tests/Airbnb.Tests.csproj" />
-  </Folder>
   <Folder Name="/Audit/">
     <Project Path="Audit/Airbnb.Audit.API/Airbnb.Audit.API.csproj" />
     <Project Path="Audit/Airbnb.Audit.Application/Airbnb.Audit.Application.csproj" />
     <Project Path="Audit/Airbnb.Audit.Domain/Airbnb.Audit.Domain.csproj" />
     <Project Path="Audit/Airbnb.Audit.Infrastructure/Airbnb.Audit.Infrastructure.csproj" />
-    <Project Path="Audit/Airbnb.Audit.Tests/Airbnb.Audit.Tests.csproj" />
+    <Project Path="Audit\Airbnb.Audit.UnitTests\Airbnb.Audit.UnitTests.csproj" />
+  </Folder>
+  <Folder Name="/Monolith/">
+    <Project Path="Monolith/Airbnb.API/Airbnb.API.csproj" />
+    <Project Path="Monolith/Airbnb.Application/Airbnb.Application.csproj" />
+    <Project Path="Monolith/Airbnb.Domain/Airbnb.Domain.csproj" />
+    <Project Path="Monolith/Airbnb.Infrastructure/Airbnb.Infrastructure.csproj" />
+    <Project Path="Monolith/Airbnb.Migrator/Airbnb.Migrator.csproj" />
+    <Project Path="Monolith/Airbnb.UnitTests/Airbnb.UnitTests.csproj" />
+  </Folder>
+  <Folder Name="/Shared/">
+    <Project Path="Shared/Airbnb.Contracts/Airbnb.Contracts.csproj" />
+    <Project Path="Shared/Airbnb.Messaging/Airbnb.Messaging.csproj" />
   </Folder>
   <Folder Name="/Solution Items/">
     <File Path=".env" />
