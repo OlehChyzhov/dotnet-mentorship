@@ -1,7 +1,9 @@
+using Airbnb.Audit.Domain.Attributes;
 using Airbnb.Audit.Domain.Enums;
 
 namespace Airbnb.Audit.Domain.Models;
 
+[BsonCollection("user_audits")]
 public class UserAuditChangeEntity
 {
     public string? Id { get; set; }

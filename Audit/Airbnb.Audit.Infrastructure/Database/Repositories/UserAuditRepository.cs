@@ -9,7 +9,7 @@ namespace Airbnb.Audit.Infrastructure.Database.Repositories;
 
 public class UserAuditRepository : MongoRepository<UserAuditChangeEntity>, IUserAuditRepository
 {
-    public UserAuditRepository(IMongoDatabase db): base(database: db, collectionName: "user_audits") { }
+    public UserAuditRepository(IMongoDatabase db): base(db) { }
 
     public async Task<PagedResult<UserAuditChangeEntity>> GetAllAuditsPaged(UserAuditFilter parameters)
     {
