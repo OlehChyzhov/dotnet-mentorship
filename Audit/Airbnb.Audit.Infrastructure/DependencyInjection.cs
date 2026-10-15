@@ -1,9 +1,6 @@
 using Airbnb.Audit.Application.Abstractions.Repositories;
-using Airbnb.Audit.Domain.Enums;
-using Airbnb.Audit.Domain.Models;
-using Airbnb.Audit.Infrastructure.Database.Configurations;
+using Airbnb.Audit.Infrastructure.Database.Maps;
 using Airbnb.Audit.Infrastructure.Database.Repositories;
-using Airbnb.Audit.Infrastructure.Options;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using MongoDB.Bson.Serialization;
