@@ -14,7 +14,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddTransient<ValidationMiddleware>();
 
 // Message Broker
-await builder.Services.AddPublisher(builder.Configuration);
+builder.Services.AddRabbitMq(builder.Configuration);
 
 // DbContext, Repositories, UnitOfWork, etc.
 await builder.Services.AddInfrastructureAsync(builder.Configuration);
