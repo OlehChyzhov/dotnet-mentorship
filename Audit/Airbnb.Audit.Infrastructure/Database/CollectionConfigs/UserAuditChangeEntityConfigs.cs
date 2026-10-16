@@ -5,11 +5,11 @@ using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.IdGenerators;
 using MongoDB.Bson.Serialization.Serializers;
 
-namespace Airbnb.Audit.Infrastructure.Database.Maps;
+namespace Airbnb.Audit.Infrastructure.Database.CollectionConfigs;
 
-public class UserAuditChangeEntityMap : BsonClassMap<UserAuditChangeEntity>
+public class UserAuditChangeEntityConfigs : BsonClassMap<UserAuditChangeEntity>
 {
-    public UserAuditChangeEntityMap()
+    public UserAuditChangeEntityConfigs()
     {
         AutoMap();
         

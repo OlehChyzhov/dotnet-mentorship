@@ -1,0 +1,3 @@
+[*.cs]
+# CS8633: Nullability in constraints for type parameter doesn't match the constraints for type parameter in implicitly implemented interface method'.
+dotnet_diagnostic.CS8633.severity = none

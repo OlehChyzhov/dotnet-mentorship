@@ -16,7 +16,7 @@ builder.Services.AddRabbitMq(builder.Configuration, config =>
 });
 
 // DbContext, Repositories, UnitOfWork, etc.
-await builder.Services.AddInfrastructureAsync(builder.Configuration);
+builder.Services.AddInfrastructure(builder.Configuration);
 
 // Services, Mapping, Validation
 builder.Services.AddApplication();

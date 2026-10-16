@@ -12,13 +12,8 @@ public class MassTransitPublisher : IEventPublisher
         _publishEndpoint = publishEndpoint;
     }
     
-    public async Task PublishAsync<TMessage>(TMessage message)
+    public async Task PublishAsync<TMessage>(TMessage message, CancellationToken cancellationToken = default) where TMessage : notnull
     {
-        if (message == null)
-        {
-            return;
-        }
-        
-        await _publishEndpoint.Publish(message);
+        await _publishEndpoint.Publish(message, cancellationToken);
     }
 }
