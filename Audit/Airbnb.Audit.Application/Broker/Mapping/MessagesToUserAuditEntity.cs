@@ -5,7 +5,7 @@ using Mapster;
 
 namespace Airbnb.Audit.Application.Broker.Mapping;
 
-public class MessagesToUserAuditEntityMappingConfig : IRegister
+public class MessagesToUserAuditEntity : IRegister
 {
     public void Register(TypeAdapterConfig config)
     {
