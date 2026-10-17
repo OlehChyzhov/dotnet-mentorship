@@ -1,4 +1,4 @@
-﻿namespace Airbnb.Contracts;
+﻿namespace Airbnb.Contracts.HTTP;
 
 public class Result<T>
 {

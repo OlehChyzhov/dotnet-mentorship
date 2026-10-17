@@ -3,7 +3,8 @@ using Airbnb.Audit.Application.Abstractions.Services;
 using Airbnb.Audit.Application.DTOs;
 using Airbnb.Audit.Application.Querying;
 using Airbnb.Contracts;
-using Airbnb.Contracts.Paging;
+using Airbnb.Contracts.HTTP;
+using Airbnb.Contracts.HTTP.Paging;
 using MapsterMapper;
 
 namespace Airbnb.Audit.Application.Services;

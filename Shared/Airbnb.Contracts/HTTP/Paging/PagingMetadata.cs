@@ -1,4 +1,4 @@
-namespace Airbnb.Contracts.Paging;
+namespace Airbnb.Contracts.HTTP.Paging;
 
 public class PagingMetadata
 {

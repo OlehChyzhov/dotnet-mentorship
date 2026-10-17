@@ -2,18 +2,18 @@ using Airbnb.Audit.Application.Abstractions.Repositories;
 using Airbnb.Audit.Application.Querying;
 using Airbnb.Audit.Domain.Models;
 using Airbnb.Contracts;
-using Airbnb.Contracts.Paging;
+using Airbnb.Contracts.HTTP.Paging;
 using MongoDB.Driver;
 
 namespace Airbnb.Audit.Infrastructure.Database.Repositories;
 
-public class UserAuditRepository : MongoRepository<UserAuditChangeEntity>, IUserAuditRepository
+public class UserAuditRepository : MongoRepository<UserAuditEntity>, IUserAuditRepository
 {
     public UserAuditRepository(MongoDbContext db): base(db) { }
 
-    public async Task<PagedResult<UserAuditChangeEntity>> GetAllAuditsPaged(UserAuditFilter parameters)
+    public async Task<PagedResult<UserAuditEntity>> GetAllAuditsPaged(UserAuditFilter parameters)
     {
-        var filterBuilder = Builders<UserAuditChangeEntity>.Filter;
+        var filterBuilder = Builders<UserAuditEntity>.Filter;
         var filter = filterBuilder.Empty;
         
         if (parameters.UserId != null)
@@ -39,7 +39,7 @@ public class UserAuditRepository : MongoRepository<UserAuditChangeEntity>, IUser
             .Limit(parameters.PageSize)
             .ToListAsync();
 
-        return new PagedResult<UserAuditChangeEntity>(
+        return new PagedResult<UserAuditEntity>(
             items: audits, 
             totalCount: (int)totalCount, 
             pageNumber: parameters.PageNumber, 

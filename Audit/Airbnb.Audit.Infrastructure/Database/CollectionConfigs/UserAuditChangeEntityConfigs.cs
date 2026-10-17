@@ -7,7 +7,7 @@ using MongoDB.Bson.Serialization.Serializers;
 
 namespace Airbnb.Audit.Infrastructure.Database.CollectionConfigs;
 
-public class UserAuditChangeEntityConfigs : BsonClassMap<UserAuditChangeEntity>
+public class UserAuditChangeEntityConfigs : BsonClassMap<UserAuditEntity>
 {
     public UserAuditChangeEntityConfigs()
     {

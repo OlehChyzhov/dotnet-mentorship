@@ -3,7 +3,7 @@ using MassTransit;
 
 namespace Airbnb.Messaging.Broker;
 
-public class MassTransitPublisher : IEventPublisher
+public class MassTransitPublisher : IPublisher
 {
     private readonly IPublishEndpoint _publishEndpoint;
     

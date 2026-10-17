@@ -12,7 +12,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Message Broker
 builder.Services.AddRabbitMq(builder.Configuration, config =>
 {
-    config.AddConsumersFromNamespaceContaining<UserCreatedConsumer>();
+    config.AddConsumersFromNamespaceContaining<ApartmentMessageConsumer>();
 });
 
 // DbContext, Repositories, UnitOfWork, etc.

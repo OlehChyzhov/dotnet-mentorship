@@ -1,6 +1,6 @@
 namespace Airbnb.Contracts.Broker;
 
-public interface IEventPublisher
+public interface IPublisher
 {
     Task PublishAsync<TMessage>(TMessage message, CancellationToken cancellationToken = default);
 }

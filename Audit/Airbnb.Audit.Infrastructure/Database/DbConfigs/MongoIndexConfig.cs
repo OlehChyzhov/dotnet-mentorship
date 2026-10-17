@@ -8,18 +8,18 @@ public sealed class MongoIndexConfig(MongoDbContext dbContext) : IHostedService
 {
     public async Task StartAsync(CancellationToken cancellationToken)
     {
-        var keys = Builders<UserAuditChangeEntity>.IndexKeys;
+        var keys = Builders<UserAuditEntity>.IndexKeys;
         
         // User Audit Collection Indexes
         await dbContext.UserAudits.Indexes.CreateManyAsync([
             
             // Search by date
-            new CreateIndexModel<UserAuditChangeEntity>(
+            new CreateIndexModel<UserAuditEntity>(
                 keys.Ascending(x => x.CreatedAt),
                 new CreateIndexOptions { Name = "ix_createdAt" }),
             
             // Search by user id for the specified date
-            new CreateIndexModel<UserAuditChangeEntity>(
+            new CreateIndexModel<UserAuditEntity>(
                 keys.Ascending(x => x.UserId).Ascending(x => x.CreatedAt), 
                 new CreateIndexOptions { Name = "ix_userId_createdAt"}),
             

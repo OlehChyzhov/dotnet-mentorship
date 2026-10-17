@@ -35,7 +35,7 @@ public static class DependencyInjection
             });
         });
 
-        services.AddScoped<IEventPublisher, MassTransitPublisher>();
+        services.AddScoped<IPublisher, MassTransitPublisher>();
         
         return services;
     }

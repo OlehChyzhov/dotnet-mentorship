@@ -14,7 +14,7 @@ public class MongoDbContext : IDisposable
         _db = db;
     }
 
-    public IMongoCollection<UserAuditChangeEntity> UserAudits => GetCollection<UserAuditChangeEntity>();
+    public IMongoCollection<UserAuditEntity> UserAudits => GetCollection<UserAuditEntity>();
 
     public IMongoCollection<T> GetCollection<T>()
     {

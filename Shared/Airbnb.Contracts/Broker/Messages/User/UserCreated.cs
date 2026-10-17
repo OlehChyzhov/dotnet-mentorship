@@ -1,9 +1,6 @@
 namespace Airbnb.Contracts.Broker.Messages.User;
 
-public class UserCreated
+public record UserCreated
 {
-    public string? UserId { get; set; }
-    public string? UserName { get; set; }
-    public string? Email { get; set; }
-    public DateTime? CreatedAt { get; set; }
+    public string EntityId { get; set; } = string.Empty;
 }

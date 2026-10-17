@@ -1,5 +1,6 @@
 using Airbnb.Audit.Application.Abstractions.Repositories;
 using Airbnb.Contracts;
+using Airbnb.Contracts.HTTP;
 using MongoDB.Bson;
 using MongoDB.Driver;
 

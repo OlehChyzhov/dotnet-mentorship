@@ -9,6 +9,6 @@ public class UserAuditMappingConfig : IRegister
     public void Register(TypeAdapterConfig config)
     {
         // UserAuditChangeEntity => UserAuditDto
-        config.NewConfig<UserAuditChangeEntity, UserAuditDto>();
+        config.NewConfig<UserAuditEntity, UserAuditDto>();
     }
 }

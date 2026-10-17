@@ -43,6 +43,13 @@ public abstract class Repository<TEntity, TKey, TExternalKey> : IRepository<TEnt
         return Task.CompletedTask;
     }
 
+    public Task DeleteAsync(TKey entityId)
+    {
+        var entityToDelete = DbSet.First(x => x.Id!.Equals(entityId));
+        DbSet.Remove(entityToDelete);
+        return Task.CompletedTask;
+    }
+
     protected async Task<IEnumerable<TEntity>> FindAsync(Expression<Func<TEntity, bool>> predicate)
     {
         return await DbSet.Where(predicate).AsNoTracking().ToListAsync();
