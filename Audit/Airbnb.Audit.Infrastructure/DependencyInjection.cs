@@ -28,7 +28,9 @@ public static class DependencyInjection
         services.AddHostedService<MongoIndexConfig>();
         
         // Collection Configurations
-        BsonClassMap.RegisterClassMap(new UserAuditChangeEntityConfigs());
+        BsonClassMap.RegisterClassMap(new UserAuditEntityConfigs());
+        BsonClassMap.RegisterClassMap(new ApartmentAuditEntityConfigs());
+        BsonClassMap.RegisterClassMap(new BookingAuditEntityConfigs());
         
         services.AddScoped<IUserAuditRepository, UserAuditRepository>();
         

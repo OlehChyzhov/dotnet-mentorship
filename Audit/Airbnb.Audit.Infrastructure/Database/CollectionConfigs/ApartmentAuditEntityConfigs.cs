@@ -7,9 +7,9 @@ using MongoDB.Bson.Serialization.Serializers;
 
 namespace Airbnb.Audit.Infrastructure.Database.CollectionConfigs;
 
-public class UserAuditChangeEntityConfigs : BsonClassMap<UserAuditEntity>
+public class ApartmentAuditEntityConfigs : BsonClassMap<ApartmentAuditEntity>
 {
-    public UserAuditChangeEntityConfigs()
+    public ApartmentAuditEntityConfigs()
     {
         AutoMap();
         
@@ -18,6 +18,6 @@ public class UserAuditChangeEntityConfigs : BsonClassMap<UserAuditEntity>
             .SetSerializer(new StringSerializer(BsonType.ObjectId));
         
         MapMember(x => x.ChangeType)
-            .SetSerializer(new EnumSerializer<ChangeType>(BsonType.String));
+            .SetSerializer(new NullableSerializer<ChangeType>(new EnumSerializer<ChangeType>(BsonType.String)));
     }
 }
