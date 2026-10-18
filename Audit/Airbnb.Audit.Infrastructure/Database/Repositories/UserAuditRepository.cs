@@ -30,20 +30,8 @@ public class UserAuditRepository : MongoRepository<UserAuditEntity>, IUserAuditR
                       & filterBuilder.Lt(audit => audit.EventOccuredAt, dayEnd);
         }
 
-        var totalCount = await Collection.CountDocumentsAsync(filter);
-
-        var audits = await Collection
-            .Find(filter)
-            .SortByDescending(audit => audit.EventOccuredAt)
-            .Skip((parameters.PageNumber - 1) * parameters.PageSize)
-            .Limit(parameters.PageSize)
-            .ToListAsync();
-
-        return new PagedResult<UserAuditEntity>(
-            items: audits, 
-            totalCount: (int)totalCount, 
-            pageNumber: parameters.PageNumber, 
-            pageSize: parameters.PageSize
-        );
+        var sort = Builders<UserAuditEntity>.Sort.Descending(x => x.EventOccuredAt);
+        var paged = await GetPagedAsync(filter, sort, parameters.PageNumber, parameters.PageSize);
+        return paged;
     }
 }

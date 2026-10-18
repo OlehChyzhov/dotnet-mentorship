@@ -33,7 +33,7 @@ public class BookingAuditService : IBookingAuditService
 
     public async  Task<Result<PagedResult<BookingAuditDto>>> GetAuditsPaged(BookingAuditFilter parameters)
     {
-        var auditsPaged = await _auditRepository.GetAllAuditsPaged(parameters);
+        var auditsPaged = await _auditRepository.GetBookingsPagedAsync(parameters);
         var auditsDto = _mapper.Map<List<BookingAuditDto>>(auditsPaged.Items);
         
         var auditResult = new PagedResult<BookingAuditDto>(

@@ -4,7 +4,7 @@ namespace Airbnb.Audit.Application.DTOs;
 
 public class ApartmentAuditDto
 {
-    public string AuditId { get; set; } = string.Empty;
+    public string Id { get; set; } = string.Empty;
     public string ApartmentId { get; set; } = string.Empty;
     public ChangeType ChangeType { get; set; }
     public string? UpdatedProperty { get; set; }

@@ -1,6 +1,8 @@
+using System.Linq.Expressions;
 using Airbnb.Audit.Application.Abstractions.Repositories;
 using Airbnb.Contracts;
 using Airbnb.Contracts.HTTP;
+using Airbnb.Contracts.HTTP.Paging;
 using MongoDB.Bson;
 using MongoDB.Driver;
 
@@ -21,12 +23,6 @@ public abstract class MongoRepository<T> : IRepository<T>
         return await Collection.Find(filter).FirstOrDefaultAsync();
     }
 
-    public async Task<Result<IEnumerable<T>>> GetAllAsync()
-    {
-        var audits = await Collection.FindAsync(_ => true);
-        return audits.ToList();
-    }
-
     public async Task CreateAsync(T entity)
     {
         await Collection.InsertOneAsync(entity);
@@ -36,5 +32,30 @@ public abstract class MongoRepository<T> : IRepository<T>
     {
         var filter =  Builders<T>.Filter.Eq("_id", ObjectId.Parse(id));
         await Collection.ReplaceOneAsync(filter, entity);
+    }
+
+    public async Task DeleteAsync(string id)
+    {
+        var filter = Builders<T>.Filter.Eq("_id", ObjectId.Parse(id));
+        await Collection.DeleteOneAsync(filter);
+    }
+    
+    protected async Task<PagedResult<T>> GetPagedAsync(
+        FilterDefinition<T> filter, 
+        SortDefinition<T> sort, 
+        int pageNumber, 
+        int pageSize, 
+        CancellationToken cancellationToken = default)
+    {
+        var totalCount = await Collection.CountDocumentsAsync(filter, cancellationToken: cancellationToken);
+        
+        var audits = await Collection
+            .Find(filter)
+            .Sort(sort)
+            .Skip((pageNumber - 1) * pageSize)
+            .Limit(pageSize)
+            .ToListAsync(cancellationToken);
+        
+        return new PagedResult<T>(audits, (int)totalCount, pageNumber, pageSize);
     }
 }

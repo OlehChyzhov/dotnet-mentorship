@@ -33,7 +33,7 @@ public class ApartmentAuditService : IApartmentAuditService
 
     public async Task<Result<PagedResult<ApartmentAuditDto>>> GetAuditsPaged(ApartmentAuditFilter parameters)
     {
-        var auditsPaged = await _auditRepository.GetAllAuditsPaged(parameters);
+        var auditsPaged = await _auditRepository.GetApartmentsPagedAsync(parameters);
         var auditsDto = _mapper.Map<List<ApartmentAuditDto>>(auditsPaged.Items);
         
         var auditResult = new PagedResult<ApartmentAuditDto>(

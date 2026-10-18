@@ -4,7 +4,7 @@ using Mapster;
 
 namespace Airbnb.Audit.Application.Mapping;
 
-public class UserAuditMappingConfig : IRegister
+public class UserAuditMapping : IRegister
 {
     public void Register(TypeAdapterConfig config)
     {

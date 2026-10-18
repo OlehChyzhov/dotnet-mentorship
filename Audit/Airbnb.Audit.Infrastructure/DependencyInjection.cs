@@ -33,6 +33,8 @@ public static class DependencyInjection
         BsonClassMap.RegisterClassMap(new BookingAuditEntityConfigs());
         
         services.AddScoped<IUserAuditRepository, UserAuditRepository>();
+        services.AddScoped<IApartmentAuditRepository, ApartmentAuditRepository>();
+        services.AddScoped<IBookingAuditRepository, BookingAuditRepository>();
         
         return services;
     }
