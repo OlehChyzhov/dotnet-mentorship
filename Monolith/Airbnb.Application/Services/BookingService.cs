@@ -81,6 +81,8 @@ public class BookingService : IBookingService
         var createdBooking = await _unitOfWork.Bookings.GetByIdAsync(bookingId);
         var createdBookingDto = _mapper.Map<BookingDto>(createdBooking);
         
+        await _publisher.PublishAsync(new BookingCreated() { EntityId = createdBookingDto.Id.ToString() });
+        
         return createdBookingDto;
     }
 

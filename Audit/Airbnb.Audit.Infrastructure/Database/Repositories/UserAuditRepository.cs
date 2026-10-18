@@ -26,15 +26,15 @@ public class UserAuditRepository : MongoRepository<UserAuditEntity>, IUserAuditR
             var dayStart = DateTime.SpecifyKind(parameters.Date.Value.Date, DateTimeKind.Utc);
             var dayEnd = dayStart.AddDays(1);
 
-            filter &= filterBuilder.Gte(audit => audit.CreatedAt, dayStart)
-                      & filterBuilder.Lt(audit => audit.CreatedAt, dayEnd);
+            filter &= filterBuilder.Gte(audit => audit.EventOccuredAt, dayStart)
+                      & filterBuilder.Lt(audit => audit.EventOccuredAt, dayEnd);
         }
 
         var totalCount = await Collection.CountDocumentsAsync(filter);
 
         var audits = await Collection
             .Find(filter)
-            .SortByDescending(audit => audit.CreatedAt)
+            .SortByDescending(audit => audit.EventOccuredAt)
             .Skip((parameters.PageNumber - 1) * parameters.PageSize)
             .Limit(parameters.PageSize)
             .ToListAsync();

@@ -12,5 +12,6 @@ public class UserAuditEntity
     public string? UpdatedProperty { get; set; }
     public string? OldValue { get; set; }
     public string? NewValue { get; set; }
-    public DateTime? CreatedAt { get; set; } = DateTime.UtcNow;
+    public DateTime? EventOccuredAt { get; set; }
+    public DateTime? AuditCreatedAt { get; set; }
 }

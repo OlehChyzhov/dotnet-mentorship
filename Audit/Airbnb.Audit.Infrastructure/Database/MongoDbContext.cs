@@ -15,7 +15,11 @@ public class MongoDbContext : IDisposable
     }
 
     public IMongoCollection<UserAuditEntity> UserAudits => GetCollection<UserAuditEntity>();
-
+    
+    public IMongoCollection<ApartmentAuditEntity> ApartmentAudits => GetCollection<ApartmentAuditEntity>();
+    
+    public IMongoCollection<BookingAuditEntity> BookingAudits => GetCollection<BookingAuditEntity>();
+    
     public IMongoCollection<T> GetCollection<T>()
     {
         return _db.GetCollection<T>(GetCollectionName<T>());

@@ -8,21 +8,41 @@ public sealed class MongoIndexConfig(MongoDbContext dbContext) : IHostedService
 {
     public async Task StartAsync(CancellationToken cancellationToken)
     {
-        var keys = Builders<UserAuditEntity>.IndexKeys;
-        
         // User Audit Collection Indexes
+        var userIndexBuilder = Builders<UserAuditEntity>.IndexKeys;
         await dbContext.UserAudits.Indexes.CreateManyAsync([
-            
-            // Search by date
             new CreateIndexModel<UserAuditEntity>(
-                keys.Ascending(x => x.CreatedAt),
-                new CreateIndexOptions { Name = "ix_createdAt" }),
+                userIndexBuilder.Ascending(x => x.EventOccuredAt),
+                new CreateIndexOptions { Name = "ix_eventOccuredAt" }),
             
-            // Search by user id for the specified date
             new CreateIndexModel<UserAuditEntity>(
-                keys.Ascending(x => x.UserId).Ascending(x => x.CreatedAt), 
-                new CreateIndexOptions { Name = "ix_userId_createdAt"}),
+                userIndexBuilder.Ascending(x => x.UserId).Ascending(x => x.EventOccuredAt), 
+                new CreateIndexOptions { Name = "ix_userId_eventOccuredAt"}),
             
+        ], cancellationToken);
+
+        // Apartment Audit Collection Indexes
+        var apartmentIndexBuilder = Builders<ApartmentAuditEntity>.IndexKeys;
+        await dbContext.ApartmentAudits.Indexes.CreateManyAsync([
+            new CreateIndexModel<ApartmentAuditEntity>(
+                apartmentIndexBuilder.Ascending(x => x.EventOccuredAt), 
+                new CreateIndexOptions() { Name = "ix_eventOccuredAt" }),
+            
+            new CreateIndexModel<ApartmentAuditEntity>(
+                apartmentIndexBuilder.Ascending(x => x.ApartmentId).Ascending(x => x.EventOccuredAt), 
+                new CreateIndexOptions() { Name = "ix_apartmentId_eventOccuredAt"})
+        ], cancellationToken);
+        
+        // Booking Audit Collection Indexes
+        var bookingIndexBuilder = Builders<BookingAuditEntity>.IndexKeys;
+        await dbContext.BookingAudits.Indexes.CreateManyAsync([
+            new CreateIndexModel<BookingAuditEntity>(
+                bookingIndexBuilder.Ascending(x => x.EventOccuredAt), 
+                new CreateIndexOptions() { Name = "ix_eventOccuredAt" }),
+            
+            new CreateIndexModel<BookingAuditEntity>(
+                bookingIndexBuilder.Ascending(x => x.BookingId).Ascending(x => x.EventOccuredAt), 
+                new CreateIndexOptions() { Name = "ix_bookingId_eventOccuredAt"})
         ], cancellationToken);
     }
 
