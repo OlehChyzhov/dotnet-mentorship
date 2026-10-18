@@ -1,26 +1,24 @@
-using System.Text.Json;
-using Airbnb.Audit.Application.Abstractions.Repositories;
 using Airbnb.Audit.Application.Abstractions.Services;
 using Airbnb.Audit.Application.Querying;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Airbnb.Audit.API.Controllers;
 
-[Route("api/user-audits")]
+[Route("api/apartment-audits")]
 [ApiController]
-public class UserAuditsController : ControllerBase
+public class ApartmentController : ControllerBase
 {
-    private readonly IUserAuditService _userAuditService;
+    private readonly IApartmentAuditService _apartmentAuditService;
     
-    public UserAuditsController(IUserAuditService service)
+    public ApartmentController(IApartmentAuditService service)
     {
-        _userAuditService = service;
+        _apartmentAuditService = service;
     }
 
     [HttpGet("{auditId}")]
     public async Task<IActionResult> GetAuditByIdAsync(string auditId)
     {
-        var result = await _userAuditService.GetAuditByIdAsync(auditId);
+        var result = await _apartmentAuditService.GetAuditByIdAsync(auditId);
         if (!result.IsSuccessful)
         {
             return BadRequest(result.Message);
@@ -30,9 +28,9 @@ public class UserAuditsController : ControllerBase
     }
     
     [HttpGet("all")]
-    public async Task<IActionResult> GetAllAuditsAsync([FromQuery] UserAuditFilter parameters)
+    public async Task<IActionResult> GetAllAuditsAsync([FromQuery] ApartmentAuditFilter parameters)
     {
-        var result = await _userAuditService.GetAuditsPaged(parameters);
+        var result = await _apartmentAuditService.GetAuditsPaged(parameters);
         if (!result.IsSuccessful)
         {
             return BadRequest(result.Message);
