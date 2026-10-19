@@ -1,11 +1,11 @@
-﻿using Airbnb.Application.Abstractions.Services;
-using Airbnb.Application.Abstracts.Repositories;
-using Airbnb.Application.Abstracts.Services;
+﻿using Airbnb.Application.Abstractions.Repositories;
+using Airbnb.Application.Abstractions.Services;
 using Airbnb.Application.DTOs.Apartment;
 using Airbnb.Application.DTOs.Querying;
-using Airbnb.Contracts;
-using Airbnb.Contracts.Paging;
-using Airbnb.Domain;
+using Airbnb.Contracts.Broker;
+using Airbnb.Contracts.Broker.Messages.Apartment;
+using Airbnb.Contracts.HTTP;
+using Airbnb.Contracts.HTTP.Paging;
 using Airbnb.Domain.Enums;
 using Airbnb.Domain.Models;
 using MapsterMapper;
@@ -14,11 +14,13 @@ namespace Airbnb.Application.Services;
 
 public class ApartmentService : IApartmentService
 {
+    private readonly IPublisher _publisher;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
 
-    public ApartmentService(IUnitOfWork unitOfWork, IMapper mapper)
+    public ApartmentService(IPublisher publisher, IUnitOfWork unitOfWork, IMapper mapper)
     {
+        _publisher = publisher;
         _unitOfWork = unitOfWork;
         _mapper = mapper;
     }
@@ -68,6 +70,8 @@ public class ApartmentService : IApartmentService
         
         var createdApartment = await _unitOfWork.Apartments.GetByIdAsync(apartmentGuid);
         var createdApartmentDto = _mapper.Map<ApartmentDto>(createdApartment);
+
+        await _publisher.PublishAsync(new ApartmentCreated() { EntityId = apartment.Id.ToString() });
         
         return createdApartmentDto;
     }
@@ -82,8 +86,18 @@ public class ApartmentService : IApartmentService
         {
             return upsertResult.Message!;
         }
+        
+        // TODO: Add message showing update of multiple properties
 
         return _mapper.Map<ApartmentDto>(upsertResult.Value!);
+    }
+
+    public async Task DeleteApartmentAsync(Guid id)
+    {
+        await _unitOfWork.Apartments.DeleteAsync(id);
+        await _unitOfWork.SaveChangesAsync();
+        
+        await _publisher.PublishAsync(new ApartmentDeleted() { EntityId = id.ToString() });
     }
 
     public async Task<Result<List<ApartmentByProfitDto>>> GetTopApartmentsByProfitAsync(int numOfApartments, string userId) =>

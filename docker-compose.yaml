@@ -44,12 +44,9 @@
       ConnectionStrings__DefaultConnection: ${APPLICATION_DB_CONNECTION_STRING}
       DefaultUserOptions__DefaultPassword: ${APPLICATION_DEFAULT_USER_PASSWORD}
       
-      RabbitMq__HostName: ${RABBITMQ_HOSTNAME}
-      RabbitMq__Port: ${RABBITMQ_PORT}
+      RabbitMq__HostUri: ${RABBITMQ_HOST_URI}
       RabbitMq__UserName: ${RABBITMQ_USER}
       RabbitMq__Password: ${RABBITMQ_PASSWORD}
-      RabbitMq__Exchange: ${RABBITMQ_EXCHANGE}
-      RabbitMq__ClientProvidedName: "user-service"
     depends_on:
       airbnb.sqlserver:
         condition: service_started
@@ -81,12 +78,9 @@
     environment:
       ConnectionStrings__MongoDB: ${AUDIT_MONGODB_DB_CONNECTION_STRING}
       
-      RabbitMq__HostName: ${RABBITMQ_HOSTNAME}
-      RabbitMq__Port: ${RABBITMQ_PORT}
+      RabbitMq__HostUri: ${RABBITMQ_HOST_URI}
       RabbitMq__UserName: ${RABBITMQ_USER}
       RabbitMq__Password: ${RABBITMQ_PASSWORD}
-      RabbitMq__Exchange: ${RABBITMQ_EXCHANGE}
-      RabbitMq__ClientProvidedName: "audit_service"
     depends_on:
       airbnb.audit.mongodb:
         condition: service_started

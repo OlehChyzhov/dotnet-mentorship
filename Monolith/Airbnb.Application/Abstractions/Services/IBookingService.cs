@@ -1,7 +1,8 @@
 ﻿using Airbnb.Application.DTOs.Booking;
 using Airbnb.Application.DTOs.Querying;
 using Airbnb.Contracts;
-using Airbnb.Contracts.Paging;
+using Airbnb.Contracts.HTTP;
+using Airbnb.Contracts.HTTP.Paging;
 
 namespace Airbnb.Application.Abstractions.Services;
 

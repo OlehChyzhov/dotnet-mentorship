@@ -10,14 +10,14 @@ namespace Airbnb.Application.Services;
 public class UserService : IUserService
 {
     private readonly IIdentityService _identityService;
-    private readonly IEventPublisher _eventPublisher;
+    private readonly IPublisher _publisher;
 
     public UserService(
         IIdentityService identityService,
-        IEventPublisher eventPublisher)
+        IPublisher publisher)
     {
         _identityService = identityService;
-        _eventPublisher = eventPublisher;
+        _publisher = publisher;
     }
 
     public async Task<IdentityResult> CreateUserAsync(User user, string password, string role)
@@ -36,14 +36,8 @@ public class UserService : IUserService
 
         result = await _identityService.AddUserToRoleAsync(user, role);
         if (!result.Succeeded) return result;
-
-        await _eventPublisher.PublishAsync(new UserCreated()
-        {
-            UserId = user.Id,
-            UserName = user.UserName,
-            Email = user.Email,
-            CreatedAt = DateTime.UtcNow,
-        });
+        
+        await _publisher.PublishAsync(new UserCreated() { EntityId = user.Id });
         
         return result;
     }
@@ -58,15 +52,15 @@ public class UserService : IUserService
         var result = await _identityService.ChangeEmailAsync(user, newEmail);
         if (!result.Succeeded) return result;
 
-        await _eventPublisher.PublishAsync(new UserEmailChanged()
+        var message = new UserUpdated()
         {
-            UserId = user.Id,
-            UserName = user.UserName,
-            CreatedAt = DateTime.UtcNow,
-            OldEmail = oldEmail,
-            NewEmail = newEmail,
-        });
-
+            EntityId = user.Id, 
+            PropertyName = nameof(user.Email), 
+            NewValue = user.Email, 
+            OldValue = oldEmail
+        };
+        
+        await _publisher.PublishAsync(message);
         return result;
     }
 
@@ -77,14 +71,8 @@ public class UserService : IUserService
 
         var result = await _identityService.DeleteUserAsync(user);
         if (!result.Succeeded) return result;
-
-        await _eventPublisher.PublishAsync(new UserDeleted()
-        {
-            UserId = user.Id,
-            UserName = user.UserName,
-            Email = user.Email,
-            CreatedAt = DateTime.UtcNow,
-        });
+        
+        await _publisher.PublishAsync(new UserDeleted() { EntityId = user.Id });
 
         return result;
     }

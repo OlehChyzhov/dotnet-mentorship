@@ -3,8 +3,10 @@ using System.Text;
 using Airbnb.API.Middleware;
 using Airbnb.Application;
 using Airbnb.Infrastructure;
+using Airbnb.Infrastructure.Database;
 using Airbnb.Messaging;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Scalar.AspNetCore;
 
@@ -14,7 +16,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddTransient<ValidationMiddleware>();
 
 // Message Broker
-await builder.Services.AddPublisher(builder.Configuration);
+builder.Services.AddRabbitMq(builder.Configuration);
 
 // DbContext, Repositories, UnitOfWork, etc.
 await builder.Services.AddInfrastructureAsync(builder.Configuration);
@@ -73,6 +75,14 @@ if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
             .WithTheme(ScalarTheme.Default)
             .WithDefaultHttpClient(ScalarTarget.CSharp, ScalarClient.Http);
     });
+
+    // TODO: Replace with explicit step in CI/CD using bundle
+    // TODO: Add migration in docker-compose file
+    using (var scope = app.Services.CreateScope())
+    {
+        var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        await db.Database.MigrateAsync();
+    }
 }
 
 app.UseHttpsRedirection();

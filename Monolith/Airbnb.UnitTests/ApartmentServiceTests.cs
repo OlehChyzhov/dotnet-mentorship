@@ -4,7 +4,9 @@ using Airbnb.Application.DTOs.Apartment;
 using Airbnb.Application.DTOs.Querying;
 using Airbnb.Application.Services;
 using Airbnb.Contracts;
-using Airbnb.Contracts.Paging;
+using Airbnb.Contracts.Broker;
+using Airbnb.Contracts.HTTP;
+using Airbnb.Contracts.HTTP.Paging;
 using Airbnb.Domain;
 using Airbnb.Domain.Enums;
 using Airbnb.Domain.Models;
@@ -16,6 +18,7 @@ namespace Airbnb.Tests;
 
 public class ApartmentServiceTests
 {
+    private readonly Mock<IPublisher> _publisherMock;
     private readonly Mock<IUnitOfWork> _unitOfWorkMock;
     private readonly Mock<IApartmentRepository> _apartmentRepositoryMock;
     private readonly Mock<IMapper> _mapperMock;
@@ -23,13 +26,14 @@ public class ApartmentServiceTests
 
     public ApartmentServiceTests()
     {
+        _publisherMock = new Mock<IPublisher>();
         _apartmentRepositoryMock = new Mock<IApartmentRepository>();
         _unitOfWorkMock = new Mock<IUnitOfWork>();
         _unitOfWorkMock.Setup(u => u.Apartments).Returns(_apartmentRepositoryMock.Object);
 
         _mapperMock = new Mock<IMapper>();
 
-        _sut = new ApartmentService(_unitOfWorkMock.Object, _mapperMock.Object);
+        _sut = new ApartmentService(_publisherMock.Object, _unitOfWorkMock.Object, _mapperMock.Object);
     }
 
     private static Apartment CreateApartment(Guid id, bool isListed = true) => new()

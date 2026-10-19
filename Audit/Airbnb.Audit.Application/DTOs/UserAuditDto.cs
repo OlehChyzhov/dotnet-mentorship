@@ -4,11 +4,12 @@ namespace Airbnb.Audit.Application.DTOs;
 
 public record UserAuditDto
 {
-    public string? Id { get; init; }
-    public string? UserId { get; init; }
-    public string? UserName { get; init; }
-    public string? Email { get; init; }
-    public ChangeType ChangeType { get; init; }
-    public string? OldValue { get; init; }
-    public DateTime CreatedAt { get; init; }
+    public string Id { get; set; } = string.Empty;
+    public string UserId { get; set; } = string.Empty;
+    public ChangeType ChangeType { get; set; }
+    public string? UpdatedProperty { get; set; }
+    public string? OldValue { get; set; }
+    public string? NewValue { get; set; }
+    public DateTime EventOccuredAt { get; set; }
+    public DateTime AuditCreatedAt { get; set; }
 }

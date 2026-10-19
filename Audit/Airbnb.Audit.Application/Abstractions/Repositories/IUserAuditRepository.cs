@@ -1,11 +1,11 @@
 using Airbnb.Audit.Application.Querying;
 using Airbnb.Audit.Domain.Models;
 using Airbnb.Contracts;
-using Airbnb.Contracts.Paging;
+using Airbnb.Contracts.HTTP.Paging;
 
 namespace Airbnb.Audit.Application.Abstractions.Repositories;
 
-public interface IUserAuditRepository : IRepository<UserAuditChangeEntity>
+public interface IUserAuditRepository : IRepository<UserAuditEntity>
 {
-    public Task<PagedResult<UserAuditChangeEntity>> GetAllAuditsPaged(UserAuditFilter parameters);
+    public Task<PagedResult<UserAuditEntity>> GetAllAuditsPaged(UserAuditFilter parameters);
 }

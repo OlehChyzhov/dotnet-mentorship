@@ -20,7 +20,6 @@
   </Folder>
   <Folder Name="/Solution Items/">
     <File Path=".env" />
-    <File Path=".env.example" />
     <File Path="docker-compose.yaml" />
   </Folder>
 </Solution>

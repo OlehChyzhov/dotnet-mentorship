@@ -1,12 +1,6 @@
 using System.Reflection;
 using Airbnb.Audit.Application.Abstractions.Services;
-using Airbnb.Audit.Application.Broker;
-using Airbnb.Audit.Application.Broker.Services;
 using Airbnb.Audit.Application.Services;
-using Airbnb.Contracts.Broker;
-using Airbnb.Contracts.Broker.Messages;
-using Airbnb.Contracts.Broker.Messages.User;
-using FluentValidation;
 using Mapster;
 using MapsterMapper;
 using Microsoft.Extensions.DependencyInjection;
@@ -25,13 +19,10 @@ public static class DependencyInjection
         services.AddSingleton(mapsterConfig);
         services.AddScoped<IMapper, ServiceMapper>();
 
-        // Message handlers
-        services.AddScoped<IMessageSaver<UserCreated>, UserAuditMessageSaver<UserCreated>>();
-        services.AddScoped<IMessageSaver<UserDeleted>, UserAuditMessageSaver<UserDeleted>>();
-        services.AddScoped<IMessageSaver<UserEmailChanged>, UserAuditMessageSaver<UserEmailChanged>>();
-
         // Services
         services.AddScoped<IUserAuditService, UserAuditService>();
+        services.AddScoped<IApartmentAuditService, ApartmentAuditService>();
+        services.AddScoped<IBookingAuditService, BookingAuditService>();
         
         return services;
     }

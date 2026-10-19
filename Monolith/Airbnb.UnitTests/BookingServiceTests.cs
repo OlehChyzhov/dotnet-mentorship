@@ -3,7 +3,8 @@ using Airbnb.Application.Abstracts.Repositories;
 using Airbnb.Application.DTOs.Booking;
 using Airbnb.Application.DTOs.Querying;
 using Airbnb.Application.Services;
-using Airbnb.Contracts.Paging;
+using Airbnb.Contracts.Broker;
+using Airbnb.Contracts.HTTP.Paging;
 using Airbnb.Domain.Enums;
 using Airbnb.Domain.Models;
 using MapsterMapper;
@@ -14,6 +15,7 @@ namespace Airbnb.Tests;
 
 public class BookingServiceTests
 {
+    private readonly Mock<IPublisher> _publisherMock;
     private readonly Mock<IUnitOfWork> _unitOfWorkMock;
     private readonly Mock<IApartmentRepository> _apartmentRepositoryMock;
     private readonly Mock<IBookingRepository> _bookingRepositoryMock;
@@ -22,6 +24,7 @@ public class BookingServiceTests
 
     public BookingServiceTests()
     {
+        _publisherMock = new Mock<IPublisher>();
         _apartmentRepositoryMock = new Mock<IApartmentRepository>();
         _bookingRepositoryMock = new Mock<IBookingRepository>();
 
@@ -31,7 +34,7 @@ public class BookingServiceTests
 
         _mapperMock = new Mock<IMapper>();
 
-        _sut = new BookingService(_unitOfWorkMock.Object, _mapperMock.Object);
+        _sut = new BookingService(_publisherMock.Object, _unitOfWorkMock.Object, _mapperMock.Object);
     }
 
     private static Apartment CreateApartment(Guid id, bool isListed = true, double pricePerNight = 50) => new()

@@ -4,7 +4,6 @@ using Airbnb.Application.Abstractions.Services;
 using Airbnb.Application.Abstracts.Services;
 using Airbnb.Application.DTOs.Apartment;
 using Airbnb.Application.DTOs.Querying;
-using Airbnb.Contracts.Paging;
 using Airbnb.Domain.Constants;
 using Airbnb.Domain.Enums;
 using Microsoft.AspNetCore.Authorization;

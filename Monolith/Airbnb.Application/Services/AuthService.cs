@@ -7,6 +7,7 @@ using Airbnb.Application.Abstracts.Services;
 using Airbnb.Application.DTOs.Authentication;
 using Airbnb.Application.Options;
 using Airbnb.Contracts;
+using Airbnb.Contracts.HTTP;
 using Airbnb.Domain;
 using Airbnb.Domain.Models;
 using MapsterMapper;

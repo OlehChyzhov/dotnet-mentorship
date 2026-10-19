@@ -13,13 +13,13 @@ namespace Airbnb.Tests;
 public class UserServiceTests
 {
     private readonly Mock<IIdentityService> _identityServiceMock;
-    private readonly Mock<IEventPublisher> _eventPublisherMock;
+    private readonly Mock<IPublisher> _eventPublisherMock;
     private readonly UserService _sut;
 
     public UserServiceTests()
     {
         _identityServiceMock = new Mock<IIdentityService>();
-        _eventPublisherMock = new Mock<IEventPublisher>();
+        _eventPublisherMock = new Mock<IPublisher>();
 
         _sut = new UserService(_identityServiceMock.Object, _eventPublisherMock.Object);
     }
@@ -70,8 +70,7 @@ public class UserServiceTests
         _identityServiceMock.Verify(m => m.CreateUserAsync(user, "Password123!"), Times.Once);
         _identityServiceMock.Verify(m => m.AddUserToRoleAsync(user, Roles.Client), Times.Once);
         _eventPublisherMock.Verify(
-            m => m.PublishAsync(It.Is<UserCreated>(msg => msg.UserId == "user-id" && msg.Email == "test@test.com")),
-            Times.Once);
+            m => m.PublishAsync(It.Is<UserCreated>(msg => msg.EntityId == "user-id")), Times.Once);
     }
 
     [Fact]
@@ -93,8 +92,7 @@ public class UserServiceTests
 
         // Assert
         result.Succeeded.ShouldBeFalse();
-        _eventPublisherMock.Verify(
-            m => m.PublishAsync(It.IsAny<UserCreated>()), Times.Never);
+        _eventPublisherMock.Verify(m => m.PublishAsync(It.IsAny<UserCreated>()), Times.Never);
     }
 
     [Fact]
@@ -107,8 +105,7 @@ public class UserServiceTests
         result.Succeeded.ShouldBeFalse();
         result.Errors.ShouldContain(e => e.Code == "UserNotFound");
 
-        _identityServiceMock.Verify(
-            m => m.ChangeEmailAsync(It.IsAny<User>(), It.IsAny<string>()), Times.Never);
+        _identityServiceMock.Verify(m => m.ChangeEmailAsync(It.IsAny<User>(), It.IsAny<string>()), Times.Never);
     }
 
     [Fact]
@@ -126,10 +123,7 @@ public class UserServiceTests
 
         // Assert
         result.Succeeded.ShouldBeTrue();
-        _eventPublisherMock.Verify(
-            m => m.PublishAsync(It.Is<UserEmailChanged>(msg =>
-                msg.UserId == "user-id" && msg.OldEmail == "old@test.com" && msg.NewEmail == "new@test.com")),
-            Times.Once);
+        _eventPublisherMock.Verify(m => m.PublishAsync(It.Is<UserUpdated>(msg => msg.EntityId == "user-id")), Times.Once);
     }
 
     [Fact]
@@ -147,8 +141,7 @@ public class UserServiceTests
 
         // Assert
         result.Succeeded.ShouldBeFalse();
-        _eventPublisherMock.Verify(
-            m => m.PublishAsync(It.IsAny<UserEmailChanged>()), Times.Never);
+        _eventPublisherMock.Verify(m => m.PublishAsync(It.IsAny<UserUpdated>()), Times.Never);
     }
 
     [Fact]
@@ -164,8 +157,6 @@ public class UserServiceTests
 
         // Assert
         result.Succeeded.ShouldBeTrue();
-        _eventPublisherMock.Verify(
-            m => m.PublishAsync(It.Is<UserDeleted>(msg => msg.UserId == "user-id" && msg.Email == "test@test.com")),
-            Times.Once);
+        _eventPublisherMock.Verify(m => m.PublishAsync(It.Is<UserDeleted>(msg => msg.EntityId == "user-id")), Times.Once);
     }
 }

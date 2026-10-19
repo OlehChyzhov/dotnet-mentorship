@@ -1,4 +1,4 @@
-using Airbnb.Contracts.Paging;
+using Airbnb.Contracts.HTTP.Paging;
 
 namespace Airbnb.Audit.Application.Querying;
 

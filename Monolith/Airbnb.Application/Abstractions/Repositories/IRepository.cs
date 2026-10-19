@@ -9,4 +9,5 @@ public interface IRepository<TEntity, TKey, TExternalKey> where TEntity : class,
     Task<TEntity> GetByExternalIdAsync(TExternalKey externalId);
     Task CreateAsync(TEntity entity);
     Task UpdateAsync(TEntity entity);
+    Task DeleteAsync(TKey id);
 }

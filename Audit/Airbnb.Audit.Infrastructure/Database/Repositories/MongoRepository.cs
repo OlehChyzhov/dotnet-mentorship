@@ -1,7 +1,8 @@
-using System.Reflection;
+using System.Linq.Expressions;
 using Airbnb.Audit.Application.Abstractions.Repositories;
-using Airbnb.Audit.Domain.Attributes;
 using Airbnb.Contracts;
+using Airbnb.Contracts.HTTP;
+using Airbnb.Contracts.HTTP.Paging;
 using MongoDB.Bson;
 using MongoDB.Driver;
 
@@ -9,9 +10,9 @@ namespace Airbnb.Audit.Infrastructure.Database.Repositories;
 
 public abstract class MongoRepository<T> : IRepository<T>
 {
-    protected MongoRepository(IMongoDatabase database)
+    protected MongoRepository(MongoDbContext context)
     {
-        Collection = database.GetCollection<T>(GetCollectionName());
+        Collection = context.GetCollection<T>();
     }
     
     protected IMongoCollection<T> Collection { get; }
@@ -20,12 +21,6 @@ public abstract class MongoRepository<T> : IRepository<T>
     {
         var filter = Builders<T>.Filter.Eq("_id", ObjectId.Parse(id));
         return await Collection.Find(filter).FirstOrDefaultAsync();
-    }
-
-    public async Task<Result<IEnumerable<T>>> GetAllAsync()
-    {
-        var audits = await Collection.FindAsync(_ => true);
-        return audits.ToList();
     }
 
     public async Task CreateAsync(T entity)
@@ -39,14 +34,28 @@ public abstract class MongoRepository<T> : IRepository<T>
         await Collection.ReplaceOneAsync(filter, entity);
     }
 
-    private string GetCollectionName()
+    public async Task DeleteAsync(string id)
     {
-        var collectionName = typeof(T).GetCustomAttribute<BsonCollection>()?.CollectionName;
-        if (string.IsNullOrEmpty(collectionName))
-        {
-            throw new InvalidOperationException($"{typeof(T).Name} does not have [BsonCollection] attribute");
-        }
+        var filter = Builders<T>.Filter.Eq("_id", ObjectId.Parse(id));
+        await Collection.DeleteOneAsync(filter);
+    }
+    
+    protected async Task<PagedResult<T>> GetPagedAsync(
+        FilterDefinition<T> filter, 
+        SortDefinition<T> sort, 
+        int pageNumber, 
+        int pageSize, 
+        CancellationToken cancellationToken = default)
+    {
+        var totalCount = await Collection.CountDocumentsAsync(filter, cancellationToken: cancellationToken);
         
-        return collectionName;
+        var audits = await Collection
+            .Find(filter)
+            .Sort(sort)
+            .Skip((pageNumber - 1) * pageSize)
+            .Limit(pageSize)
+            .ToListAsync(cancellationToken);
+        
+        return new PagedResult<T>(audits, (int)totalCount, pageNumber, pageSize);
     }
 }
