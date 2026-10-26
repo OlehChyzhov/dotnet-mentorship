@@ -1,24 +1,24 @@
 using Airbnb.Audit.Domain.Enums;
 using Airbnb.Audit.Domain.Models;
-using Airbnb.Contracts.Broker.Messages.Apartment;
+using Airbnb.Contracts.Broker.Messages.Booking;
 using Mapster;
 
-namespace Airbnb.Audit.Application.Broker.Mapping;
+namespace Airbnb.Audit.Application.Mapping.Messages;
 
-public class ApartmentAuditEntityConfig : IRegister
+public class BookingAuditEntityConfig : IRegister
 {
     public void Register(TypeAdapterConfig config)
     {
-        // ApartmentCreated => ApartmentAuditEntity
-        config.NewConfig<ApartmentCreated, ApartmentAuditEntity>()
-            .Map(dest => dest.ApartmentId, src => src.EntityId)
+        // BookingCreated => BookingAuditEntity
+        config.NewConfig<BookingCreated, BookingAuditEntity>()
+            .Map(dest => dest.BookingId, src => src.EntityId)
             .Map(dest => dest.ChangeType, src => ChangeType.Created)
             .Map(dest => dest.EventOccuredAt, src => src.CreatedAt)
             .Map(dest => dest.AuditCreatedAt, src => DateTime.UtcNow);
         
-        // ApartmentUpdated => ApartmentAuditEntity
-        config.NewConfig<ApartmentUpdated, ApartmentAuditEntity>()
-            .Map(dest => dest.ApartmentId, src => src.EntityId)
+        // BookingUpdated => BookingAuditEntity
+        config.NewConfig<BookingUpdated, BookingAuditEntity>()
+            .Map(dest => dest.BookingId, src => src.EntityId)
             .Map(dest => dest.ChangeType, src => ChangeType.Updated)
             .Map(dest => dest.EventOccuredAt, src => src.UpdatedAt)
             .Map(dest => dest.AuditCreatedAt, src => DateTime.UtcNow)
@@ -26,9 +26,9 @@ public class ApartmentAuditEntityConfig : IRegister
             .Map(dest => dest.OldValue, src => src.OldValue)
             .Map(dest => dest.NewValue, src => src.NewValue);
         
-        // ApartmentDeleted => ApartmentAuditEntity
-        config.NewConfig<ApartmentDeleted, ApartmentAuditEntity>()
-            .Map(dest => dest.ApartmentId, src => src.EntityId)
+        // BookingDeleted => BookingAuditEntity
+        config.NewConfig<BookingDeleted, BookingAuditEntity>()
+            .Map(dest => dest.BookingId, src => src.EntityId)
             .Map(dest => dest.ChangeType, src => ChangeType.Deleted)
             .Map(dest => dest.EventOccuredAt, src => src.DeletedAt)
             .Map(dest => dest.AuditCreatedAt, src => DateTime.UtcNow);

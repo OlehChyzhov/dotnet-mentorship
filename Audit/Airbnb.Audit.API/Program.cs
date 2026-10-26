@@ -1,7 +1,7 @@
 using System.Text.Json.Serialization;
 using Airbnb.Audit.Application;
-using Airbnb.Audit.Application.Broker.Consumers;
 using Airbnb.Audit.Infrastructure;
+using Airbnb.Audit.Infrastructure.Consumers;
 using Airbnb.Contracts.Broker;
 using Airbnb.Messaging;
 using MassTransit;

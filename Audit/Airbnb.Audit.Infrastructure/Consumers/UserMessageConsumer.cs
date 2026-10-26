@@ -4,7 +4,7 @@ using Airbnb.Contracts.Broker.Messages.User;
 using MapsterMapper;
 using MassTransit;
 
-namespace Airbnb.Audit.Application.Broker.Consumers;
+namespace Airbnb.Audit.Infrastructure.Consumers;
 
 public class UserMessageConsumer : IConsumer<UserCreated>, IConsumer<UserUpdated>, IConsumer<UserDeleted>
 {

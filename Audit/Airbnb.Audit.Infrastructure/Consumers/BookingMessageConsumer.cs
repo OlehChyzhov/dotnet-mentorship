@@ -1,11 +1,10 @@
 using Airbnb.Audit.Application.Abstractions.Repositories;
 using Airbnb.Audit.Domain.Models;
-using Airbnb.Contracts.Broker.Messages.Apartment;
 using Airbnb.Contracts.Broker.Messages.Booking;
 using MapsterMapper;
 using MassTransit;
 
-namespace Airbnb.Audit.Application.Broker.Consumers;
+namespace Airbnb.Audit.Infrastructure.Consumers;
 
 public class BookingMessageConsumer : IConsumer<BookingCreated>, IConsumer<BookingUpdated>, IConsumer<BookingDeleted>
 {
