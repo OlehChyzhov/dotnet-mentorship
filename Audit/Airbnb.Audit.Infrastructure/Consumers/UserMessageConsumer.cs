@@ -1,6 +1,6 @@
 using Airbnb.Audit.Application.Abstractions.Repositories;
 using Airbnb.Audit.Domain.Models;
-using Airbnb.Contracts.Broker.Messages.User;
+using Airbnb.Shared.Messages.User;
 using MapsterMapper;
 using MassTransit;
 

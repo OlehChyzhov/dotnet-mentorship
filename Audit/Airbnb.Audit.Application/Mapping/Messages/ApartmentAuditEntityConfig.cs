@@ -1,6 +1,6 @@
 using Airbnb.Audit.Domain.Enums;
 using Airbnb.Audit.Domain.Models;
-using Airbnb.Contracts.Broker.Messages.Apartment;
+using Airbnb.Shared.Messages.Apartment;
 using Mapster;
 
 namespace Airbnb.Audit.Application.Mapping.Messages;

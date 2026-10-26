@@ -1,11 +1,10 @@
-using Airbnb.Contracts.Broker;
-using Airbnb.Messaging.Broker;
-using Airbnb.Messaging.Options;
+using Airbnb.Shared.Broker;
+using Airbnb.Shared.Options;
 using MassTransit;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Airbnb.Messaging;
+namespace Airbnb.Shared;
 
 public static class DependencyInjection
 {

@@ -1,8 +1,7 @@
 using Airbnb.Audit.Application.Abstractions.Repositories;
 using Airbnb.Audit.Application.Querying;
 using Airbnb.Audit.Domain.Models;
-using Airbnb.Contracts;
-using Airbnb.Contracts.HTTP.Paging;
+using Airbnb.Shared.HTTP;
 using MongoDB.Driver;
 
 namespace Airbnb.Audit.Infrastructure.Database.Repositories;

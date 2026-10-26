@@ -1,9 +1,7 @@
 ﻿using Airbnb.Application.DTOs.Apartment;
 using Airbnb.Application.DTOs.Querying;
-using Airbnb.Contracts;
-using Airbnb.Contracts.HTTP;
-using Airbnb.Contracts.HTTP.Paging;
 using Airbnb.Domain.Enums;
+using Airbnb.Shared.HTTP;
 
 namespace Airbnb.Application.Abstractions.Services;
 

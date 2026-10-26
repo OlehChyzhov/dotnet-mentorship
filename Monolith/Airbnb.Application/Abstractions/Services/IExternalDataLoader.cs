@@ -1,8 +1,6 @@
-﻿using Airbnb.Contracts;
-using Airbnb.Contracts.HTTP;
-using Airbnb.Domain;
+﻿using Airbnb.Shared.HTTP;
 
-namespace Airbnb.Application.Abstracts.Services;
+namespace Airbnb.Application.Abstractions.Services;
 
 public interface IExternalDataLoader
 {

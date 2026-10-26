@@ -7,7 +7,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\Shared\Airbnb.Contracts\Airbnb.Contracts.csproj" />
+      <ProjectReference Include="..\..\Shared\Airbnb.Shared\Airbnb.Shared.csproj" />
       <ProjectReference Include="..\Airbnb.Audit.Domain\Airbnb.Audit.Domain.csproj" />
     </ItemGroup>
 

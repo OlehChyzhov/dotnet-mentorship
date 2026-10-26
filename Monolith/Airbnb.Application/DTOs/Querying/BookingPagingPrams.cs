@@ -1,4 +1,4 @@
-﻿using Airbnb.Contracts.HTTP.Paging;
+﻿using Airbnb.Shared.HTTP;
 
 namespace Airbnb.Application.DTOs.Querying;
 

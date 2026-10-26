@@ -1,4 +1,4 @@
-﻿using Airbnb.Application.Abstracts.Services;
+﻿using Airbnb.Application.Abstractions.Services;
 using Airbnb.Application.DTOs.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;

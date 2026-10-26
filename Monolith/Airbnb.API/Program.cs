@@ -4,7 +4,7 @@ using Airbnb.API.Middleware;
 using Airbnb.Application;
 using Airbnb.Infrastructure;
 using Airbnb.Infrastructure.Database;
-using Airbnb.Messaging;
+using Airbnb.Shared;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;

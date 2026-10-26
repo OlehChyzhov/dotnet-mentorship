@@ -1,6 +1,6 @@
-namespace Airbnb.Contracts.Broker.Messages.User;
+namespace Airbnb.Shared.Messages.Booking;
 
-public record UserCreated
+public record BookingCreated
 {
     public string EntityId { get; set; } = string.Empty;
     public DateTime CreatedAt { get; set; } =  DateTime.UtcNow;

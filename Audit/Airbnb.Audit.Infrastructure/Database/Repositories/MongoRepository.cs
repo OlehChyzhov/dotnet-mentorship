@@ -1,8 +1,5 @@
-using System.Linq.Expressions;
 using Airbnb.Audit.Application.Abstractions.Repositories;
-using Airbnb.Contracts;
-using Airbnb.Contracts.HTTP;
-using Airbnb.Contracts.HTTP.Paging;
+using Airbnb.Shared.HTTP;
 using MongoDB.Bson;
 using MongoDB.Driver;
 

@@ -2,9 +2,9 @@
 using Airbnb.Application.Abstracts.Repositories;
 using Airbnb.Application.DTOs;
 using Airbnb.Application.DTOs.Querying;
-using Airbnb.Contracts.HTTP.Paging;
 using Airbnb.Domain.Enums;
 using Airbnb.Domain.Models;
+using Airbnb.Shared.HTTP;
 using Microsoft.EntityFrameworkCore;
 
 namespace Airbnb.Infrastructure.Database.Repositories;

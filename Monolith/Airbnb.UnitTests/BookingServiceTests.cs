@@ -1,12 +1,11 @@
 using Airbnb.Application.Abstractions.Repositories;
-using Airbnb.Application.Abstracts.Repositories;
 using Airbnb.Application.DTOs.Booking;
 using Airbnb.Application.DTOs.Querying;
 using Airbnb.Application.Services;
-using Airbnb.Contracts.Broker;
-using Airbnb.Contracts.HTTP.Paging;
 using Airbnb.Domain.Enums;
 using Airbnb.Domain.Models;
+using Airbnb.Shared.Broker;
+using Airbnb.Shared.HTTP;
 using MapsterMapper;
 using Moq;
 using Shouldly;

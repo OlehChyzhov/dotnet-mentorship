@@ -1,6 +1,6 @@
-namespace Airbnb.Contracts.Broker.Messages.Apartment;
+namespace Airbnb.Shared.Messages.Booking;
 
-public record ApartmentUpdated
+public record BookingUpdated
 {
     public string EntityId { get; set; } = string.Empty;
     public string PropertyName { get; set; } = string.Empty;

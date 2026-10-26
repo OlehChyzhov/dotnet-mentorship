@@ -1,4 +1,4 @@
-namespace Airbnb.Contracts.Broker.Messages.User;
+namespace Airbnb.Shared.Messages.User;
 
 public record UserUpdated
 {

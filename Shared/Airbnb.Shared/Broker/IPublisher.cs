@@ -1,4 +1,4 @@
-namespace Airbnb.Contracts.Broker;
+namespace Airbnb.Shared.Broker;
 
 public interface IPublisher
 {

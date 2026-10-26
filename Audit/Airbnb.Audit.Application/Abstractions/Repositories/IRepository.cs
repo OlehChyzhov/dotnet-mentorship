@@ -1,6 +1,4 @@
-using Airbnb.Contracts;
-using Airbnb.Contracts.HTTP;
-using Airbnb.Contracts.HTTP.Paging;
+using Airbnb.Shared.HTTP;
 
 namespace Airbnb.Audit.Application.Abstractions.Repositories;
 

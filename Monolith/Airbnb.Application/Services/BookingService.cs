@@ -1,16 +1,11 @@
 ﻿using Airbnb.Application.Abstractions.Repositories;
 using Airbnb.Application.Abstractions.Services;
-using Airbnb.Application.Abstracts.Repositories;
-using Airbnb.Application.Abstracts.Services;
 using Airbnb.Application.DTOs.Booking;
 using Airbnb.Application.DTOs.Querying;
-using Airbnb.Contracts;
-using Airbnb.Contracts.Broker;
-using Airbnb.Contracts.Broker.Messages.Booking;
-using Airbnb.Contracts.HTTP;
-using Airbnb.Contracts.HTTP.Paging;
-using Airbnb.Domain;
 using Airbnb.Domain.Enums;
+using Airbnb.Shared.Broker;
+using Airbnb.Shared.HTTP;
+using Airbnb.Shared.Messages.Booking;
 using MapsterMapper;
 
 namespace Airbnb.Application.Services;

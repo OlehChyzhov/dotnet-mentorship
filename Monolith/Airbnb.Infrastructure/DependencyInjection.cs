@@ -1,7 +1,7 @@
 ﻿using Airbnb.Application.Abstractions.Repositories;
+using Airbnb.Application.Abstractions.Services;
 using Airbnb.Application.Abstracts.Identity;
 using Airbnb.Application.Abstracts.Repositories;
-using Airbnb.Application.Abstracts.Services;
 using Airbnb.Domain.Models;
 using Airbnb.Infrastructure.Database;
 using Airbnb.Infrastructure.Database.Repositories;

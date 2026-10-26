@@ -15,8 +15,7 @@
     <Project Path="Monolith/Airbnb.UnitTests/Airbnb.UnitTests.csproj" />
   </Folder>
   <Folder Name="/Shared/">
-    <Project Path="Shared/Airbnb.Contracts/Airbnb.Contracts.csproj" />
-    <Project Path="Shared/Airbnb.Messaging/Airbnb.Messaging.csproj" />
+    <Project Path="Shared/Airbnb.Shared/Airbnb.Shared.csproj" />
   </Folder>
   <Folder Name="/Solution Items/">
     <File Path=".env" />

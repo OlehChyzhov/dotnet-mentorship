@@ -1,4 +1,4 @@
-﻿namespace Airbnb.Contracts.HTTP.Paging;
+﻿namespace Airbnb.Shared.HTTP;
 
 public abstract record PagingPramsBase
 {

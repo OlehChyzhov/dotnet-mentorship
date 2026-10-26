@@ -1,10 +1,8 @@
 ﻿using Airbnb.Application.DTOs.Authentication;
-using Airbnb.Contracts;
-using Airbnb.Contracts.HTTP;
-using Airbnb.Domain;
+using Airbnb.Shared.HTTP;
 using Microsoft.AspNetCore.Identity;
 
-namespace Airbnb.Application.Abstracts.Services;
+namespace Airbnb.Application.Abstractions.Services;
 
 public interface IAuthService
 {

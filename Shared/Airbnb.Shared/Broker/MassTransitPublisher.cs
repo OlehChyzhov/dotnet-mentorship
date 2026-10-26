@@ -1,7 +1,6 @@
-using Airbnb.Contracts.Broker;
 using MassTransit;
 
-namespace Airbnb.Messaging.Broker;
+namespace Airbnb.Shared.Broker;
 
 public class MassTransitPublisher : IPublisher
 {
