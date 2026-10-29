@@ -11,8 +11,7 @@ COPY ["Audit/Airbnb.Audit.API/Airbnb.Audit.API.csproj", "Audit/Airbnb.Audit.API/
 COPY ["Audit/Airbnb.Audit.Application/Airbnb.Audit.Application.csproj", "Audit/Airbnb.Audit.Application/"]
 COPY ["Audit/Airbnb.Audit.Infrastructure/Airbnb.Audit.Infrastructure.csproj", "Audit/Airbnb.Audit.Infrastructure/"]
 COPY ["Audit/Airbnb.Audit.Domain/Airbnb.Audit.Domain.csproj", "Audit/Airbnb.Audit.Domain/"]
-COPY ["Shared/Airbnb.Messaging/Airbnb.Messaging.csproj", "Shared/Airbnb.Messaging/"]
-COPY ["Shared/Airbnb.Contracts/Airbnb.Contracts.csproj", "Shared/Airbnb.Contracts/"]
+COPY ["Shared/Airbnb.Shared/Airbnb.Shared.csproj", "Shared/Airbnb.Shared/"]
 RUN dotnet restore "Audit/Airbnb.Audit.API/Airbnb.Audit.API.csproj"
 
 COPY . .
