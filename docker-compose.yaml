@@ -17,7 +17,7 @@
     volumes:
       - "rabbitmq_data:/var/lib/rabbitmq"
   
-  # Application
+  # Databases
   airbnb.sqlserver:
     container_name: "airbnb.sqlserver"
     image: mcr.microsoft.com/mssql/server:2025-latest
@@ -28,7 +28,37 @@
       MSSQL_SA_PASSWORD: ${APPLICATION_MSSQL_SA_PASSWORD}
     volumes:
       - "mssql_data:/var/opt/mssql"
-
+    
+  airbnb.audit.mongodb:
+    container_name: "airbnb.audit.mongodb"
+    image: mongo:8.0.4
+    ports:
+      - "2001:27017"
+    environment:
+      MONGO_INITDB_DATABASE: airbnb-audit-db
+      MONGO_INITDB_ROOT_USERNAME: ${AUDIT_MONGODB_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${AUDIT_MONGODB_PASSWORD}
+    volumes:
+      - "mongodb_data:/data/db"
+    restart: unless-stopped
+    
+  # API Gateway
+  airbnb.gateway:
+    container_name: "airbnb.gateway"
+    build:
+      context: "."
+      dockerfile: "Airbnb.Gateway/Dockerfile"
+    ports:
+      - "3100:8080"
+    depends_on:
+      airbnb.sqlserver:
+        condition: service_started
+      airbnb.audit.mongodb:
+        condition: service_started
+      airbnb.broker.rabbitmq:
+        condition: service_healthy
+    
+  # Monolith
   airbnb.api.first:
     container_name: "airbnb.api.first"
     build:
@@ -101,20 +131,7 @@
       airbnb.broker.rabbitmq:
         condition: service_healthy
     
-  # Audit
-  airbnb.audit.mongodb:
-    container_name: "airbnb.audit.mongodb"
-    image: mongo:8.0.4
-    ports:
-      - "2001:27017"
-    environment:
-      MONGO_INITDB_DATABASE: airbnb-audit-db
-      MONGO_INITDB_ROOT_USERNAME: ${AUDIT_MONGODB_USERNAME}
-      MONGO_INITDB_ROOT_PASSWORD: ${AUDIT_MONGODB_PASSWORD}
-    volumes:
-      - "mongodb_data:/data/db"
-    restart: unless-stopped
-      
+  # Audit Microservice
   airbnb.audit.api.first:
     container_name: "airbnb.audit.api.first"
     build:
