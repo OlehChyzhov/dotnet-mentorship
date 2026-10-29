@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Airbnb.API.Controllers;
 
 [ApiController]
-[Route("api/bookings")]
+[Route("bookings")]
 [Authorize(Roles = $"{Roles.Client}, {Roles.Host}")]
 public class BookingsController : ControllerBase
 {

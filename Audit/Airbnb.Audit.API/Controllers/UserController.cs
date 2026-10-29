@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Airbnb.Audit.API.Controllers;
 
-[Route("api/user-audits")]
+[Route("users")]
 [ApiController]
 public class UserController : ControllerBase
 {

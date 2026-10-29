@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Airbnb.API.Controllers;
 
 [ApiController]
-[Route("api/apartments")]
+[Route("apartments")]
 public class ApartmentsController : ControllerBase
 {
     private readonly IApartmentService _apartmentService;
