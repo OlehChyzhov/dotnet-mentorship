@@ -51,7 +51,7 @@
     ports:
       - "3100:8080"
     environment:
-      ElasticConfigurations__Uri: http://elasticsearch:9200
+      ElasticConfigurations__Uri: ${LOGGING_ELASTICSEARCH_URI}
     depends_on:
       airbnb.sqlserver:
         condition: service_started
@@ -69,7 +69,7 @@
     ports:
       - "3101:8080"
     environment:
-      ElasticConfigurations__Uri: http://elasticsearch:9200
+      ElasticConfigurations__Uri: ${LOGGING_ELASTICSEARCH_URI}
       JWT__Key: ${APPLICATION_JWT_KEY}
       JWT__Issuer: ${APPLICATION_JWT_ISSUER}
       JWT__Audience: ${APPLICATION_JWT_Audience}
@@ -94,7 +94,7 @@
     ports:
       - "3102:8080"
     environment:
-      ElasticConfigurations__Uri: http://elasticsearch:9200
+      ElasticConfigurations__Uri: ${LOGGING_ELASTICSEARCH_URI}
       JWT__Key: ${APPLICATION_JWT_KEY}
       JWT__Issuer: ${APPLICATION_JWT_ISSUER}
       JWT__Audience: ${APPLICATION_JWT_Audience}
@@ -119,7 +119,7 @@
     ports:
       - "3103:8080"
     environment:
-      ElasticConfigurations__Uri: http://elasticsearch:9200
+      ElasticConfigurations__Uri: ${LOGGING_ELASTICSEARCH_URI}
       JWT__Key: ${APPLICATION_JWT_KEY}
       JWT__Issuer: ${APPLICATION_JWT_ISSUER}
       JWT__Audience: ${APPLICATION_JWT_Audience}
@@ -145,7 +145,7 @@
     ports:
       - "3201:8080"
     environment:
-      ElasticConfigurations__Uri: http://elasticsearch:9200
+      ElasticConfigurations__Uri: ${LOGGING_ELASTICSEARCH_URI}
       ConnectionStrings__MongoDB: ${AUDIT_MONGODB_DB_CONNECTION_STRING}
       
       RabbitMq__HostUri: ${RABBITMQ_HOST_URI}
@@ -165,7 +165,7 @@
     ports:
       - "3202:8080"
     environment:
-      ElasticConfigurations__Uri: http://elasticsearch:9200
+      ElasticConfigurations__Uri: ${LOGGING_ELASTICSEARCH_URI}
       ConnectionStrings__MongoDB: ${AUDIT_MONGODB_DB_CONNECTION_STRING}
 
       RabbitMq__HostUri: ${RABBITMQ_HOST_URI}
@@ -185,7 +185,7 @@
     ports:
       - "3203:8080"
     environment:
-      ElasticConfigurations__Uri: http://elasticsearch:9200
+      ElasticConfigurations__Uri: ${LOGGING_ELASTICSEARCH_URI}
       ConnectionStrings__MongoDB: ${AUDIT_MONGODB_DB_CONNECTION_STRING}
 
       RabbitMq__HostUri: ${RABBITMQ_HOST_URI}
@@ -213,7 +213,7 @@
     image: docker.elastic.co/kibana/kibana:8.15.0
     container_name: kibana
     environment:
-      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+      ELASTICSEARCH_HOSTS: ${LOGGING_ELASTICSEARCH_URI}
     ports:
       - "5601:5601"
     depends_on:

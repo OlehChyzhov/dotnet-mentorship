@@ -1,4 +1,6 @@
+using System.Reflection;
 using System.Text.Json.Serialization;
+using Airbnb.Audit.API.Options;
 using Airbnb.Audit.Application;
 using Airbnb.Audit.Infrastructure;
 using Airbnb.Audit.Infrastructure.Consumers;
@@ -25,18 +27,29 @@ builder.Services.AddApplication();
 // Logging
 builder.Services.AddSerilog(config =>
 {
+    string projectName = builder.Environment.ApplicationName.ToLowerInvariant();
+    string environment = builder.Environment.EnvironmentName.ToLowerInvariant();
+
     config.Enrich.FromLogContext();
     config.Enrich.WithMachineName();
+    config.Enrich.WithProperty("Application", projectName);
+    config.Enrich.WithProperty("Environment", environment);
+
+    // Console
     config.WriteTo.Console();
 
-    string? uri = builder.Configuration["ElasticConfigurations:Uri"];
-    if (string.IsNullOrEmpty(uri))
+    // Elastic Search
+    var elasticOptions = builder.Configuration.GetSection("ElasticConfigurations").Get<ElasticOptions>();
+    if (string.IsNullOrEmpty(elasticOptions?.Uri))
     {
         throw new InvalidOperationException("ElasticConfigurations:Uri is not configured");
     }
-    
-    config.WriteTo.Elasticsearch(new ElasticsearchSinkOptions(new Uri(uri)));
-    config.Enrich.WithProperty("Environment", builder.Environment.EnvironmentName);
+
+    config.WriteTo.Elasticsearch(new ElasticsearchSinkOptions(new Uri(elasticOptions.Uri))
+    {
+        IndexFormat = $"{projectName}-logs-{environment}-{{0:yyyy.MM.dd}}",
+        AutoRegisterTemplate = true
+    });
 });
 
 // Default
