@@ -5,6 +5,8 @@ using Airbnb.Audit.Infrastructure.Consumers;
 using Airbnb.Shared;
 using MassTransit;
 using Scalar.AspNetCore;
+using Serilog;
+using Serilog.Sinks.Elasticsearch;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,6 +21,23 @@ builder.Services.AddInfrastructure(builder.Configuration);
 
 // Services, Mapping, Validation
 builder.Services.AddApplication();
+
+// Logging
+builder.Services.AddSerilog(config =>
+{
+    config.Enrich.FromLogContext();
+    config.Enrich.WithMachineName();
+    config.WriteTo.Console();
+
+    string? uri = builder.Configuration["ElasticConfigurations:Uri"];
+    if (string.IsNullOrEmpty(uri))
+    {
+        throw new InvalidOperationException("ElasticConfigurations:Uri is not configured");
+    }
+    
+    config.WriteTo.Elasticsearch(new ElasticsearchSinkOptions(new Uri(uri)));
+    config.Enrich.WithProperty("Environment", builder.Environment.EnvironmentName);
+});
 
 // Default
 builder.Services.AddControllers().AddJsonOptions(options =>
@@ -48,5 +67,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.UseSerilogRequestLogging();
 
 app.Run();

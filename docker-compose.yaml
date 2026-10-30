@@ -50,6 +50,8 @@
       dockerfile: "Airbnb.Gateway/Dockerfile"
     ports:
       - "3100:8080"
+    environment:
+      ElasticConfigurations__Uri: http://elasticsearch:9200
     depends_on:
       airbnb.sqlserver:
         condition: service_started
@@ -67,6 +69,7 @@
     ports:
       - "3101:8080"
     environment:
+      ElasticConfigurations__Uri: http://elasticsearch:9200
       JWT__Key: ${APPLICATION_JWT_KEY}
       JWT__Issuer: ${APPLICATION_JWT_ISSUER}
       JWT__Audience: ${APPLICATION_JWT_Audience}
@@ -91,6 +94,7 @@
     ports:
       - "3102:8080"
     environment:
+      ElasticConfigurations__Uri: http://elasticsearch:9200
       JWT__Key: ${APPLICATION_JWT_KEY}
       JWT__Issuer: ${APPLICATION_JWT_ISSUER}
       JWT__Audience: ${APPLICATION_JWT_Audience}
@@ -115,6 +119,7 @@
     ports:
       - "3103:8080"
     environment:
+      ElasticConfigurations__Uri: http://elasticsearch:9200
       JWT__Key: ${APPLICATION_JWT_KEY}
       JWT__Issuer: ${APPLICATION_JWT_ISSUER}
       JWT__Audience: ${APPLICATION_JWT_Audience}
@@ -140,6 +145,7 @@
     ports:
       - "3201:8080"
     environment:
+      ElasticConfigurations__Uri: http://elasticsearch:9200
       ConnectionStrings__MongoDB: ${AUDIT_MONGODB_DB_CONNECTION_STRING}
       
       RabbitMq__HostUri: ${RABBITMQ_HOST_URI}
@@ -159,6 +165,7 @@
     ports:
       - "3202:8080"
     environment:
+      ElasticConfigurations__Uri: http://elasticsearch:9200
       ConnectionStrings__MongoDB: ${AUDIT_MONGODB_DB_CONNECTION_STRING}
 
       RabbitMq__HostUri: ${RABBITMQ_HOST_URI}
@@ -178,6 +185,7 @@
     ports:
       - "3203:8080"
     environment:
+      ElasticConfigurations__Uri: http://elasticsearch:9200
       ConnectionStrings__MongoDB: ${AUDIT_MONGODB_DB_CONNECTION_STRING}
 
       RabbitMq__HostUri: ${RABBITMQ_HOST_URI}
@@ -188,9 +196,32 @@
         condition: service_started
       airbnb.broker.rabbitmq:
         condition: service_healthy
+        
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.15.0
+    container_name: elasticsearch
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m
+    ports:
+      - "9200:9200"
+    volumes:
+      - elasticsearch-data:/usr/share/elasticsearch/data
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.15.0
+    container_name: kibana
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+    ports:
+      - "5601:5601"
+    depends_on:
+      - elasticsearch
     
   
 volumes:
   rabbitmq_data:
   mssql_data:
   mongodb_data:
+  elasticsearch-data:

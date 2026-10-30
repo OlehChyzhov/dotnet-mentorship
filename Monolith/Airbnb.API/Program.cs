@@ -9,6 +9,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Scalar.AspNetCore;
+using Serilog;
+using Serilog.Sinks.Elasticsearch;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -59,6 +61,23 @@ builder.Services.AddAuthentication(options =>
         };
     });
 
+// Logging
+builder.Services.AddSerilog(config =>
+{
+    config.Enrich.FromLogContext();
+    config.Enrich.WithMachineName();
+    config.WriteTo.Console();
+
+    string? uri = builder.Configuration["ElasticConfigurations:Uri"];
+    if (string.IsNullOrEmpty(uri))
+    {
+        throw new InvalidOperationException("ElasticConfigurations:Uri is not configured");
+    }
+    
+    config.WriteTo.Elasticsearch(new ElasticsearchSinkOptions(new Uri(uri)));
+    config.Enrich.WithProperty("Environment", builder.Environment.EnvironmentName);
+});
+
 // Default
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
@@ -94,5 +113,6 @@ app.UseAuthorization();
 app.UseMiddleware<ValidationMiddleware>();
 
 app.MapControllers();
+app.UseSerilogRequestLogging();
 
 app.Run();
