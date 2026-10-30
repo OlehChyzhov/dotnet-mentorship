@@ -5,8 +5,8 @@
     "name": "adpcpdf",
     "namespace": "default",
     "uid": "b74ec841-8cc6-4877-ba03-8943681aa1f0",
-    "resourceVersion": "1793375163981990",
-    "generation": 13,
+    "resourceVersion": "1793375806341008",
+    "generation": 15,
     "creationTimestamp": "2026-10-30T14:18:39Z",
     "labels": {
       "grafana.app/deprecatedInternalID": "3984713942138880"
@@ -15,7 +15,7 @@
       "grafana.app/createdBy": "user:fg2sfytoq4v0gb",
       "grafana.app/saved-from-ui": "Grafana v13.3.0 (6f8ce3c693)",
       "grafana.app/updatedBy": "user:fg2sfytoq4v0gb",
-      "grafana.app/updatedTimestamp": "2026-10-30T15:46:03Z"
+      "grafana.app/updatedTimestamp": "2026-10-30T15:56:46Z"
     }
   },
   "spec": {
@@ -471,12 +471,13 @@
               "options": {
                 "legend": {
                   "calcs": [
-                    "sum"
+                    "last"
                   ],
                   "displayMode": "table",
+                  "enableFacetedFilter": true,
                   "placement": "right",
                   "showLegend": true,
-                  "sortBy": "Total",
+                  "sortBy": "Last",
                   "sortDesc": true
                 },
                 "timezone": [
