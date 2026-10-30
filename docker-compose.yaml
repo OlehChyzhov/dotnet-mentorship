@@ -237,6 +237,16 @@
       - grafana-data:/var/lib/grafana
     depends_on:
       - prometheus
+  
+  k6:
+    image: grafana/k6:latest
+    container_name: k6
+    profiles: [ "load-test" ]
+    volumes:
+      - ./load-test.js:/scripts/load-test.js
+    command: run /scripts/load-test.js
+    depends_on:
+      - airbnb.audit.api.first
     
   
 volumes:
