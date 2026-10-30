@@ -23,5 +23,6 @@
   <Folder Name="/Solution Items/">
     <File Path=".env" />
     <File Path="docker-compose.yaml" />
+    <File Path="prometheus.yml" />
   </Folder>
 </Solution>

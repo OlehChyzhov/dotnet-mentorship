@@ -9,8 +9,11 @@ using Airbnb.Shared;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using OpenTelemetry.Metrics;
+using OpenTelemetry.Resources;
 using Scalar.AspNetCore;
 using Serilog;
+using Serilog.Events;
 using Serilog.Sinks.Elasticsearch;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -68,6 +71,8 @@ builder.Services.AddSerilog(config =>
     string projectName = builder.Environment.ApplicationName.ToLowerInvariant();
     string environment = builder.Environment.EnvironmentName.ToLowerInvariant();
 
+    config.MinimumLevel.Override("Microsoft.AspNetCore", LogEventLevel.Warning);
+
     config.Enrich.FromLogContext();
     config.Enrich.WithMachineName();
     config.Enrich.WithProperty("Application", projectName);
@@ -89,6 +94,16 @@ builder.Services.AddSerilog(config =>
         AutoRegisterTemplate = true
     });
 });
+
+// Open Telemetry and Prometheus
+builder.Services.AddOpenTelemetry()
+    .ConfigureResource(r => r.AddService(builder.Environment.ApplicationName))
+    .WithMetrics(metrics =>
+    {
+        metrics.AddMeter("Microsoft.AspNetCore.Hosting");
+        metrics.AddMeter("System.Runtime");
+        metrics.AddPrometheusExporter();
+    });
 
 // Default
 builder.Services.AddControllers();
@@ -125,6 +140,13 @@ app.UseAuthorization();
 app.UseMiddleware<ValidationMiddleware>();
 
 app.MapControllers();
-app.UseSerilogRequestLogging();
+app.UseSerilogRequestLogging(options =>
+{
+    options.GetLevel = (httpContext, _, ex) =>
+        httpContext.Request.Path.StartsWithSegments("/metrics") ? LogEventLevel.Verbose
+        : ex != null || httpContext.Response.StatusCode > 499 ? LogEventLevel.Error
+        : LogEventLevel.Information;
+});
+app.MapPrometheusScrapingEndpoint();
 
 app.Run();
