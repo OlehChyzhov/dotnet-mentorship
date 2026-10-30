@@ -15,8 +15,7 @@ COPY ["Monolith/Airbnb.API/Airbnb.API.csproj", "Monolith/Airbnb.API/"]
 COPY ["Monolith/Airbnb.Infrastructure/Airbnb.Infrastructure.csproj", "Monolith/Airbnb.Infrastructure/"]
 COPY ["Monolith/Airbnb.Application/Airbnb.Application.csproj", "Monolith/Airbnb.Application/"]
 COPY ["Monolith/Airbnb.Domain/Airbnb.Domain.csproj", "Monolith/Airbnb.Domain/"]
-COPY ["Shared/Airbnb.Messaging/Airbnb.Messaging.csproj", "Shared/Airbnb.Messaging/"]
-COPY ["Shared/Airbnb.Contracts/Airbnb.Contracts.csproj", "Shared/Airbnb.Contracts/"]
+COPY ["Shared/Airbnb.Shared/Airbnb.Shared.csproj", "Shared/Airbnb.Shared/"]
 RUN dotnet restore "Monolith/Airbnb.API/Airbnb.API.csproj"
 
 # In here we copy the rest of the code, so on any change the execution of the build of 

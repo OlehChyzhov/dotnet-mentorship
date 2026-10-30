@@ -17,7 +17,7 @@
     volumes:
       - "rabbitmq_data:/var/lib/rabbitmq"
   
-  # Application
+  # Databases
   airbnb.sqlserver:
     container_name: "airbnb.sqlserver"
     image: mcr.microsoft.com/mssql/server:2025-latest
@@ -28,14 +28,44 @@
       MSSQL_SA_PASSWORD: ${APPLICATION_MSSQL_SA_PASSWORD}
     volumes:
       - "mssql_data:/var/opt/mssql"
-
-  airbnb.api:
-    container_name: "airbnb.api"
+    
+  airbnb.audit.mongodb:
+    container_name: "airbnb.audit.mongodb"
+    image: mongo:8.0.4
+    ports:
+      - "2001:27017"
+    environment:
+      MONGO_INITDB_DATABASE: airbnb-audit-db
+      MONGO_INITDB_ROOT_USERNAME: ${AUDIT_MONGODB_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${AUDIT_MONGODB_PASSWORD}
+    volumes:
+      - "mongodb_data:/data/db"
+    restart: unless-stopped
+    
+  # API Gateway
+  airbnb.gateway:
+    container_name: "airbnb.gateway"
+    build:
+      context: "."
+      dockerfile: "Airbnb.Gateway/Dockerfile"
+    ports:
+      - "3100:8080"
+    depends_on:
+      airbnb.sqlserver:
+        condition: service_started
+      airbnb.audit.mongodb:
+        condition: service_started
+      airbnb.broker.rabbitmq:
+        condition: service_healthy
+    
+  # Monolith
+  airbnb.api.first:
+    container_name: "airbnb.api.first"
     build:
       context: "."
       dockerfile: "Monolith/Airbnb.API/Dockerfile"
     ports:
-      - "3000:8080"
+      - "3101:8080"
     environment:
       JWT__Key: ${APPLICATION_JWT_KEY}
       JWT__Issuer: ${APPLICATION_JWT_ISSUER}
@@ -53,31 +83,103 @@
       airbnb.broker.rabbitmq:
         condition: service_healthy
     
-    
-  # Audit
-  airbnb.audit.mongodb:
-    container_name: "airbnb.audit.mongodb"
-    image: mongo:8.0.4
+  airbnb.api.second:
+    container_name: "airbnb.api.second"
+    build:
+      context: "."
+      dockerfile: "Monolith/Airbnb.API/Dockerfile"
     ports:
-      - "2001:27017"
+      - "3102:8080"
     environment:
-      MONGO_INITDB_DATABASE: airbnb-audit-db
-      MONGO_INITDB_ROOT_USERNAME: ${AUDIT_MONGODB_USERNAME}
-      MONGO_INITDB_ROOT_PASSWORD: ${AUDIT_MONGODB_PASSWORD}
-    volumes:
-      - "mongodb_data:/data/db"
-    restart: unless-stopped
-      
-  airbnb.audit.api:
-    container_name: "airbnb.audit.api"
+      JWT__Key: ${APPLICATION_JWT_KEY}
+      JWT__Issuer: ${APPLICATION_JWT_ISSUER}
+      JWT__Audience: ${APPLICATION_JWT_Audience}
+      JWT__ExpirationMinutes: ${APPLICATION_JWT_EXPIRATION_MINUTES}
+      ConnectionStrings__DefaultConnection: ${APPLICATION_DB_CONNECTION_STRING}
+      DefaultUserOptions__DefaultPassword: ${APPLICATION_DEFAULT_USER_PASSWORD}
+
+      RabbitMq__HostUri: ${RABBITMQ_HOST_URI}
+      RabbitMq__UserName: ${RABBITMQ_USER}
+      RabbitMq__Password: ${RABBITMQ_PASSWORD}
+    depends_on:
+      airbnb.sqlserver:
+        condition: service_started
+      airbnb.broker.rabbitmq:
+        condition: service_healthy
+    
+  airbnb.api.third:
+    container_name: "airbnb.api.third"
+    build:
+      context: "."
+      dockerfile: "Monolith/Airbnb.API/Dockerfile"
+    ports:
+      - "3103:8080"
+    environment:
+      JWT__Key: ${APPLICATION_JWT_KEY}
+      JWT__Issuer: ${APPLICATION_JWT_ISSUER}
+      JWT__Audience: ${APPLICATION_JWT_Audience}
+      JWT__ExpirationMinutes: ${APPLICATION_JWT_EXPIRATION_MINUTES}
+      ConnectionStrings__DefaultConnection: ${APPLICATION_DB_CONNECTION_STRING}
+      DefaultUserOptions__DefaultPassword: ${APPLICATION_DEFAULT_USER_PASSWORD}
+
+      RabbitMq__HostUri: ${RABBITMQ_HOST_URI}
+      RabbitMq__UserName: ${RABBITMQ_USER}
+      RabbitMq__Password: ${RABBITMQ_PASSWORD}
+    depends_on:
+      airbnb.sqlserver:
+        condition: service_started
+      airbnb.broker.rabbitmq:
+        condition: service_healthy
+    
+  # Audit Microservice
+  airbnb.audit.api.first:
+    container_name: "airbnb.audit.api.first"
     build:
       context: "."
       dockerfile: "Audit/Airbnb.Audit.API/Dockerfile"
     ports:
-      - "3001:8080"
+      - "3201:8080"
     environment:
       ConnectionStrings__MongoDB: ${AUDIT_MONGODB_DB_CONNECTION_STRING}
       
+      RabbitMq__HostUri: ${RABBITMQ_HOST_URI}
+      RabbitMq__UserName: ${RABBITMQ_USER}
+      RabbitMq__Password: ${RABBITMQ_PASSWORD}
+    depends_on:
+      airbnb.audit.mongodb:
+        condition: service_started
+      airbnb.broker.rabbitmq:
+        condition: service_healthy
+        
+  airbnb.audit.api.second:
+    container_name: "airbnb.audit.api.second"
+    build:
+      context: "."
+      dockerfile: "Audit/Airbnb.Audit.API/Dockerfile"
+    ports:
+      - "3202:8080"
+    environment:
+      ConnectionStrings__MongoDB: ${AUDIT_MONGODB_DB_CONNECTION_STRING}
+
+      RabbitMq__HostUri: ${RABBITMQ_HOST_URI}
+      RabbitMq__UserName: ${RABBITMQ_USER}
+      RabbitMq__Password: ${RABBITMQ_PASSWORD}
+    depends_on:
+      airbnb.audit.mongodb:
+        condition: service_started
+      airbnb.broker.rabbitmq:
+        condition: service_healthy
+  
+  airbnb.audit.api.third:
+    container_name: "airbnb.audit.third"
+    build:
+      context: "."
+      dockerfile: "Audit/Airbnb.Audit.API/Dockerfile"
+    ports:
+      - "3203:8080"
+    environment:
+      ConnectionStrings__MongoDB: ${AUDIT_MONGODB_DB_CONNECTION_STRING}
+
       RabbitMq__HostUri: ${RABBITMQ_HOST_URI}
       RabbitMq__UserName: ${RABBITMQ_USER}
       RabbitMq__Password: ${RABBITMQ_PASSWORD}

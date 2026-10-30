@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Airbnb.API.Controllers;
 
-[Route("api/auth")]
+[Route("auth")]
 [ApiController]
 public class AuthController : ControllerBase
 {
