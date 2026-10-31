@@ -1,14 +1,21 @@
 using System.Security.Claims;
 using System.Text;
 using Airbnb.API.Middleware;
+using Airbnb.API.Options;
 using Airbnb.Application;
+using Airbnb.Application.Metrics;
 using Airbnb.Infrastructure;
 using Airbnb.Infrastructure.Database;
 using Airbnb.Shared;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using OpenTelemetry.Metrics;
+using OpenTelemetry.Resources;
 using Scalar.AspNetCore;
+using Serilog;
+using Serilog.Events;
+using Serilog.Sinks.Elasticsearch;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -59,6 +66,47 @@ builder.Services.AddAuthentication(options =>
         };
     });
 
+// Logging
+builder.Services.AddSerilog(config =>
+{
+    string projectName = builder.Environment.ApplicationName.ToLowerInvariant();
+    string environment = builder.Environment.EnvironmentName.ToLowerInvariant();
+
+    config.MinimumLevel.Override("Microsoft.AspNetCore", LogEventLevel.Warning);
+
+    config.Enrich.FromLogContext();
+    config.Enrich.WithMachineName();
+    config.Enrich.WithProperty("Application", projectName);
+    config.Enrich.WithProperty("Environment", environment);
+
+    // Console
+    config.WriteTo.Console();
+
+    // Elastic Search
+    var elasticOptions = builder.Configuration.GetSection("ElasticConfigurations").Get<ElasticOptions>();
+    if (string.IsNullOrEmpty(elasticOptions?.Uri))
+    {
+        throw new InvalidOperationException("ElasticConfigurations:Uri is not configured");
+    }
+
+    config.WriteTo.Elasticsearch(new ElasticsearchSinkOptions(new Uri(elasticOptions.Uri))
+    {
+        IndexFormat = $"{projectName}-logs-{environment}-{{0:yyyy.MM.dd}}",
+        AutoRegisterTemplate = true
+    });
+});
+
+// Open Telemetry and Prometheus
+builder.Services.AddOpenTelemetry()
+    .ConfigureResource(r => r.AddService(builder.Environment.ApplicationName))
+    .WithMetrics(metrics =>
+    {
+        metrics.AddMeter("Microsoft.AspNetCore.Hosting");
+        metrics.AddMeter("System.Runtime");
+        metrics.AddMeter(BusinessMetrics.MeterName);
+        metrics.AddPrometheusExporter();
+    });
+
 // Default
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
@@ -94,5 +142,13 @@ app.UseAuthorization();
 app.UseMiddleware<ValidationMiddleware>();
 
 app.MapControllers();
+app.UseSerilogRequestLogging(options =>
+{
+    options.GetLevel = (httpContext, _, ex) =>
+        httpContext.Request.Path.StartsWithSegments("/metrics") ? LogEventLevel.Verbose
+        : ex != null || httpContext.Response.StatusCode > 499 ? LogEventLevel.Error
+        : LogEventLevel.Information;
+});
+app.MapPrometheusScrapingEndpoint();
 
 app.Run();

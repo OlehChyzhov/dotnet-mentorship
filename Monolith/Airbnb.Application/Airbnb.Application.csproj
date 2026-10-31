@@ -17,6 +17,11 @@
       <PackageReference Include="Mapster.DependencyInjection" Version="10.1.0-pre01" />
       <PackageReference Include="Microsoft.Extensions.Identity.Core" Version="10.0.10" />
       <PackageReference Include="Microsoft.Extensions.Identity.Stores" Version="10.0.10" />
+      <PackageReference Include="OpenTelemetry.Exporter.Prometheus.AspNetCore" Version="1.20.1-beta.1" />
+      <PackageReference Include="OpenTelemetry.Extensions.Hosting" Version="1.21.0-rc.1" />
+      <PackageReference Include="Serilog.AspNetCore" Version="10.0.0" />
+      <PackageReference Include="Serilog.Enrichers.Environment" Version="3.0.1" />
+      <PackageReference Include="Serilog.Sinks.Elasticsearch" Version="10.0.0" />
       <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.19.2" />
     </ItemGroup>
 

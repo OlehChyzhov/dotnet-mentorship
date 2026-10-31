@@ -1,5 +1,6 @@
 using Airbnb.Application.Abstractions.Services;
 using Airbnb.Application.Abstracts.Identity;
+using Airbnb.Application.Metrics;
 using Airbnb.Domain.Models;
 using Airbnb.Shared.Broker;
 using Airbnb.Shared.Messages.User;
@@ -11,13 +12,13 @@ public class UserService : IUserService
 {
     private readonly IIdentityService _identityService;
     private readonly IPublisher _publisher;
+    private readonly BusinessMetrics _metrics;
 
-    public UserService(
-        IIdentityService identityService,
-        IPublisher publisher)
+    public UserService(IIdentityService identityService, IPublisher publisher, BusinessMetrics metrics)
     {
         _identityService = identityService;
         _publisher = publisher;
+        _metrics = metrics;
     }
 
     public async Task<IdentityResult> CreateUserAsync(User user, string password, string role)
@@ -33,6 +34,9 @@ public class UserService : IUserService
         
         var result = await _identityService.CreateUserAsync(user, password);
         if (!result.Succeeded) return result;
+
+        var inbox = user.Email!.Split('@').Last().ToLowerInvariant();
+        _metrics.UserCreated(inbox);
 
         result = await _identityService.AddUserToRoleAsync(user, role);
         if (!result.Succeeded) return result;

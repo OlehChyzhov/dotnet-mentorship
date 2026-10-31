@@ -1,0 +1,24 @@
+global:
+  scrape_interval: 10s
+
+scrape_configs:
+  # API Gateway
+  - job_name: "airbnb.gateway"
+    static_configs:
+      - targets: ["airbnb.gateway:8080"]
+  
+  # Monolith API (3 Instances)
+  - job_name: "airbnb.api"
+    static_configs:
+      - targets:
+          - "airbnb.api.first:8080"
+          - "airbnb.api.second:8080"
+          - "airbnb.api.third:8080"
+  
+  # Audit microservice (3 Instances)
+  - job_name: "airbnb.audit.api"
+    static_configs:
+      - targets:
+          - "airbnb.audit.api.first:8080"
+          - "airbnb.audit.api.second:8080"
+          - "airbnb.audit.api.third:8080"
