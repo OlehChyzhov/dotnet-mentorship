@@ -1,10 +1,13 @@
+using System.Diagnostics.Metrics;
 using Airbnb.Application.Abstracts.Identity;
+using Airbnb.Application.Metrics;
 using Airbnb.Application.Services;
 using Airbnb.Domain.Constants;
 using Airbnb.Domain.Models;
 using Airbnb.Shared.Broker;
 using Airbnb.Shared.Messages.User;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using Shouldly;
 
@@ -21,7 +24,12 @@ public class UserServiceTests
         _identityServiceMock = new Mock<IIdentityService>();
         _eventPublisherMock = new Mock<IPublisher>();
 
-        _sut = new UserService(_identityServiceMock.Object, _eventPublisherMock.Object);
+        var meterFactory = new ServiceCollection()
+            .AddMetrics()
+            .BuildServiceProvider()
+            .GetRequiredService<IMeterFactory>();
+
+        _sut = new UserService(_identityServiceMock.Object, _eventPublisherMock.Object, new BusinessMetrics(meterFactory));
     }
 
     [Fact]

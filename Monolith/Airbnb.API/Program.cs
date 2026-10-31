@@ -3,6 +3,7 @@ using System.Text;
 using Airbnb.API.Middleware;
 using Airbnb.API.Options;
 using Airbnb.Application;
+using Airbnb.Application.Metrics;
 using Airbnb.Infrastructure;
 using Airbnb.Infrastructure.Database;
 using Airbnb.Shared;
@@ -102,6 +103,7 @@ builder.Services.AddOpenTelemetry()
     {
         metrics.AddMeter("Microsoft.AspNetCore.Hosting");
         metrics.AddMeter("System.Runtime");
+        metrics.AddMeter(BusinessMetrics.MeterName);
         metrics.AddPrometheusExporter();
     });
 

@@ -1,5 +1,6 @@
 ﻿using Airbnb.Application.Abstractions.Services;
 using Airbnb.Application.Mapping;
+using Airbnb.Application.Metrics;
 using Airbnb.Application.Options;
 using Airbnb.Application.Services;
 using Airbnb.Application.Validators;
@@ -19,6 +20,9 @@ public static class DependencyInjection
         services.AddScoped<IBookingService, BookingService>();
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<IUserService, UserService>();
+
+        // Metrics
+        services.AddSingleton<BusinessMetrics>();
 
         // Mapping
         TypeAdapterConfig.GlobalSettings.RequireExplicitMapping = true;

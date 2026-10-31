@@ -5,8 +5,8 @@
     "name": "adpcpdf",
     "namespace": "default",
     "uid": "b74ec841-8cc6-4877-ba03-8943681aa1f0",
-    "resourceVersion": "1793375806341008",
-    "generation": 15,
+    "resourceVersion": "1793440657977019",
+    "generation": 17,
     "creationTimestamp": "2026-10-30T14:18:39Z",
     "labels": {
       "grafana.app/deprecatedInternalID": "3984713942138880"
@@ -15,7 +15,7 @@
       "grafana.app/createdBy": "user:fg2sfytoq4v0gb",
       "grafana.app/saved-from-ui": "Grafana v13.3.0 (6f8ce3c693)",
       "grafana.app/updatedBy": "user:fg2sfytoq4v0gb",
-      "grafana.app/updatedTimestamp": "2026-10-30T15:56:46Z"
+      "grafana.app/updatedTimestamp": "2026-10-31T09:57:37Z"
     }
   },
   "spec": {
@@ -553,6 +553,135 @@
           },
           "transparent": true
         }
+      },
+      "panel-5": {
+        "kind": "Panel",
+        "spec": {
+          "id": 5,
+          "title": "Registered Emails",
+          "description": "",
+          "links": [],
+          "data": {
+            "kind": "QueryGroup",
+            "spec": {
+              "queries": [
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "prometheus",
+                      "version": "v0",
+                      "datasource": {
+                        "name": "eg2sg9i5k0hdsa"
+                      },
+                      "spec": {
+                        "editorMode": "code",
+                        "expr": "sum by (user_email_inbox) (airbnb_business_recently_created_users_total)",
+                        "legendFormat": "__auto",
+                        "range": true
+                      }
+                    },
+                    "refId": "A",
+                    "hidden": false
+                  }
+                }
+              ],
+              "transformations": [],
+              "queryOptions": {}
+            }
+          },
+          "vizConfig": {
+            "kind": "VizConfig",
+            "group": "timeseries",
+            "version": "13.3.0",
+            "spec": {
+              "options": {
+                "legend": {
+                  "calcs": [
+                    "max"
+                  ],
+                  "displayMode": "table",
+                  "enableFacetedFilter": false,
+                  "placement": "right",
+                  "showLegend": true,
+                  "sortBy": "Max",
+                  "sortDesc": true
+                },
+                "timezone": [
+                  "browser",
+                  "UTC"
+                ],
+                "tooltip": {
+                  "hideZeros": false,
+                  "mode": "single",
+                  "sort": "none"
+                }
+              },
+              "fieldConfig": {
+                "defaults": {
+                  "unit": "none",
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "value": 0,
+                        "color": "green"
+                      },
+                      {
+                        "value": 80,
+                        "color": "red"
+                      }
+                    ]
+                  },
+                  "color": {
+                    "mode": "palette-classic",
+                    "seriesBy": "max"
+                  },
+                  "custom": {
+                    "axisBorderShow": false,
+                    "axisCenteredZero": false,
+                    "axisColorMode": "text",
+                    "axisLabel": "",
+                    "axisPlacement": "auto",
+                    "barAlignment": 0,
+                    "barWidthFactor": 0.9,
+                    "drawStyle": "line",
+                    "fillOpacity": 33,
+                    "gradientMode": "opacity",
+                    "hideFrom": {
+                      "legend": false,
+                      "tooltip": false,
+                      "viz": false
+                    },
+                    "insertNulls": false,
+                    "lineInterpolation": "linear",
+                    "lineStyle": {
+                      "fill": "solid"
+                    },
+                    "lineWidth": 1,
+                    "pointSize": 4,
+                    "scaleDistribution": {
+                      "type": "linear"
+                    },
+                    "showPoints": "always",
+                    "showValues": false,
+                    "spanNulls": false,
+                    "stacking": {
+                      "group": "A",
+                      "mode": "none"
+                    },
+                    "thresholdsStyle": {
+                      "mode": "off"
+                    }
+                  }
+                },
+                "overrides": []
+              }
+            }
+          },
+          "transparent": true
+        }
       }
     },
     "layout": {
@@ -646,6 +775,31 @@
                               }
                             ]
                           }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          {
+            "kind": "TabsLayoutTab",
+            "spec": {
+              "title": "Custom",
+              "layout": {
+                "kind": "AutoGridLayout",
+                "spec": {
+                  "maxColumnCount": 3,
+                  "columnWidthMode": "standard",
+                  "rowHeightMode": "standard",
+                  "items": [
+                    {
+                      "kind": "AutoGridLayoutItem",
+                      "spec": {
+                        "element": {
+                          "kind": "ElementReference",
+                          "name": "panel-5"
                         }
                       }
                     }
