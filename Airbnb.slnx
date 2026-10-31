@@ -17,6 +17,10 @@
     <Project Path="Monolith/Airbnb.Migrator/Airbnb.Migrator.csproj" />
     <Project Path="Monolith/Airbnb.UnitTests/Airbnb.UnitTests.csproj" />
   </Folder>
+  <Folder Name="/Payment/">
+    <Project Path="Payment/Airbnb.Payment.API/Airbnb.Payment.API.csproj" />
+    <Project Path="Payment/Airbnb.Payment.Application/Airbnb.Payment.Application.csproj" />
+  </Folder>
   <Folder Name="/Shared/">
     <Project Path="Shared/Airbnb.Shared/Airbnb.Shared.csproj" />
   </Folder>

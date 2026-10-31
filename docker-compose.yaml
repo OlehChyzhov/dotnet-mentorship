@@ -196,7 +196,19 @@
         condition: service_started
       airbnb.broker.rabbitmq:
         condition: service_healthy
-        
+
+  # Payment Microservice
+  airbnb.payment.api.first:
+    container_name: "airbnb.payment.first"
+    build:
+      context: "."
+      dockerfile: "Payment/Airbnb.Payment.API/Dockerfile"
+    ports:
+      - "3301:8080"
+    environment:
+      ElasticConfigurations__Uri: ${LOGGING_ELASTICSEARCH_URI}
+
+  # Other
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:8.15.0
     container_name: elasticsearch

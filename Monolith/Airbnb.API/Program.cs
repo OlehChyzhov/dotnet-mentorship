@@ -149,6 +149,7 @@ app.UseSerilogRequestLogging(options =>
         : ex != null || httpContext.Response.StatusCode > 499 ? LogEventLevel.Error
         : LogEventLevel.Information;
 });
+
 app.MapPrometheusScrapingEndpoint();
 
 app.Run();
