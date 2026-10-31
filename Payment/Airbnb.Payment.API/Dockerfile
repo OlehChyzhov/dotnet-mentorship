@@ -6,9 +6,14 @@ EXPOSE 8081
 
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 ARG BUILD_CONFIGURATION=Release
+
+
 WORKDIR /src
 COPY ["Payment/Airbnb.Payment.API/Airbnb.Payment.API.csproj", "Payment/Airbnb.Payment.API/"]
+COPY ["Payment/Airbnb.Payment.Application/Airbnb.Payment.Application.csproj", "Payment/Airbnb.Payment.Application/"]
+COPY ["Shared/Airbnb.Shared/Airbnb.Shared.csproj", "Shared/Airbnb.Shared/"]
 RUN dotnet restore "Payment/Airbnb.Payment.API/Airbnb.Payment.API.csproj"
+
 COPY . .
 WORKDIR "/src/Payment/Airbnb.Payment.API"
 RUN dotnet build "./Airbnb.Payment.API.csproj" -c $BUILD_CONFIGURATION -o /app/build
