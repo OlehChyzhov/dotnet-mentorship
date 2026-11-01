@@ -20,8 +20,6 @@
   <Folder Name="/Payment/">
     <Project Path="Payment/Airbnb.Payment.API/Airbnb.Payment.API.csproj" />
     <Project Path="Payment/Airbnb.Payment.Application/Airbnb.Payment.Application.csproj" />
-    <Project Path="Payment/Airbnb.Payment.Domain/Airbnb.Payment.Domain.csproj" />
-    <Project Path="Payment/Airbnb.Payment.Infrastructure/Airbnb.Payment.Infrastructure.csproj" />
   </Folder>
   <Folder Name="/Shared/">
     <Project Path="Shared/Airbnb.Shared/Airbnb.Shared.csproj" />

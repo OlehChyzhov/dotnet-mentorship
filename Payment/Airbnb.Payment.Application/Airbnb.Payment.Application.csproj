@@ -15,8 +15,4 @@
       <PackageReference Include="Stripe.net" Version="53.1.0" />
     </ItemGroup>
 
-    <ItemGroup>
-      <ProjectReference Include="..\Airbnb.Payment.Domain\Airbnb.Payment.Domain.csproj" />
-    </ItemGroup>
-
 </Project>

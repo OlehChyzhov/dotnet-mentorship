@@ -1,14 +1,26 @@
 using Airbnb.Payment.API.Options;
+using Airbnb.Payment.Application;
 using Serilog;
 using Serilog.Events;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using Scalar.AspNetCore;
 using Serilog.Sinks.Elasticsearch;
+using Stripe;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddOpenApi();
+builder.Services.AddControllers();
+
+// Stripe
+builder.Services.Configure<StripeOptions>(builder.Configuration.GetSection("Stripe"));
+builder.Services.AddScoped<TokenService>();
+builder.Services.AddScoped<CustomerService>();
+builder.Services.AddScoped<ChargeService>();
+
+// Services
+builder.Services.AddApplication();
 
 // Logging
 builder.Services.AddSerilog(config =>
@@ -40,6 +52,7 @@ builder.Services.AddSerilog(config =>
     });
 });
 
+
 // Open Telemetry and Prometheus
 builder.Services.AddOpenTelemetry()
     .ConfigureResource(r => r.AddService(builder.Environment.ApplicationName))
@@ -51,6 +64,7 @@ builder.Services.AddOpenTelemetry()
     });
 
 var app = builder.Build();
+app.MapControllers();
 
 if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
 {
