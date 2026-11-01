@@ -207,6 +207,8 @@
       - "3301:8080"
     environment:
       ElasticConfigurations__Uri: ${LOGGING_ELASTICSEARCH_URI}
+      Stripe__PublishableKey: ${STRIPE_PUBLISHABLE_KEY}
+      Stripe__SecretKey: ${STRIPE_SECRET_KEY}
 
   # Other
   elasticsearch:
