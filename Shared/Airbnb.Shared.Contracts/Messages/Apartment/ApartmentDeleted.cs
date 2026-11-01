@@ -1,4 +1,4 @@
-namespace Airbnb.Shared.Messages.Apartment;
+namespace Airbnb.Shared.Contracts.Messages.Apartment;
 
 public record ApartmentDeleted
 {

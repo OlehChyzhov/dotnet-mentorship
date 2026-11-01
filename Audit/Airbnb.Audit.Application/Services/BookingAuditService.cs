@@ -2,7 +2,7 @@ using Airbnb.Audit.Application.Abstractions.Repositories;
 using Airbnb.Audit.Application.Abstractions.Services;
 using Airbnb.Audit.Application.DTOs;
 using Airbnb.Audit.Application.Querying;
-using Airbnb.Shared.HTTP;
+using Airbnb.Shared.Common;
 using MapsterMapper;
 
 namespace Airbnb.Audit.Application.Services;

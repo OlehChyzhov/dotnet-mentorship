@@ -11,7 +11,6 @@ ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["Payment/Airbnb.Payment.API/Airbnb.Payment.API.csproj", "Payment/Airbnb.Payment.API/"]
 COPY ["Payment/Airbnb.Payment.Application/Airbnb.Payment.Application.csproj", "Payment/Airbnb.Payment.Application/"]
-COPY ["Shared/Airbnb.Shared/Airbnb.Shared.csproj", "Shared/Airbnb.Shared/"]
 RUN dotnet restore "Payment/Airbnb.Payment.API/Airbnb.Payment.API.csproj"
 
 COPY . .

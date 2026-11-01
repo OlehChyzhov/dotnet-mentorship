@@ -1,4 +1,4 @@
-﻿namespace Airbnb.Shared.HTTP;
+﻿namespace Airbnb.Shared.Common;
 
 public class Result<T>
 {

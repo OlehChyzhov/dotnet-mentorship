@@ -3,22 +3,22 @@ using Airbnb.Application.Abstractions.Services;
 using Airbnb.Application.DTOs.Booking;
 using Airbnb.Application.DTOs.Querying;
 using Airbnb.Domain.Enums;
-using Airbnb.Shared.Broker;
-using Airbnb.Shared.HTTP;
-using Airbnb.Shared.Messages.Booking;
+using Airbnb.Shared.Common;
+using Airbnb.Shared.Contracts.Messages.Booking;
 using MapsterMapper;
+using MassTransit;
 
 namespace Airbnb.Application.Services;
 
 public class BookingService : IBookingService
 {
-    private readonly IPublisher _publisher;
+    private readonly IPublishEndpoint _publishEndpoint;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
 
-    public BookingService(IPublisher publisher, IUnitOfWork unitOfWork, IMapper mapper)
+    public BookingService(IPublishEndpoint publishEndpoint, IUnitOfWork unitOfWork, IMapper mapper)
     {
-        _publisher = publisher;
+        _publishEndpoint = publishEndpoint;
         _unitOfWork = unitOfWork;
         _mapper = mapper;
     }
@@ -76,7 +76,7 @@ public class BookingService : IBookingService
         var createdBooking = await _unitOfWork.Bookings.GetByIdAsync(bookingId);
         var createdBookingDto = _mapper.Map<BookingDto>(createdBooking);
         
-        await _publisher.PublishAsync(new BookingCreated() { EntityId = createdBookingDto.Id.ToString() });
+        await _publishEndpoint.Publish(new BookingCreated() { EntityId = createdBookingDto.Id.ToString() });
         
         return createdBookingDto;
     }
@@ -86,6 +86,6 @@ public class BookingService : IBookingService
         await _unitOfWork.Bookings.DeleteAsync(bookingId);
         await _unitOfWork.SaveChangesAsync();
 
-        await _publisher.PublishAsync(new BookingDeleted() { EntityId = bookingId.ToString() });
+        await _publishEndpoint.Publish(new BookingDeleted() { EntityId = bookingId.ToString() });
     }
 }

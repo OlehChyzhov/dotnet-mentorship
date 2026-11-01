@@ -1,7 +1,7 @@
 ﻿using Airbnb.Application.Abstracts.Repositories;
 using Airbnb.Application.DTOs.Querying;
 using Airbnb.Domain.Models;
-using Airbnb.Shared.HTTP;
+using Airbnb.Shared.Common;
 
 namespace Airbnb.Application.Abstractions.Repositories;
 

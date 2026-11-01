@@ -1,4 +1,6 @@
-namespace Airbnb.Shared.HTTP;
+using Airbnb.Shared.Common.Paging;
+
+namespace Airbnb.Shared.Common;
 
 public class PagedResult<T>
 {

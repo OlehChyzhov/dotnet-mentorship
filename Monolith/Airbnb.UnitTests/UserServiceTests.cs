@@ -4,8 +4,8 @@ using Airbnb.Application.Metrics;
 using Airbnb.Application.Services;
 using Airbnb.Domain.Constants;
 using Airbnb.Domain.Models;
-using Airbnb.Shared.Broker;
-using Airbnb.Shared.Messages.User;
+using MassTransit;
+using Airbnb.Shared.Contracts.Messages.User;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
@@ -16,13 +16,13 @@ namespace Airbnb.Tests;
 public class UserServiceTests
 {
     private readonly Mock<IIdentityService> _identityServiceMock;
-    private readonly Mock<IPublisher> _eventPublisherMock;
+    private readonly Mock<IPublishEndpoint> _eventPublisherMock;
     private readonly UserService _sut;
 
     public UserServiceTests()
     {
         _identityServiceMock = new Mock<IIdentityService>();
-        _eventPublisherMock = new Mock<IPublisher>();
+        _eventPublisherMock = new Mock<IPublishEndpoint>();
 
         var meterFactory = new ServiceCollection()
             .AddMetrics()
@@ -52,7 +52,7 @@ public class UserServiceTests
         _identityServiceMock.Verify(
             m => m.CreateUserAsync(It.IsAny<User>(), It.IsAny<string>()), Times.Never);
         _eventPublisherMock.Verify(
-            m => m.PublishAsync(It.IsAny<UserCreated>()), Times.Never);
+            m => m.Publish(It.IsAny<UserCreated>(), It.IsAny<CancellationToken>()), Times.Never);
     }
 
     [Fact]
@@ -78,7 +78,7 @@ public class UserServiceTests
         _identityServiceMock.Verify(m => m.CreateUserAsync(user, "Password123!"), Times.Once);
         _identityServiceMock.Verify(m => m.AddUserToRoleAsync(user, Roles.Client), Times.Once);
         _eventPublisherMock.Verify(
-            m => m.PublishAsync(It.Is<UserCreated>(msg => msg.EntityId == "user-id")), Times.Once);
+            m => m.Publish(It.Is<UserCreated>(msg => msg.EntityId == "user-id"), It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]
@@ -100,7 +100,7 @@ public class UserServiceTests
 
         // Assert
         result.Succeeded.ShouldBeFalse();
-        _eventPublisherMock.Verify(m => m.PublishAsync(It.IsAny<UserCreated>()), Times.Never);
+        _eventPublisherMock.Verify(m => m.Publish(It.IsAny<UserCreated>(), It.IsAny<CancellationToken>()), Times.Never);
     }
 
     [Fact]
@@ -131,7 +131,7 @@ public class UserServiceTests
 
         // Assert
         result.Succeeded.ShouldBeTrue();
-        _eventPublisherMock.Verify(m => m.PublishAsync(It.Is<UserUpdated>(msg => msg.EntityId == "user-id")), Times.Once);
+        _eventPublisherMock.Verify(m => m.Publish(It.Is<UserUpdated>(msg => msg.EntityId == "user-id"), It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]
@@ -149,7 +149,7 @@ public class UserServiceTests
 
         // Assert
         result.Succeeded.ShouldBeFalse();
-        _eventPublisherMock.Verify(m => m.PublishAsync(It.IsAny<UserUpdated>()), Times.Never);
+        _eventPublisherMock.Verify(m => m.Publish(It.IsAny<UserUpdated>(), It.IsAny<CancellationToken>()), Times.Never);
     }
 
     [Fact]
@@ -165,6 +165,6 @@ public class UserServiceTests
 
         // Assert
         result.Succeeded.ShouldBeTrue();
-        _eventPublisherMock.Verify(m => m.PublishAsync(It.Is<UserDeleted>(msg => msg.EntityId == "user-id")), Times.Once);
+        _eventPublisherMock.Verify(m => m.Publish(It.Is<UserDeleted>(msg => msg.EntityId == "user-id"), It.IsAny<CancellationToken>()), Times.Once);
     }
 }

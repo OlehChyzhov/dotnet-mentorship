@@ -20,7 +20,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\Shared\Airbnb.Shared\Airbnb.Shared.csproj" />
       <ProjectReference Include="..\Airbnb.Payment.Application\Airbnb.Payment.Application.csproj" />
     </ItemGroup>
 

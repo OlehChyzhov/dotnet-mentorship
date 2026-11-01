@@ -4,8 +4,8 @@ using Airbnb.Application.DTOs.Querying;
 using Airbnb.Application.Services;
 using Airbnb.Domain.Enums;
 using Airbnb.Domain.Models;
-using Airbnb.Shared.Broker;
-using Airbnb.Shared.HTTP;
+using MassTransit;
+using Airbnb.Shared.Common;
 using MapsterMapper;
 using Moq;
 using Shouldly;
@@ -14,7 +14,7 @@ namespace Airbnb.Tests;
 
 public class BookingServiceTests
 {
-    private readonly Mock<IPublisher> _publisherMock;
+    private readonly Mock<IPublishEndpoint> _publisherMock;
     private readonly Mock<IUnitOfWork> _unitOfWorkMock;
     private readonly Mock<IApartmentRepository> _apartmentRepositoryMock;
     private readonly Mock<IBookingRepository> _bookingRepositoryMock;
@@ -23,7 +23,7 @@ public class BookingServiceTests
 
     public BookingServiceTests()
     {
-        _publisherMock = new Mock<IPublisher>();
+        _publisherMock = new Mock<IPublishEndpoint>();
         _apartmentRepositoryMock = new Mock<IApartmentRepository>();
         _bookingRepositoryMock = new Mock<IBookingRepository>();
 

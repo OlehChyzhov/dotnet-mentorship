@@ -1,5 +1,5 @@
 using Airbnb.Audit.Application.Abstractions.Repositories;
-using Airbnb.Shared.HTTP;
+using Airbnb.Shared.Common;
 using MongoDB.Bson;
 using MongoDB.Driver;
 

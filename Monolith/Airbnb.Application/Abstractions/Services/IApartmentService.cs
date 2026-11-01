@@ -1,7 +1,7 @@
 ﻿using Airbnb.Application.DTOs.Apartment;
 using Airbnb.Application.DTOs.Querying;
 using Airbnb.Domain.Enums;
-using Airbnb.Shared.HTTP;
+using Airbnb.Shared.Common;
 
 namespace Airbnb.Application.Abstractions.Services;
 
@@ -11,7 +11,7 @@ public interface IApartmentService
 
     Task<Result<ApartmentDto>> GetApartmentByExternalIdAsync(Guid id);
 
-    Task<Result<PagedResult<ApartmentDto>>> GetApartmentsAsync(ApartmentPagingParamters query);
+    Task<Result<PagedResult<ApartmentDto>>> GetApartmentsAsync(ApartmentPagingParameters query);
 
     Task<Result<ApartmentDto>> CreateApartmentAsync(CreateApartmentDto dto, string userId);
 

@@ -1,8 +1,8 @@
-﻿using Airbnb.Shared.HTTP;
+﻿using Airbnb.Shared.Common.Paging;
 
 namespace Airbnb.Application.DTOs.Querying;
 
-public record ApartmentPagingParamters : PagingPramsBase
+public record ApartmentPagingParameters : PagingPramsBase
 {
     public DateTime? StartDate { get; init; } = null;
     public DateTime? EndDate { get; init; } = null;

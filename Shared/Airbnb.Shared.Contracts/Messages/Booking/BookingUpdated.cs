@@ -1,4 +1,4 @@
-namespace Airbnb.Shared.Messages.Booking;
+namespace Airbnb.Shared.Contracts.Messages.Booking;
 
 public record BookingUpdated
 {

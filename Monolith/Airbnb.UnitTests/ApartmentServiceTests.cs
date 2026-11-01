@@ -4,8 +4,8 @@ using Airbnb.Application.DTOs.Querying;
 using Airbnb.Application.Services;
 using Airbnb.Domain.Enums;
 using Airbnb.Domain.Models;
-using Airbnb.Shared.Broker;
-using Airbnb.Shared.HTTP;
+using MassTransit;
+using Airbnb.Shared.Common;
 using MapsterMapper;
 using Moq;
 using Shouldly;
@@ -14,7 +14,7 @@ namespace Airbnb.Tests;
 
 public class ApartmentServiceTests
 {
-    private readonly Mock<IPublisher> _publisherMock;
+    private readonly Mock<IPublishEndpoint> _publisherMock;
     private readonly Mock<IUnitOfWork> _unitOfWorkMock;
     private readonly Mock<IApartmentRepository> _apartmentRepositoryMock;
     private readonly Mock<IMapper> _mapperMock;
@@ -22,7 +22,7 @@ public class ApartmentServiceTests
 
     public ApartmentServiceTests()
     {
-        _publisherMock = new Mock<IPublisher>();
+        _publisherMock = new Mock<IPublishEndpoint>();
         _apartmentRepositoryMock = new Mock<IApartmentRepository>();
         _unitOfWorkMock = new Mock<IUnitOfWork>();
         _unitOfWorkMock.Setup(u => u.Apartments).Returns(_apartmentRepositoryMock.Object);
@@ -75,7 +75,7 @@ public class ApartmentServiceTests
     public async Task GetApartmentsAsync_ReturnsPagedResultWithMetadata()
     {
         // Arrange
-        var query = new ApartmentPagingParamters { PageNumber = 1, PageSize = 10 };
+        var query = new ApartmentPagingParameters { PageNumber = 1, PageSize = 10 };
 
         var apartments = new List<Apartment> { CreateApartment(Guid.NewGuid()), CreateApartment(Guid.NewGuid()) };
         var pagedApartments = new PagedResult<Apartment>(apartments, totalCount: 2, pageNumber: 1, pageSize: 10);

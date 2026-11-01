@@ -3,13 +3,13 @@ using Airbnb.Application.DTOs.Apartment;
 using Airbnb.Application.DTOs.Querying;
 using Airbnb.Domain.Enums;
 using Airbnb.Domain.Models;
-using Airbnb.Shared.HTTP;
+using Airbnb.Shared.Common;
 
 namespace Airbnb.Application.Abstractions.Repositories;
 
 public interface IApartmentRepository : IRepository<Apartment, Guid, Guid?>
 {
-    Task<PagedResult<Apartment>> GetApartmentsPagedAsync(ApartmentPagingParamters query);
+    Task<PagedResult<Apartment>> GetApartmentsPagedAsync(ApartmentPagingParameters query);
 
     Task<Result<Apartment>> UpsertApartmentAsync(Apartment apartmentToUpsert);
 
