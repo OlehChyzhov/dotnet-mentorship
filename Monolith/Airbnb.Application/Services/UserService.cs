@@ -2,7 +2,7 @@ using Airbnb.Application.Abstractions.Services;
 using Airbnb.Application.Abstracts.Identity;
 using Airbnb.Application.Metrics;
 using Airbnb.Domain.Models;
-using Airbnb.Shared.Contracts.Messages.User;
+using Airbnb.Shared.Contracts.Events.User;
 using MassTransit;
 using Microsoft.AspNetCore.Identity;
 
@@ -41,9 +41,7 @@ public class UserService : IUserService
         result = await _identityService.AddUserToRoleAsync(user, role);
         if (!result.Succeeded) return result;
         
-        await _publisher.Publish(new UserCreated() { EntityId = user.Id });
-        await _publisher.Publish(new StartTransactionCommand(Guid.NewGuid()));
-        
+        await _publisher.Publish(new UserCreatedEvent() { UserId = user.Id });
         return result;
     }
 
@@ -57,9 +55,9 @@ public class UserService : IUserService
         var result = await _identityService.ChangeEmailAsync(user, newEmail);
         if (!result.Succeeded) return result;
 
-        var message = new UserUpdated()
+        var message = new UserUpdatedEvent()
         {
-            EntityId = user.Id, 
+            UserId = user.Id, 
             PropertyName = nameof(user.Email), 
             NewValue = user.Email, 
             OldValue = oldEmail
@@ -77,7 +75,7 @@ public class UserService : IUserService
         var result = await _identityService.DeleteUserAsync(user);
         if (!result.Succeeded) return result;
         
-        await _publisher.Publish(new UserDeleted() { EntityId = user.Id });
+        await _publisher.Publish(new UserDeletedEvent() { UserId = user.Id });
 
         return result;
     }

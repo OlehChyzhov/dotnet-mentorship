@@ -20,7 +20,7 @@ builder.Services.AddScoped<CustomerService>();
 builder.Services.AddScoped<ChargeService>();
 
 // Services
-builder.Services.AddApplication();
+builder.Services.AddApplication(builder.Configuration);
 
 // Logging
 builder.Services.AddSerilog(config =>

@@ -7,7 +7,8 @@ public class Booking : IEntity<Guid, Guid?>
     public Guid Id { get; set; }
     public Guid? ExternalId { get; set; }
 
-    public BookingStatus Status { get; set; } = BookingStatus.Pending;
+    public BookingStatus Status { get; set; } = BookingStatus.AwaitingPayment;
+    public string? PaymentSessionUrl { get; set; }
     
     // Stay Dates
     public DateTime CheckIn { get; set; }

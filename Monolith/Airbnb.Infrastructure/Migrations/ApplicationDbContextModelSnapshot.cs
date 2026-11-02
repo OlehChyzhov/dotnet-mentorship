@@ -130,6 +130,9 @@ namespace Airbnb.Infrastructure.Migrations
                     b.Property<int>("GuestsCount")
                         .HasColumnType("int");
 
+                    b.Property<string>("PaymentSessionUrl")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("Status")
                         .HasColumnType("int");
 

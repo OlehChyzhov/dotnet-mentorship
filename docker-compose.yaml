@@ -206,6 +206,10 @@
     ports:
       - "3301:8080"
     environment:
+      RabbitMq__HostUri: ${RABBITMQ_HOST_URI}
+      RabbitMq__UserName: ${RABBITMQ_USER}
+      RabbitMq__Password: ${RABBITMQ_PASSWORD}
+      
       ElasticConfigurations__Uri: ${LOGGING_ELASTICSEARCH_URI}
       Stripe__PublishableKey: ${STRIPE_PUBLISHABLE_KEY}
       Stripe__SecretKey: ${STRIPE_SECRET_KEY}

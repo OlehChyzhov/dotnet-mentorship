@@ -5,7 +5,7 @@ using Airbnb.Application.DTOs.Querying;
 using Airbnb.Domain.Enums;
 using Airbnb.Domain.Models;
 using Airbnb.Shared.Common;
-using Airbnb.Shared.Contracts.Messages.Apartment;
+using Airbnb.Shared.Contracts.Events.Apartment;
 using MapsterMapper;
 using MassTransit;
 
@@ -70,7 +70,7 @@ public class ApartmentService : IApartmentService
         var createdApartment = await _unitOfWork.Apartments.GetByIdAsync(apartmentGuid);
         var createdApartmentDto = _mapper.Map<ApartmentDto>(createdApartment);
 
-        await _publishEndpoint.Publish(new ApartmentCreated() { EntityId = apartment.Id.ToString() });
+        await _publishEndpoint.Publish(new ApartmentCreatedEvent() { ApartmentId = apartment.Id.ToString() });
         
         return createdApartmentDto;
     }
@@ -96,7 +96,7 @@ public class ApartmentService : IApartmentService
         await _unitOfWork.Apartments.DeleteAsync(id);
         await _unitOfWork.SaveChangesAsync();
         
-        await _publishEndpoint.Publish(new ApartmentDeleted() { EntityId = id.ToString() });
+        await _publishEndpoint.Publish(new ApartmentDeletedEvent() { ApartmentId = id.ToString() });
     }
 
     public async Task<Result<List<ApartmentByProfitDto>>> GetTopApartmentsByProfitAsync(int numOfApartments, string userId) =>

@@ -3,8 +3,11 @@ using Airbnb.Application.Abstractions.Services;
 using Airbnb.Application.DTOs.Booking;
 using Airbnb.Application.DTOs.Querying;
 using Airbnb.Domain.Enums;
+using Airbnb.Domain.Models;
 using Airbnb.Shared.Common;
-using Airbnb.Shared.Contracts.Messages.Booking;
+using Airbnb.Shared.Contracts.Commands.Payment;
+using Airbnb.Shared.Contracts.Events.Booking;
+using Airbnb.Shared.Contracts.Events.Payment;
 using MapsterMapper;
 using MassTransit;
 
@@ -12,12 +15,18 @@ namespace Airbnb.Application.Services;
 
 public class BookingService : IBookingService
 {
+    private readonly IRequestClient<CreatePaymentSessionCommand> _requestClient;
     private readonly IPublishEndpoint _publishEndpoint;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
 
-    public BookingService(IPublishEndpoint publishEndpoint, IUnitOfWork unitOfWork, IMapper mapper)
+    public BookingService(
+        IRequestClient<CreatePaymentSessionCommand> requestClient,
+        IPublishEndpoint publishEndpoint,
+        IUnitOfWork unitOfWork, 
+        IMapper mapper)
     {
+        _requestClient = requestClient;
         _publishEndpoint = publishEndpoint;
         _unitOfWork = unitOfWork;
         _mapper = mapper;
@@ -65,10 +74,18 @@ public class BookingService : IBookingService
 
         booking.Id = bookingId;
         booking.ClientId = userId;
-        booking.Status = BookingStatus.Pending;
+        booking.Status = BookingStatus.AwaitingPayment;
         booking.CreatedAt = DateTime.UtcNow;
         booking.BookedPricePerNight = apartment.PricePerNight;
         booking.BookedTotalPrice =  apartment.PricePerNight * ((dto.CheckOut - dto.CheckIn).TotalDays);
+        
+        var paymentSession = await CreatePaymentSessionAsync(booking);
+        if (!paymentSession.IsSuccessful)
+        {
+            return paymentSession.Message!;
+        }
+
+        booking.PaymentSessionUrl = paymentSession.Value!.PaymentSessionUrl;
         
         await _unitOfWork.Bookings.CreateAsync(booking);
         await _unitOfWork.SaveChangesAsync();
@@ -76,9 +93,44 @@ public class BookingService : IBookingService
         var createdBooking = await _unitOfWork.Bookings.GetByIdAsync(bookingId);
         var createdBookingDto = _mapper.Map<BookingDto>(createdBooking);
         
-        await _publishEndpoint.Publish(new BookingCreated() { EntityId = createdBookingDto.Id.ToString() });
+        await _publishEndpoint.Publish(new BookingCreatedEvent()
+        {
+            BookingId = createdBookingDto.Id, 
+            BookingTotal = createdBookingDto.BookedTotalPrice,
+            StartDate = createdBookingDto.CheckIn,
+            EndDate = createdBookingDto.CheckOut,
+            GuestsCount = createdBookingDto.GuestsCount,
+        });
         
         return createdBookingDto;
+    }
+
+    private async Task<Result<PaymentSessionCreationSucceededEvent>> CreatePaymentSessionAsync(Booking booking)
+    {
+        var createPaymentCommand = new CreatePaymentSessionCommand()
+        {
+            BookingId = booking.Id,
+            PaymentAmount = booking.BookedTotalPrice
+        };
+        
+        try
+        {
+            var response = await _requestClient.GetResponse<PaymentSessionCreationSucceededEvent, PaymentSessionCreationFailedEvent>(createPaymentCommand);
+            if (response.Is(out Response<PaymentSessionCreationSucceededEvent>? created))
+            {
+                return created!.Message;
+            }
+            else if (response.Is(out Response<PaymentSessionCreationFailedEvent>? failed))
+            {
+                return failed!.Message.FailureReason;
+            }
+            
+            return "Payment session creation succeeded, but unknown response type returned";
+        }
+        catch (Exception ex)
+        {
+            return "Could not create payment session";
+        }
     }
 
     public async Task DeleteBookingAsync(Guid bookingId)
@@ -86,6 +138,6 @@ public class BookingService : IBookingService
         await _unitOfWork.Bookings.DeleteAsync(bookingId);
         await _unitOfWork.SaveChangesAsync();
 
-        await _publishEndpoint.Publish(new BookingDeleted() { EntityId = bookingId.ToString() });
+        await _publishEndpoint.Publish(new BookingDeletedEvent() { BookingId = bookingId.ToString() });
     }
 }

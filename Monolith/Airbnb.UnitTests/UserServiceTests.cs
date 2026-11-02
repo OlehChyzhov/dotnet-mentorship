@@ -4,8 +4,8 @@ using Airbnb.Application.Metrics;
 using Airbnb.Application.Services;
 using Airbnb.Domain.Constants;
 using Airbnb.Domain.Models;
+using Airbnb.Shared.Contracts.Events.User;
 using MassTransit;
-using Airbnb.Shared.Contracts.Messages.User;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
@@ -52,7 +52,7 @@ public class UserServiceTests
         _identityServiceMock.Verify(
             m => m.CreateUserAsync(It.IsAny<User>(), It.IsAny<string>()), Times.Never);
         _eventPublisherMock.Verify(
-            m => m.Publish(It.IsAny<UserCreated>(), It.IsAny<CancellationToken>()), Times.Never);
+            m => m.Publish(It.IsAny<UserCreatedEvent>(), It.IsAny<CancellationToken>()), Times.Never);
     }
 
     [Fact]
@@ -78,7 +78,7 @@ public class UserServiceTests
         _identityServiceMock.Verify(m => m.CreateUserAsync(user, "Password123!"), Times.Once);
         _identityServiceMock.Verify(m => m.AddUserToRoleAsync(user, Roles.Client), Times.Once);
         _eventPublisherMock.Verify(
-            m => m.Publish(It.Is<UserCreated>(msg => msg.EntityId == "user-id"), It.IsAny<CancellationToken>()), Times.Once);
+            m => m.Publish(It.Is<UserCreatedEvent>(msg => msg.UserId == "user-id"), It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]
@@ -100,7 +100,7 @@ public class UserServiceTests
 
         // Assert
         result.Succeeded.ShouldBeFalse();
-        _eventPublisherMock.Verify(m => m.Publish(It.IsAny<UserCreated>(), It.IsAny<CancellationToken>()), Times.Never);
+        _eventPublisherMock.Verify(m => m.Publish(It.IsAny<UserCreatedEvent>(), It.IsAny<CancellationToken>()), Times.Never);
     }
 
     [Fact]
@@ -131,7 +131,7 @@ public class UserServiceTests
 
         // Assert
         result.Succeeded.ShouldBeTrue();
-        _eventPublisherMock.Verify(m => m.Publish(It.Is<UserUpdated>(msg => msg.EntityId == "user-id"), It.IsAny<CancellationToken>()), Times.Once);
+        _eventPublisherMock.Verify(m => m.Publish(It.Is<UserUpdatedEvent>(msg => msg.UserId == "user-id"), It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]
@@ -149,7 +149,7 @@ public class UserServiceTests
 
         // Assert
         result.Succeeded.ShouldBeFalse();
-        _eventPublisherMock.Verify(m => m.Publish(It.IsAny<UserUpdated>(), It.IsAny<CancellationToken>()), Times.Never);
+        _eventPublisherMock.Verify(m => m.Publish(It.IsAny<UserUpdatedEvent>(), It.IsAny<CancellationToken>()), Times.Never);
     }
 
     [Fact]
@@ -165,6 +165,6 @@ public class UserServiceTests
 
         // Assert
         result.Succeeded.ShouldBeTrue();
-        _eventPublisherMock.Verify(m => m.Publish(It.Is<UserDeleted>(msg => msg.EntityId == "user-id"), It.IsAny<CancellationToken>()), Times.Once);
+        _eventPublisherMock.Verify(m => m.Publish(It.Is<UserDeletedEvent>(msg => msg.UserId == "user-id"), It.IsAny<CancellationToken>()), Times.Once);
     }
 }

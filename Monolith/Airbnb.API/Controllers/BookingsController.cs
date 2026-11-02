@@ -21,7 +21,7 @@ public class BookingsController : ControllerBase
         _bookingService = bookingService;
     }
 
-    [HttpGet("{bookingId}")]
+    [HttpGet("booking/{bookingId}")]
     public async Task<IActionResult> GetBookingById(Guid bookingId)
     {
         var result = await _bookingService.GetBookingByIdAsync(bookingId);
@@ -33,7 +33,7 @@ public class BookingsController : ControllerBase
         return Ok(result.Value);
     }
     
-    [HttpGet]
+    [HttpGet("user/{userId}")]
     public async Task<IActionResult> GetUserBookings([FromQuery] BookingPagingPrams query)
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
@@ -47,8 +47,8 @@ public class BookingsController : ControllerBase
         return Ok(result.Value);
     }
 
-    [HttpPost]
-    public async Task<IActionResult> CreateBooking([FromBody] CreateBookingDto dto)
+    [HttpPost("booking/reserve")]
+    public async Task<IActionResult> ReserveBooking([FromBody] CreateBookingDto dto)
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
 

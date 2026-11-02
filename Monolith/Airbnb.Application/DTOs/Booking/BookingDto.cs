@@ -6,6 +6,7 @@ public record BookingDto
 {
     public Guid Id { get; init; }
     public BookingStatus Status { get; init; }
+    public string? PaymentSessionUrl { get; set; }
     
     public DateTime CheckIn { get; init; }
     public DateTime CheckOut { get; init; }
