@@ -221,22 +221,23 @@ namespace Airbnb.Infrastructure.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
-            modelBuilder.Entity("Airbnb.Infrastructure.Saga.MockSagaStateMachineInstance", b =>
+            modelBuilder.Entity("Airbnb.Infrastructure.Saga.BookingSaga.BookingPaymentStateMachineInstance", b =>
                 {
                     b.Property<Guid>("CorrelationId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("CurrentState")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("RandomValue")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid>("SomeId")
+                    b.Property<Guid?>("BookingId")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("CurrentState")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FailureReason")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PaymentIntendId")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("CorrelationId");
 

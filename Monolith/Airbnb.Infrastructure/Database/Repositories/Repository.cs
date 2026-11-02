@@ -24,12 +24,12 @@ public abstract class Repository<TEntity, TKey, TExternalKey> : IRepository<TEnt
 
     public async Task<TEntity> GetByIdAsync(TKey id)
     {
-        return await DbSet.AsNoTracking().FirstAsync(entity => entity.Id!.Equals(id));
+        return await DbSet.FirstAsync(entity => entity.Id!.Equals(id));
     }
 
     public async Task<TEntity> GetByExternalIdAsync(TExternalKey externalId)
     {
-        return await DbSet.AsNoTracking().FirstAsync(entity => entity.ExternalId!.Equals(externalId));
+        return await DbSet.FirstAsync(entity => entity.ExternalId!.Equals(externalId));
     }
 
     public async Task CreateAsync(TEntity entity)

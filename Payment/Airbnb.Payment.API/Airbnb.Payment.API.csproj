@@ -23,8 +23,4 @@
       <ProjectReference Include="..\Airbnb.Payment.Application\Airbnb.Payment.Application.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="Controllers\" />
-    </ItemGroup>
-
 </Project>

@@ -9,6 +9,7 @@ using Airbnb.Infrastructure.DataLoading;
 using Airbnb.Infrastructure.Identity;
 using Airbnb.Infrastructure.Options;
 using Airbnb.Infrastructure.Saga;
+using Airbnb.Infrastructure.Saga.BookingSaga;
 using MassTransit;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -30,18 +31,14 @@ public static class DependencyInjection
         {
             config.SetKebabCaseEndpointNameFormatter();
 
-            config.AddSagaStateMachine<MockSagaStateMachine, MockSagaStateMachineInstance>()
+            config.AddSagaStateMachine<BookingPaymentSagaStateMachine, BookingPaymentStateMachineInstance>()
                 .EntityFrameworkRepository(r =>
                 {
                     r.ExistingDbContext<ApplicationDbContext>();
                     r.UseSqlServer();
                 });
             
-            config.AddConsumer<StartTransactionCommandHandler>();
-            config.AddConsumer<SecondCommandHandler>();
-            config.AddConsumer<ThirdCommandHandler>();
-            config.AddConsumer<FourthCommandHandler>();
-            config.AddConsumer<TransactionCompletedEventHandler>();
+            config.AddConsumersFromNamespaceContaining<MarkBookingAsPaidCommandHandler>();
             
             config.UsingRabbitMq((context, rabbitMqConfig) =>
             {

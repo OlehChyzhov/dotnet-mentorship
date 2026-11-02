@@ -39,22 +39,29 @@ public class StripePaymentService : IPaymentService
                             Currency = "usd",
                             ProductData = new SessionLineItemPriceDataProductDataOptions()
                             {
-                                Name = $"Booking of the '{command.ApartmentName}'"
+                                Name = $"Booking of the '{command.ApartmentName}'",
+                                Description = $"{command.CheckIn.Date} - {command.CheckOut.Date} for {command.GuestsCount} guests",
                             }
                         },
                         Quantity = 1,
                     }
                 },
                 Mode = "payment",
-                SuccessUrl = _stripeConfig.SuccessUrl,
-                CancelUrl = _stripeConfig.CancelUrl
+                ClientReferenceId = command.BookingId.ToString(),
+                Metadata = new Dictionary<string, string>()
+                {
+                    ["bookingId"] = command.BookingId.ToString(),
+                },
+                ExpiresAt = DateTime.UtcNow.AddMinutes(31),
+                SuccessUrl = "https://example.com/success"
             };
         
             Session session = _sessionService.Create(options);
 
             var result = new PaymentSessionCreationDto()
             {
-                PaymentSessionUrl = session.Url
+                PaymentSessionUrl = session.Url,
+                SessionId = session.Id
             };
 
             return result;
