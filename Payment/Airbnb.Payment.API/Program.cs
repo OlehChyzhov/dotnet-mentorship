@@ -1,5 +1,6 @@
 using Airbnb.Payment.API.Options;
 using Airbnb.Payment.Application;
+using Airbnb.Payment.Application.Options;
 using Serilog;
 using Serilog.Events;
 using OpenTelemetry.Metrics;
@@ -12,12 +13,6 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddOpenApi();
 builder.Services.AddControllers();
-
-// Stripe
-builder.Services.Configure<StripeOptions>(builder.Configuration.GetSection("Stripe"));
-builder.Services.AddScoped<TokenService>();
-builder.Services.AddScoped<CustomerService>();
-builder.Services.AddScoped<ChargeService>();
 
 // Services
 builder.Services.AddApplication(builder.Configuration);

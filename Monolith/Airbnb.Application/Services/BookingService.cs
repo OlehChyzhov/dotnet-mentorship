@@ -79,7 +79,7 @@ public class BookingService : IBookingService
         booking.BookedPricePerNight = apartment.PricePerNight;
         booking.BookedTotalPrice =  apartment.PricePerNight * ((dto.CheckOut - dto.CheckIn).TotalDays);
         
-        var paymentSession = await CreatePaymentSessionAsync(booking);
+        var paymentSession = await CreatePaymentSessionAsync(apartment, booking);
         if (!paymentSession.IsSuccessful)
         {
             return paymentSession.Message!;
@@ -105,12 +105,16 @@ public class BookingService : IBookingService
         return createdBookingDto;
     }
 
-    private async Task<Result<PaymentSessionCreationSucceededEvent>> CreatePaymentSessionAsync(Booking booking)
+    private async Task<Result<PaymentSessionCreationSucceededEvent>> CreatePaymentSessionAsync(Apartment apartment, Booking booking)
     {
         var createPaymentCommand = new CreatePaymentSessionCommand()
         {
+            ApartmentName = apartment.Title,
             BookingId = booking.Id,
-            PaymentAmount = booking.BookedTotalPrice
+            PaymentAmount = booking.BookedTotalPrice,
+            CheckIn = booking.CheckIn,
+            CheckOut = booking.CheckOut,
+            GuestsCount = booking.GuestsCount,
         };
         
         try

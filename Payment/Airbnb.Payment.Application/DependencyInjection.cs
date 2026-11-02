@@ -5,6 +5,7 @@ using Airbnb.Payment.Application.Services;
 using MassTransit;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Stripe.Checkout;
 
 namespace Airbnb.Payment.Application;
 
@@ -37,7 +38,11 @@ public static class DependencyInjection
         });
      
         // Services
-        services.AddScoped<IPaymentService, MockPaymentService>();
+        services.AddScoped<IPaymentService, StripePaymentService>();
+        
+        // Stripe
+        services.Configure<StripeConfig>(configuration.GetSection("Stripe"));
+        services.AddScoped<SessionService>();
         
         return services;
     }
