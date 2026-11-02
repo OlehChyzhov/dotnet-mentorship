@@ -30,7 +30,18 @@ public static class DependencyInjection
         {
             config.SetKebabCaseEndpointNameFormatter();
 
-            config.AddSagaStateMachine<MockSagaStateMachine, MockSagaStateMachineInstance>();
+            config.AddSagaStateMachine<MockSagaStateMachine, MockSagaStateMachineInstance>()
+                .EntityFrameworkRepository(r =>
+                {
+                    r.ExistingDbContext<ApplicationDbContext>();
+                    r.UseSqlServer();
+                });
+            
+            config.AddConsumer<StartTransactionCommandHandler>();
+            config.AddConsumer<SecondCommandHandler>();
+            config.AddConsumer<ThirdCommandHandler>();
+            config.AddConsumer<FourthCommandHandler>();
+            config.AddConsumer<TransactionCompletedEventHandler>();
             
             config.UsingRabbitMq((context, rabbitMqConfig) =>
             {
@@ -40,6 +51,7 @@ public static class DependencyInjection
                     hostAddress.Password(rabbitmqOptions.Password);
                 });
                 
+                rabbitMqConfig.UseInMemoryOutbox();
                 rabbitMqConfig.ConfigureEndpoints(context);
             });
         });

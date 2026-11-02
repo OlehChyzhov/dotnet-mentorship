@@ -1,13 +1,8 @@
+using Airbnb.Application.Services;
 using MassTransit;
 using Microsoft.Extensions.Logging;
 
 namespace Airbnb.Infrastructure.Saga;
-
-public record StartTransactionCommand(Guid CommandId);
-public record ExecuteSecondCommand(Guid CommandId);
-public record ExecuteThirdCommand(Guid CommandId);
-public record ExecuteFourthCommand(Guid CommandId);
-public record CompleteTransactionCommand(Guid CommandId);
 
 public record StartTransactionCommandExecutedEvent(Guid CommandId);
 public record SecondCommandExecutedEvent(Guid CommandId);

@@ -42,6 +42,7 @@ public class UserService : IUserService
         if (!result.Succeeded) return result;
         
         await _publisher.Publish(new UserCreated() { EntityId = user.Id });
+        await _publisher.Publish(new StartTransactionCommand(Guid.NewGuid()));
         
         return result;
     }
