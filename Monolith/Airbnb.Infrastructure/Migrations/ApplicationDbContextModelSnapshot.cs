@@ -233,12 +233,6 @@ namespace Airbnb.Infrastructure.Migrations
                     b.Property<string>("CurrentState")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("FailureReason")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PaymentIntendId")
-                        .HasColumnType("nvarchar(max)");
-
                     b.HasKey("CorrelationId");
 
                     b.ToTable("SagaInstances");

@@ -15,11 +15,13 @@ public class BookingPaymentStateMachineInstance : SagaStateMachineInstance
 
 public class BookingPaymentSagaStateMachine : MassTransitStateMachine<BookingPaymentStateMachineInstance>
 {
+    public State AwaitingPaymentTransactionToGetCreatedState { get; set; }
     public State AwaitingPaymentWebhookToGetTriggeredState { get; set; }
     public State UpdatingPaymentTransactionState { get; set; }
     public State UpdatingBookingRecordState { get; set; }
     
     public Event<BookingCreatedEvent> BookingCreatedEventExecuted { get; set; }
+    public Event<PaymentTransactionCreatedEvent> PaymentTransactionCreatedEventExecuted { get; set; }
     public Event<PaymentWebhookTriggeredEvent>  PaymentWebhookTriggeredEventExecuted { get; set; }
     public Event<PaymentTransactionUpdatedEvent> PaymentTransactionUpdatedEventExecuted { get; set; }
     
@@ -28,6 +30,7 @@ public class BookingPaymentSagaStateMachine : MassTransitStateMachine<BookingPay
         InstanceState(x => x.CurrentState);
 
         Event(() => BookingCreatedEventExecuted, e => e.CorrelateById(m => m.Message.BookingId));
+        Event(() => PaymentTransactionCreatedEventExecuted, e => e.CorrelateById(m => m.Message.BookingId));
         Event(() => PaymentWebhookTriggeredEventExecuted, e => e.CorrelateById(m => m.Message.BookingId));
         Event(() => PaymentTransactionUpdatedEventExecuted, e => e.CorrelateById(m => m.Message.BookingId));
 
@@ -37,12 +40,24 @@ public class BookingPaymentSagaStateMachine : MassTransitStateMachine<BookingPay
                 {
                     context.Saga.BookingId = context.Message.BookingId;
                 })
-                .TransitionTo(AwaitingPaymentWebhookToGetTriggeredState)
+                .TransitionTo(AwaitingPaymentTransactionToGetCreatedState)
                 .Publish(context => new CreatePaymentTransactionCommand()
                 {
                     BookingId = context.Message.BookingId,
                     Amount = context.Message.BookingTotal
                 }));
+        
+        During(AwaitingPaymentTransactionToGetCreatedState,
+            When(PaymentTransactionCreatedEventExecuted)
+                .IfElse(ctx => ctx.Message.IsCreated,
+                    created => created.TransitionTo(AwaitingPaymentWebhookToGetTriggeredState),
+                    failed  => failed
+                        .Publish(ctx => new UpdateBookingRecordCommand
+                        {
+                            BookingId = ctx.Message.BookingId,
+                            IsFailed  = true,
+                        })
+                        .Finalize()));
         
         During(AwaitingPaymentWebhookToGetTriggeredState,
             When(PaymentWebhookTriggeredEventExecuted)
@@ -62,8 +77,12 @@ public class BookingPaymentSagaStateMachine : MassTransitStateMachine<BookingPay
                 .Publish(context => new UpdateBookingRecordCommand()
                 {
                     BookingId = context.Message.BookingId,
-                    Success = context.Message.Success,
+                    IsFailed = context.Message.IsFailed,
+                    IsExpired = context.Message.IsExpired,
+                    IsSuccessful = context.Message.IsSuccessful,
                 })
                 .Finalize());
+        
+        SetCompletedWhenFinalized();
     }
 }

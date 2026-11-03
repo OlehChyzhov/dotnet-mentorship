@@ -11,19 +11,20 @@ public class UpdatePaymentTransactionCommandHandler(ApplicationDbContext dbConte
     public async Task Consume(ConsumeContext<UpdatePaymentTransactionCommand> context)
     {
         var paymentTransaction = dbContext.PaymentTransactions.FirstOrDefault(transaction => transaction.Id == context.Message.BookingId);
-
+        
         if (paymentTransaction == null)
         {
-            paymentTransaction = new PaymentTransaction()
+            await endpointPublisher.Publish<PaymentTransactionUpdatedEvent>(new PaymentTransactionUpdatedEvent()
             {
-                Id = context.Message.BookingId,
                 BookingId = context.Message.BookingId,
-            };
-            
-            dbContext.PaymentTransactions.Add(paymentTransaction);
-            await dbContext.SaveChangesAsync();
-        }
+                IsFailed = true,
+                IsExpired = false,
+                IsSuccessful = false,
+            });
 
+            return;
+        }
+        
         if (context.Message.Success)
         {
             paymentTransaction.StripeSessionId = context.Message.PaymentSessionId!;
@@ -32,7 +33,7 @@ public class UpdatePaymentTransactionCommandHandler(ApplicationDbContext dbConte
         }
         else
         {
-            paymentTransaction.Status = PaymentTransactionStatus.Failed;
+            paymentTransaction.Status = PaymentTransactionStatus.Expired;
         }
         
         dbContext.PaymentTransactions.Update(paymentTransaction);
@@ -41,7 +42,9 @@ public class UpdatePaymentTransactionCommandHandler(ApplicationDbContext dbConte
         await endpointPublisher.Publish<PaymentTransactionUpdatedEvent>(new PaymentTransactionUpdatedEvent()
         {
             BookingId = context.Message.BookingId,
-            Success = paymentTransaction.Status == PaymentTransactionStatus.Succeeded ? true : false,
+            IsSuccessful = paymentTransaction.Status == PaymentTransactionStatus.Succeeded,
+            IsExpired = paymentTransaction.Status == PaymentTransactionStatus.Expired,
+            IsFailed = false
         });
     }
 }
