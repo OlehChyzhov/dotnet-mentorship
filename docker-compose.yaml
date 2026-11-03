@@ -26,6 +26,12 @@
     environment:
       ACCEPT_EULA: "Y"
       MSSQL_SA_PASSWORD: ${APPLICATION_MSSQL_SA_PASSWORD}
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P \"$$MSSQL_SA_PASSWORD\" -C -Q 'SELECT 1' -b || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
     volumes:
       - "mssql_data:/var/opt/mssql"
     
@@ -37,6 +43,12 @@
     environment:
       ACCEPT_EULA: "Y"
       MSSQL_SA_PASSWORD: ${PAYMENT_MSSQL_SA_PASSWORD}
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P \"$$MSSQL_SA_PASSWORD\" -C -Q 'SELECT 1' -b || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
     volumes:
       - "payment_mssql_data:/var/opt/mssql"
     
@@ -65,7 +77,7 @@
       ElasticConfigurations__Uri: ${LOGGING_ELASTICSEARCH_URI}
     depends_on:
       airbnb.sqlserver:
-        condition: service_started
+        condition: service_healthy
       airbnb.audit.mongodb:
         condition: service_started
       airbnb.broker.rabbitmq:
@@ -93,7 +105,7 @@
       RabbitMq__Password: ${RABBITMQ_PASSWORD}
     depends_on:
       airbnb.sqlserver:
-        condition: service_started
+        condition: service_healthy
       airbnb.broker.rabbitmq:
         condition: service_healthy
     
@@ -118,7 +130,7 @@
       RabbitMq__Password: ${RABBITMQ_PASSWORD}
     depends_on:
       airbnb.sqlserver:
-        condition: service_started
+        condition: service_healthy
       airbnb.broker.rabbitmq:
         condition: service_healthy
     
@@ -143,7 +155,7 @@
       RabbitMq__Password: ${RABBITMQ_PASSWORD}
     depends_on:
       airbnb.sqlserver:
-        condition: service_started
+        condition: service_healthy
       airbnb.broker.rabbitmq:
         condition: service_healthy
     
@@ -228,7 +240,9 @@
       Stripe__WebhookSecret: ${STRIPE_WEBHOOK_SECRET}
     depends_on:
       airbnb.payment.sqlserver:
-        condition: service_started
+        condition: service_healthy
+      airbnb.broker.rabbitmq:
+        condition: service_healthy
 
   # Stripe CLI
   stripe.cli:

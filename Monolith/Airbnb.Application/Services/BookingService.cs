@@ -133,7 +133,7 @@ public class BookingService : IBookingService
         }
         catch (Exception ex)
         {
-            return "Could not create payment session";
+            return $"Could not create payment session: {ex.Message}";
         }
     }
 
