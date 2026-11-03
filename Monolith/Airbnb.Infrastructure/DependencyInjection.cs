@@ -38,7 +38,7 @@ public static class DependencyInjection
                     r.UseSqlServer();
                 });
             
-            config.AddConsumersFromNamespaceContaining<MarkBookingAsPaidCommandHandler>();
+            config.AddConsumersFromNamespaceContaining<UpdateBookingRecordCommandHandler>();
             
             config.UsingRabbitMq((context, rabbitMqConfig) =>
             {

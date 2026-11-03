@@ -2,7 +2,7 @@ using Airbnb.Payment.Application.Abstractions;
 using Airbnb.Payment.Application.DTOs;
 using Airbnb.Payment.Application.Options;
 using Airbnb.Shared.Common;
-using Airbnb.Shared.Contracts.Commands.Payment;
+using Airbnb.Shared.Contracts.Messages;
 using Microsoft.Extensions.Options;
 using Stripe;
 using Stripe.Checkout;
@@ -20,7 +20,7 @@ public class StripePaymentService : IPaymentService
         _sessionService = sessionService;
     }
     
-    public Result<PaymentSessionCreationDto> CreatePaymentSession(CreatePaymentSessionCommand command)
+    public Result<PaymentSessionCreationDto> CreatePaymentSession(CreatePaymentSessionMessage message)
     {
         try
         {
@@ -35,22 +35,22 @@ public class StripePaymentService : IPaymentService
                     {
                         PriceData = new SessionLineItemPriceDataOptions()
                         {
-                            UnitAmount = (long)(command.PaymentAmount * 100),
+                            UnitAmount = (long)(message.PaymentAmount * 100),
                             Currency = "usd",
                             ProductData = new SessionLineItemPriceDataProductDataOptions()
                             {
-                                Name = $"Booking of the '{command.ApartmentName}'",
-                                Description = $"{command.CheckIn.Date} - {command.CheckOut.Date} for {command.GuestsCount} guests",
+                                Name = $"Booking of the '{message.ApartmentName}'",
+                                Description = $"{message.CheckIn.Date} - {message.CheckOut.Date} for {message.GuestsCount} guests",
                             }
                         },
                         Quantity = 1,
                     }
                 },
                 Mode = "payment",
-                ClientReferenceId = command.BookingId.ToString(),
+                ClientReferenceId = message.BookingId.ToString(),
                 Metadata = new Dictionary<string, string>()
                 {
-                    ["bookingId"] = command.BookingId.ToString(),
+                    ["bookingId"] = message.BookingId.ToString(),
                 },
                 ExpiresAt = DateTime.UtcNow.AddMinutes(31),
                 SuccessUrl = "https://example.com/success"

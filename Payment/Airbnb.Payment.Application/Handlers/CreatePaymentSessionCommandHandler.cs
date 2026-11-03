@@ -1,13 +1,13 @@
 using Airbnb.Payment.Application.Abstractions;
-using Airbnb.Shared.Contracts.Commands.Payment;
 using Airbnb.Shared.Contracts.Events.Payment;
+using Airbnb.Shared.Contracts.Messages;
 using MassTransit;
 
 namespace Airbnb.Payment.Application.Handlers;
 
-public class CreatePaymentSessionCommandHandler(IPaymentService paymentService) : IConsumer<CreatePaymentSessionCommand>
+public class CreatePaymentSessionCommandHandler(IPaymentService paymentService) : IConsumer<CreatePaymentSessionMessage>
 {
-    public async Task Consume(ConsumeContext<CreatePaymentSessionCommand> context)
+    public async Task Consume(ConsumeContext<CreatePaymentSessionMessage> context)
     {
         var sessionDto = paymentService.CreatePaymentSession(context.Message);
 

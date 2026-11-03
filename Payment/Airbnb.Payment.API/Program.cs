@@ -1,6 +1,7 @@
 using Airbnb.Payment.API.Options;
 using Airbnb.Payment.Application;
 using Airbnb.Payment.Application.Options;
+using Airbnb.Payment.Infrastructure;
 using Serilog;
 using Serilog.Events;
 using OpenTelemetry.Metrics;
@@ -16,6 +17,8 @@ builder.Services.AddControllers();
 
 // Services
 builder.Services.AddApplication(builder.Configuration);
+
+builder.Services.AddInfrastructure(builder.Configuration);
 
 // Logging
 builder.Services.AddSerilog(config =>

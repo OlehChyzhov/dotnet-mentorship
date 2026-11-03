@@ -5,9 +5,9 @@ using Airbnb.Application.DTOs.Querying;
 using Airbnb.Domain.Enums;
 using Airbnb.Domain.Models;
 using Airbnb.Shared.Common;
-using Airbnb.Shared.Contracts.Commands.Payment;
 using Airbnb.Shared.Contracts.Events.Booking;
 using Airbnb.Shared.Contracts.Events.Payment;
+using Airbnb.Shared.Contracts.Messages;
 using MapsterMapper;
 using MassTransit;
 
@@ -15,13 +15,13 @@ namespace Airbnb.Application.Services;
 
 public class BookingService : IBookingService
 {
-    private readonly IRequestClient<CreatePaymentSessionCommand> _requestClient;
+    private readonly IRequestClient<CreatePaymentSessionMessage> _requestClient;
     private readonly IPublishEndpoint _publishEndpoint;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
 
     public BookingService(
-        IRequestClient<CreatePaymentSessionCommand> requestClient,
+        IRequestClient<CreatePaymentSessionMessage> requestClient,
         IPublishEndpoint publishEndpoint,
         IUnitOfWork unitOfWork, 
         IMapper mapper)
@@ -107,7 +107,7 @@ public class BookingService : IBookingService
 
     private async Task<Result<PaymentSessionCreationSucceededEvent>> CreatePaymentSessionAsync(Apartment apartment, Booking booking)
     {
-        var createPaymentCommand = new CreatePaymentSessionCommand()
+        var createPaymentCommand = new CreatePaymentSessionMessage()
         {
             ApartmentName = apartment.Title,
             BookingId = booking.Id,

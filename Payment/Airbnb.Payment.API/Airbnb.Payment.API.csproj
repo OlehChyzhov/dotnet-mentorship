@@ -21,6 +21,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\Airbnb.Payment.Application\Airbnb.Payment.Application.csproj" />
+      <ProjectReference Include="..\Airbnb.Payment.Infrastructure\Airbnb.Payment.Infrastructure.csproj" />
     </ItemGroup>
 
 </Project>

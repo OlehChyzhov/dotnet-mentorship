@@ -1,6 +1,6 @@
-namespace Airbnb.Shared.Contracts.Commands.Payment;
+namespace Airbnb.Shared.Contracts.Messages;
 
-public class CreatePaymentSessionCommand
+public class CreatePaymentSessionMessage
 {
     public Guid BookingId { get; set; }
     public string ApartmentName { get; set; } = string.Empty;

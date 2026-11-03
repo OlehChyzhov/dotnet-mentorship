@@ -1,5 +1,6 @@
 using Airbnb.Payment.Application.Options;
 using Airbnb.Shared.Contracts.Events.Payment;
+using Airbnb.Shared.Contracts.Saga.BookingPayment.Events;
 using MassTransit;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
@@ -54,11 +55,12 @@ public class PaymentController : ControllerBase
                 var session = (Session)stripeEvent.Data.Object;
                 if (session.PaymentStatus != "paid") break;
 
-                await _publishEndpoint.Publish(new PaymentSucceededEvent
+                await _publishEndpoint.Publish(new PaymentWebhookTriggeredEvent
                 {
                     BookingId = Guid.Parse(session.ClientReferenceId),
+                    Success = true,
                     PaymentIntentId = session.PaymentIntentId,
-                    AmountTotal = session.AmountTotal ?? 0
+                    PaymentSessionId = session.Id
                 });
                 break;
             }
@@ -66,10 +68,11 @@ public class PaymentController : ControllerBase
             {
                 var session = (Session)stripeEvent.Data.Object;
 
-                await _publishEndpoint.Publish(new PaymentFailedEvent
+                await _publishEndpoint.Publish(new PaymentWebhookTriggeredEvent
                 {
                     BookingId = Guid.Parse(session.ClientReferenceId),
-                    Reason = "Checkout session expired"
+                    Success = false,
+                    FailureReason = "Checkout session expired"
                 });
                 break;
             }

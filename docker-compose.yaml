@@ -209,7 +209,8 @@
       RabbitMq__HostUri: ${RABBITMQ_HOST_URI}
       RabbitMq__UserName: ${RABBITMQ_USER}
       RabbitMq__Password: ${RABBITMQ_PASSWORD}
-      
+        
+      ConnectionStrings__DefaultConnection: ${APPLICATION_DB_CONNECTION_STRING}
       ElasticConfigurations__Uri: ${LOGGING_ELASTICSEARCH_URI}
       Stripe__PublishableKey: ${STRIPE_PUBLISHABLE_KEY}
       Stripe__SecretKey: ${STRIPE_SECRET_KEY}

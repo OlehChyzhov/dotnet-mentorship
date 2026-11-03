@@ -4,10 +4,10 @@ using Airbnb.Application.DTOs.Querying;
 using Airbnb.Application.Services;
 using Airbnb.Domain.Enums;
 using Airbnb.Domain.Models;
-using Airbnb.Shared.Contracts.Commands.Payment;
 using Airbnb.Shared.Contracts.Events.Payment;
 using MassTransit;
 using Airbnb.Shared.Common;
+using Airbnb.Shared.Contracts.Messages;
 using MapsterMapper;
 using Moq;
 using Shouldly;
@@ -16,7 +16,7 @@ namespace Airbnb.Tests;
 
 public class BookingServiceTests
 {
-    private readonly Mock<IRequestClient<CreatePaymentSessionCommand>> _paymentClientMock;
+    private readonly Mock<IRequestClient<CreatePaymentSessionMessage>> _paymentClientMock;
     private readonly Mock<IPublishEndpoint> _publisherMock;
     private readonly Mock<IUnitOfWork> _unitOfWorkMock;
     private readonly Mock<IApartmentRepository> _apartmentRepositoryMock;
@@ -26,7 +26,7 @@ public class BookingServiceTests
 
     public BookingServiceTests()
     {
-        _paymentClientMock = new Mock<IRequestClient<CreatePaymentSessionCommand>>();
+        _paymentClientMock = new Mock<IRequestClient<CreatePaymentSessionMessage>>();
         _publisherMock = new Mock<IPublishEndpoint>();
         _apartmentRepositoryMock = new Mock<IApartmentRepository>();
         _bookingRepositoryMock = new Mock<IBookingRepository>();
@@ -72,7 +72,7 @@ public class BookingServiceTests
 
         _paymentClientMock
             .Setup(c => c.GetResponse<PaymentSessionCreationSucceededEvent, PaymentSessionCreationFailedEvent>(
-                It.IsAny<CreatePaymentSessionCommand>(), It.IsAny<CancellationToken>(), It.IsAny<RequestTimeout>()))
+                It.IsAny<CreatePaymentSessionMessage>(), It.IsAny<CancellationToken>(), It.IsAny<RequestTimeout>()))
             .ReturnsAsync(new Response<PaymentSessionCreationSucceededEvent, PaymentSessionCreationFailedEvent>(
                 succeeded.Task, failed.Task));
     }
@@ -302,7 +302,7 @@ public class BookingServiceTests
 
         _paymentClientMock
             .Setup(c => c.GetResponse<PaymentSessionCreationSucceededEvent, PaymentSessionCreationFailedEvent>(
-                It.IsAny<CreatePaymentSessionCommand>(), It.IsAny<CancellationToken>(), It.IsAny<RequestTimeout>()))
+                It.IsAny<CreatePaymentSessionMessage>(), It.IsAny<CancellationToken>(), It.IsAny<RequestTimeout>()))
             .ThrowsAsync(new RequestTimeoutException());
 
         // Act
