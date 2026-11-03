@@ -2,6 +2,8 @@ using Airbnb.Payment.API.Options;
 using Airbnb.Payment.Application;
 using Airbnb.Payment.Application.Options;
 using Airbnb.Payment.Infrastructure;
+using Airbnb.Payment.Infrastructure.Database;
+using Microsoft.EntityFrameworkCore;
 using Serilog;
 using Serilog.Events;
 using OpenTelemetry.Metrics;
@@ -74,6 +76,12 @@ if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
             .WithTheme(ScalarTheme.Default)
             .WithDefaultHttpClient(ScalarTarget.CSharp, ScalarClient.Http);
     });
+
+    using (var scope = app.Services.CreateScope())
+    {
+        var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        await db.Database.MigrateAsync();
+    }
 }
 
 app.UseHttpsRedirection();

@@ -29,6 +29,17 @@
     volumes:
       - "mssql_data:/var/opt/mssql"
     
+  airbnb.payment.sqlserver:
+    container_name: "airbnb.payment.sqlserver"
+    image: mcr.microsoft.com/mssql/server:2025-latest
+    ports:
+      - "2002:1433"
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: ${PAYMENT_MSSQL_SA_PASSWORD}
+    volumes:
+      - "payment_mssql_data:/var/opt/mssql"
+    
   airbnb.audit.mongodb:
     container_name: "airbnb.audit.mongodb"
     image: mongo:8.0.4
@@ -210,11 +221,14 @@
       RabbitMq__UserName: ${RABBITMQ_USER}
       RabbitMq__Password: ${RABBITMQ_PASSWORD}
         
-      ConnectionStrings__DefaultConnection: ${APPLICATION_DB_CONNECTION_STRING}
+      ConnectionStrings__DefaultConnection: ${PAYMENT_DB_CONNECTION_STRING}
       ElasticConfigurations__Uri: ${LOGGING_ELASTICSEARCH_URI}
       Stripe__PublishableKey: ${STRIPE_PUBLISHABLE_KEY}
       Stripe__SecretKey: ${STRIPE_SECRET_KEY}
       Stripe__WebhookSecret: ${STRIPE_WEBHOOK_SECRET}
+    depends_on:
+      airbnb.payment.sqlserver:
+        condition: service_started
 
   # Stripe CLI
   stripe.cli:
@@ -279,6 +293,7 @@
 volumes:
   rabbitmq_data:
   mssql_data:
+  payment_mssql_data:
   mongodb_data:
   elasticsearch-data:
   prometheus-data:
