@@ -15,6 +15,7 @@ public static class DependencyInjection
     {
         // Services
         services.AddScoped<IPaymentService, StripePaymentService>();
+        services.AddScoped<IPaymentWebhookService, StripePaymentWebhookService>();
         
         // Stripe
         services.Configure<StripeConfig>(configuration.GetSection("Stripe"));
