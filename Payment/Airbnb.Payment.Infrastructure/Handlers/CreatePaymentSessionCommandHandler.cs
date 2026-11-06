@@ -9,7 +9,7 @@ public class CreatePaymentSessionCommandHandler(IPaymentService paymentService) 
 {
     public async Task Consume(ConsumeContext<CreatePaymentSessionMessage> context)
     {
-        var sessionDto = paymentService.CreatePaymentSession(context.Message);
+        var sessionDto = await paymentService.CreatePaymentSessionAsync(context.Message);
 
         if (sessionDto.IsSuccessful)
         {

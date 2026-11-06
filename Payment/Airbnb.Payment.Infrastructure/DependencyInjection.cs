@@ -7,6 +7,8 @@ using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
+using Stripe;
 using Stripe.Checkout;
 
 namespace Airbnb.Payment.Infrastructure;
@@ -51,6 +53,11 @@ public static class DependencyInjection
         
         // Services
         services.AddScoped<IPaymentService, StripePaymentService>();
+        services.AddSingleton<IStripeClient>(sp =>
+        {
+            var stripeConfig = sp.GetRequiredService<IOptions<StripeConfig>>().Value;
+            return new StripeClient(stripeConfig.SecretKey);
+        });
         services.AddScoped<IPaymentWebhookService, StripePaymentWebhookService>();
         return services;
     }

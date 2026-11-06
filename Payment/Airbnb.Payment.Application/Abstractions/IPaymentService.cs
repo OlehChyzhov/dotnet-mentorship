@@ -6,5 +6,5 @@ namespace Airbnb.Payment.Application.Abstractions;
 
 public interface IPaymentService
 {
-    Result<PaymentSessionCreationDto> CreatePaymentSession(CreatePaymentSessionMessage message);
+    Task<Result<PaymentSessionCreationDto>> CreatePaymentSessionAsync(CreatePaymentSessionMessage message);
 }

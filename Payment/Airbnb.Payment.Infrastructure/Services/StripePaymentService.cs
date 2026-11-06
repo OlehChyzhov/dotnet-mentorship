@@ -20,12 +20,10 @@ public class StripePaymentService : IPaymentService
         _sessionService = sessionService;
     }
     
-    public Result<PaymentSessionCreationDto> CreatePaymentSession(CreatePaymentSessionMessage message)
+    public async Task<Result<PaymentSessionCreationDto>> CreatePaymentSessionAsync(CreatePaymentSessionMessage message)
     {
         try
         {
-            StripeConfiguration.ApiKey = _stripeConfig.SecretKey;
-
             var options = new SessionCreateOptions()
             {
                 AllowedPaymentMethodTypes = new List<string>() { "card" },
@@ -53,10 +51,11 @@ public class StripePaymentService : IPaymentService
                     ["bookingId"] = message.BookingId.ToString(),
                 },
                 ExpiresAt = DateTime.UtcNow.AddMinutes(31),
-                SuccessUrl = "https://example.com/success"
+                SuccessUrl = _stripeConfig.SuccessUrl,
+                CancelUrl = _stripeConfig.CancelUrl
             };
         
-            Session session = _sessionService.Create(options);
+            Session session = await _sessionService.CreateAsync(options);
 
             var result = new PaymentSessionCreationDto()
             {
