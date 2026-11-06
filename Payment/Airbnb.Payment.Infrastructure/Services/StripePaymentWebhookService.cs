@@ -1,5 +1,5 @@
 using Airbnb.Payment.Application.Abstractions;
-using Airbnb.Payment.Application.Options;
+using Airbnb.Payment.Infrastructure.Options;
 using Airbnb.Shared.Common;
 using Airbnb.Shared.Contracts.Saga.BookingPayment.Events;
 using MassTransit;
@@ -9,7 +9,7 @@ using Stripe;
 using Stripe.Checkout;
 using Event = Stripe.Event;
 
-namespace Airbnb.Payment.Application.Services;
+namespace Airbnb.Payment.Infrastructure.Services;
 
 public class StripePaymentWebhookService : IPaymentWebhookService
 {

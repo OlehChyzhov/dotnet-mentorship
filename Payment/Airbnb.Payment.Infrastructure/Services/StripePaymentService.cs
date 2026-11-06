@@ -1,13 +1,13 @@
 using Airbnb.Payment.Application.Abstractions;
 using Airbnb.Payment.Application.DTOs;
-using Airbnb.Payment.Application.Options;
+using Airbnb.Payment.Infrastructure.Options;
 using Airbnb.Shared.Common;
 using Airbnb.Shared.Contracts.Messages;
 using Microsoft.Extensions.Options;
 using Stripe;
 using Stripe.Checkout;
 
-namespace Airbnb.Payment.Application.Services;
+namespace Airbnb.Payment.Infrastructure.Services;
 
 public class StripePaymentService : IPaymentService
 {

@@ -1,6 +1,5 @@
 using Airbnb.Payment.API.Options;
 using Airbnb.Payment.Application;
-using Airbnb.Payment.Application.Options;
 using Airbnb.Payment.Infrastructure;
 using Airbnb.Payment.Infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
@@ -16,9 +15,6 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddOpenApi();
 builder.Services.AddControllers();
-
-// Services
-builder.Services.AddApplication(builder.Configuration);
 
 builder.Services.AddInfrastructure(builder.Configuration);
 

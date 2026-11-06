@@ -1,4 +1,4 @@
-namespace Airbnb.Payment.Application.Options;
+namespace Airbnb.Payment.Infrastructure.Options;
 
 public class MessageBrokerOptions
 {

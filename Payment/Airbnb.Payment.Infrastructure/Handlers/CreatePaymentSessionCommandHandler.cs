@@ -3,7 +3,7 @@ using Airbnb.Shared.Contracts.Events.Payment;
 using Airbnb.Shared.Contracts.Messages;
 using MassTransit;
 
-namespace Airbnb.Payment.Application.Handlers;
+namespace Airbnb.Payment.Infrastructure.Handlers;
 
 public class CreatePaymentSessionCommandHandler(IPaymentService paymentService) : IConsumer<CreatePaymentSessionMessage>
 {

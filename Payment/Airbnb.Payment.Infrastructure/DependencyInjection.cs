@@ -1,11 +1,13 @@
-using Airbnb.Payment.Application.Handlers;
-using Airbnb.Payment.Application.Options;
+using Airbnb.Payment.Application.Abstractions;
 using Airbnb.Payment.Infrastructure.Database;
 using Airbnb.Payment.Infrastructure.Handlers;
+using Airbnb.Payment.Infrastructure.Options;
+using Airbnb.Payment.Infrastructure.Services;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Stripe.Checkout;
 
 namespace Airbnb.Payment.Infrastructure;
 
@@ -43,6 +45,13 @@ public static class DependencyInjection
             });
         });
         
+        // Stripe
+        services.Configure<StripeConfig>(configuration.GetSection("Stripe"));
+        services.AddScoped<SessionService>();
+        
+        // Services
+        services.AddScoped<IPaymentService, StripePaymentService>();
+        services.AddScoped<IPaymentWebhookService, StripePaymentWebhookService>();
         return services;
     }
 }
