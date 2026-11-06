@@ -238,6 +238,9 @@
       Stripe__PublishableKey: ${STRIPE_PUBLISHABLE_KEY}
       Stripe__SecretKey: ${STRIPE_SECRET_KEY}
       Stripe__WebhookSecret: ${STRIPE_WEBHOOK_SECRET}
+      Stripe__SuccessUrl: ${STRIPE_SUCCESS_URL}
+      Stripe__CancelUrl: ${STRIPE_CANCEL_URL}
+      
     depends_on:
       airbnb.payment.sqlserver:
         condition: service_healthy
