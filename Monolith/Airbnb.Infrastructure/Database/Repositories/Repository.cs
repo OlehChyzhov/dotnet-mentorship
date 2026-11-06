@@ -1,6 +1,6 @@
 ﻿using System.Data.Common;
 using System.Linq.Expressions;
-using Airbnb.Application.Abstracts.Repositories;
+using Airbnb.Application.Abstractions.Repositories;
 using Airbnb.Domain.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
@@ -23,6 +23,11 @@ public abstract class Repository<TEntity, TKey, TExternalKey> : IRepository<TEnt
     protected DbTransaction? Transaction => _context.Database.CurrentTransaction?.GetDbTransaction();
 
     public async Task<TEntity> GetByIdAsync(TKey id)
+    {
+        return await DbSet.AsNoTracking().FirstAsync(entity => entity.Id!.Equals(id));
+    }
+
+    public async Task<TEntity> GetByIdTrackedAsync(TKey id)
     {
         return await DbSet.FirstAsync(entity => entity.Id!.Equals(id));
     }

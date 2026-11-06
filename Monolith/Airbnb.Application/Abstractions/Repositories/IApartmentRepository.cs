@@ -1,5 +1,4 @@
-﻿using Airbnb.Application.Abstracts.Repositories;
-using Airbnb.Application.DTOs.Apartment;
+﻿using Airbnb.Application.DTOs.Apartment;
 using Airbnb.Application.DTOs.Querying;
 using Airbnb.Domain.Enums;
 using Airbnb.Domain.Models;
