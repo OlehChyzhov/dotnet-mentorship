@@ -25,7 +25,7 @@ public class ApartmentRepository : Repository<Apartment, Guid, Guid?>, IApartmen
                 .Include(apartment => apartment.Bookings)
                 .Where(apartment => apartment.Bookings
                     .Where(booking =>
-                        booking.Status == BookingStatus.Paid || booking.Status == BookingStatus.AwaitingPayment)
+                        booking.Status == BookingStatus.PaymentSucceeded || booking.Status == BookingStatus.AwaitingPayment)
                     .All(booking => booking.CheckOut <= query.StartDate || booking.CheckIn >= query.EndDate)
                 );
 

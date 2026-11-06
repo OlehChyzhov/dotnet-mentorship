@@ -1,7 +1,7 @@
 using Airbnb.Payment.Application.Abstractions;
 using Airbnb.Payment.Infrastructure.Database;
-using Airbnb.Payment.Infrastructure.Handlers;
 using Airbnb.Payment.Infrastructure.Options;
+using Airbnb.Payment.Infrastructure.Saga.BookingPayment;
 using Airbnb.Payment.Infrastructure.Services;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
@@ -30,8 +30,7 @@ public static class DependencyInjection
         services.AddMassTransit(config =>
         {
             config.SetKebabCaseEndpointNameFormatter();
-
-            config.AddConsumersFromNamespaceContaining<CreatePaymentSessionCommandHandler>();
+            
             config.AddConsumersFromNamespaceContaining<CreatePaymentTransactionCommandHandler>();
             
             config.UsingRabbitMq((context, rabbitMqConfig) =>
@@ -52,7 +51,6 @@ public static class DependencyInjection
         services.AddScoped<SessionService>();
         
         // Services
-        services.AddScoped<IPaymentService, StripePaymentService>();
         services.AddSingleton<IStripeClient>(sp =>
         {
             var stripeConfig = sp.GetRequiredService<IOptions<StripeConfig>>().Value;

@@ -30,7 +30,7 @@ public class BookingRepository : Repository<Booking, Guid, Guid?>, IBookingRepos
     public async Task<List<Booking>> GetConfirmedOrPendingBookingsInTimeRangeAsync(Guid apartmentId, DateTime from, DateTime to)
     {
         return await DbSet
-            .Where(booking => booking.Status == BookingStatus.Paid || booking.Status == BookingStatus.AwaitingPayment)
+            .Where(booking => booking.Status == BookingStatus.PaymentSucceeded || booking.Status == BookingStatus.AwaitingPayment)
             .Where(booking => booking.CheckIn < to && booking.CheckOut > from)
             .Where(booking => booking.ApartmentId == apartmentId)
             .OrderBy(booking => booking.CheckIn)

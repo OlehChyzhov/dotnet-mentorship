@@ -1,7 +1,8 @@
 using Airbnb.Payment.Application.Abstractions;
 using Airbnb.Payment.Infrastructure.Options;
 using Airbnb.Shared.Common;
-using Airbnb.Shared.Contracts.Saga.BookingPayment.Events;
+using Airbnb.Shared.Contracts.Saga.BookingPayment.Enums;
+using Airbnb.Shared.Contracts.Saga.BookingPayment.Success.Events;
 using MassTransit;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -45,38 +46,48 @@ public class StripePaymentWebhookService : IPaymentWebhookService
             return "Invalid Stripe webhook signature";
         }
 
-        switch (stripeEvent.Type)
+        var session = (Session)stripeEvent.Data.Object;
+        
+        if (stripeEvent.Type == EventTypes.CheckoutSessionCompleted)
         {
-            case EventTypes.CheckoutSessionCompleted:
+            if (session.PaymentStatus == "paid")
             {
-                var session = (Session)stripeEvent.Data.Object;
-                if (session.PaymentStatus != "paid") break;
-
                 await _publishEndpoint.Publish(new PaymentWebhookTriggeredEvent
                 {
                     BookingId = Guid.Parse(session.ClientReferenceId),
-                    Success = true,
                     PaymentIntentId = session.PaymentIntentId,
-                    PaymentSessionId = session.Id
-                });
-                break;
-            }
-            case EventTypes.CheckoutSessionExpired:
-            {
-                var session = (Session)stripeEvent.Data.Object;
-
-                await _publishEndpoint.Publish(new PaymentWebhookTriggeredEvent
-                {
                     PaymentSessionId = session.Id,
-                    BookingId = Guid.Parse(session.ClientReferenceId),
-                    Success = false,
-                    FailureReason = "Checkout session expired"
+                    IsSuccessful = true,
+                    Status = PaymentStatus.Paid
                 });
-                break;
+                
+                _logger.LogInformation("Payment successful for booking with id {BookingId}", session.ClientReferenceId);
             }
-            default:
-                _logger.LogInformation("Unhandled Stripe event {Type}", stripeEvent.Type);
-                break;
+        }
+        else if (stripeEvent.Type == EventTypes.CheckoutSessionExpired)
+        {
+            await _publishEndpoint.Publish(new PaymentWebhookTriggeredEvent
+            {
+                BookingId = Guid.Parse(session.ClientReferenceId),
+                PaymentIntentId = session.PaymentIntentId,
+                PaymentSessionId = session.Id,
+                IsSuccessful = true,
+                Status = PaymentStatus.Expired
+            });
+            
+            _logger.LogInformation("Payment expired for booking with id {BookingId}", session.ClientReferenceId);
+        }
+        else
+        {
+            await _publishEndpoint.Publish(new PaymentWebhookTriggeredEvent
+            {
+                BookingId = Guid.Parse(session.ClientReferenceId),
+                PaymentIntentId = session.PaymentIntentId,
+                PaymentSessionId = session.Id,
+                IsSuccessful = false,
+            });
+            
+            _logger.LogInformation("Unhandled Stripe event {Type}", stripeEvent.Type);
         }
 
         return true;

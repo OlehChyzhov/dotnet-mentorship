@@ -1,0 +1,65 @@
+using Airbnb.Application.Abstractions.Repositories;
+using Airbnb.Domain.Enums;
+using Airbnb.Shared.Contracts.Saga.BookingPayment.Enums;
+using Airbnb.Shared.Contracts.Saga.BookingPayment.Success;
+using Airbnb.Shared.Contracts.Saga.BookingPayment.Success.Commands;
+using Airbnb.Shared.Contracts.Saga.BookingPayment.Success.Events;
+using MassTransit;
+using Microsoft.Extensions.Logging;
+
+namespace Airbnb.Infrastructure.Saga.BookingSaga.Handlers;
+
+public class FinishBookingCommandHandler : IConsumer<FinishBookingCommand>
+{
+    private readonly ILogger<FinishBookingCommandHandler> _logger;
+    private readonly IUnitOfWork _unitOfWork;
+    private readonly IPublishEndpoint _publishEndpoint;
+    
+    public FinishBookingCommandHandler(
+        ILogger<FinishBookingCommandHandler> logger,
+        IUnitOfWork unitOfWork,
+        IPublishEndpoint publishEndpoint)
+    {
+        _logger = logger;
+        _unitOfWork = unitOfWork;
+        _publishEndpoint = publishEndpoint;
+    }
+    
+    public async Task Consume(ConsumeContext<FinishBookingCommand> context)
+    {
+        try
+        {
+            var booking = await _unitOfWork.Bookings.GetByIdTrackedAsync(context.Message.BookingId);
+
+            if (context.Message.Status == PaymentStatus.Paid)
+            {
+                booking.Status = BookingStatus.PaymentSucceeded;
+            }
+            else
+            {
+                booking.Status = BookingStatus.PaymentExpired;
+            }
+
+            await _unitOfWork.SaveChangesAsync();
+            await _publishEndpoint.Publish(new FinishBookingCommandExecuted()
+            {
+                TransactionId = context.Message.TransactionId,
+                BookingId = context.Message.BookingId,
+                PaymentStatus = context.Message.Status,
+                IsSuccessful = true
+            });
+        }
+        catch (Exception ex)
+        {
+            await _publishEndpoint.Publish(new FinishBookingCommandExecuted()
+            {
+                TransactionId = context.Message.TransactionId,
+                BookingId = context.Message.BookingId,
+                PaymentStatus = context.Message.Status,
+                IsSuccessful = false
+            });
+            
+            throw;
+        }
+    }
+}

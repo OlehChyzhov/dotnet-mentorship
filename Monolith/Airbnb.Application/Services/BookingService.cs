@@ -83,10 +83,10 @@ public class BookingService : IBookingService
         await _publishEndpoint.Publish(new BookingCreatedEvent()
         {
             BookingId = createdBookingDto.Id, 
-            BookingTotal = createdBookingDto.BookedTotalPrice,
-            StartDate = createdBookingDto.CheckIn,
-            EndDate = createdBookingDto.CheckOut,
-            GuestsCount = createdBookingDto.GuestsCount,
+            TotalAmount = createdBookingDto.BookedTotalPrice,
+            CheckIn = createdBookingDto.CheckIn,
+            CheckOut = createdBookingDto.CheckOut,
+            GuestCount = createdBookingDto.GuestCount,
         });
         
         return createdBookingDto;

@@ -1,3 +1,6 @@
 [*.cs]
 # CS8633: Nullability in constraints for type parameter doesn't match the constraints for type parameter in implicitly implemented interface method'.
 dotnet_diagnostic.CS8633.severity = none
+
+# CS8618: Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
+dotnet_diagnostic.CS8618.severity = none

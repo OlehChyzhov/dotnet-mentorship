@@ -6,6 +6,7 @@ namespace Airbnb.Domain.Enums;
 public enum BookingStatus
 {
     AwaitingPayment = 1,
-    Paid = 2,
-    PaymentFailed = 3,
+    PaymentExpired = 2,
+    PaymentSucceeded = 3,
+    PaymentFailed = 4,
 }
