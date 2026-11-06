@@ -8,7 +8,6 @@ public class Booking : IEntity<Guid, Guid?>
     public Guid? ExternalId { get; set; }
 
     public BookingStatus Status { get; set; } = BookingStatus.AwaitingPayment;
-    public string? PaymentSessionUrl { get; set; }
     
     // Stay Dates
     public DateTime CheckIn { get; set; }

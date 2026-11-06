@@ -6,8 +6,6 @@ using Airbnb.Domain.Enums;
 using Airbnb.Domain.Models;
 using Airbnb.Shared.Common;
 using Airbnb.Shared.Contracts.Events.Booking;
-using Airbnb.Shared.Contracts.Events.Payment;
-using Airbnb.Shared.Contracts.Messages;
 using MapsterMapper;
 using MassTransit;
 
@@ -15,18 +13,15 @@ namespace Airbnb.Application.Services;
 
 public class BookingService : IBookingService
 {
-    private readonly IRequestClient<CreatePaymentSessionMessage> _requestClient;
     private readonly IPublishEndpoint _publishEndpoint;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
 
     public BookingService(
-        IRequestClient<CreatePaymentSessionMessage> requestClient,
         IPublishEndpoint publishEndpoint,
         IUnitOfWork unitOfWork, 
         IMapper mapper)
     {
-        _requestClient = requestClient;
         _publishEndpoint = publishEndpoint;
         _unitOfWork = unitOfWork;
         _mapper = mapper;
@@ -70,7 +65,7 @@ public class BookingService : IBookingService
         
 
         Guid bookingId = Guid.NewGuid();
-        var booking = _mapper.Map<Domain.Models.Booking>(dto);
+        var booking = _mapper.Map<Booking>(dto);
 
         booking.Id = bookingId;
         booking.ClientId = userId;
@@ -78,14 +73,6 @@ public class BookingService : IBookingService
         booking.CreatedAt = DateTime.UtcNow;
         booking.BookedPricePerNight = apartment.PricePerNight;
         booking.BookedTotalPrice =  apartment.PricePerNight * (decimal)(dto.CheckOut - dto.CheckIn).TotalDays;
-        
-        var paymentSession = await CreatePaymentSessionAsync(apartment, booking);
-        if (!paymentSession.IsSuccessful)
-        {
-            return paymentSession.Message!;
-        }
-
-        booking.PaymentSessionUrl = paymentSession.Value!.PaymentSessionUrl;
         
         await _unitOfWork.Bookings.CreateAsync(booking);
         await _unitOfWork.SaveChangesAsync();
@@ -104,39 +91,7 @@ public class BookingService : IBookingService
         
         return createdBookingDto;
     }
-
-    private async Task<Result<PaymentSessionCreationSucceededEvent>> CreatePaymentSessionAsync(Apartment apartment, Booking booking)
-    {
-        var createPaymentCommand = new CreatePaymentSessionMessage()
-        {
-            ApartmentName = apartment.Title,
-            BookingId = booking.Id,
-            PaymentAmount = booking.BookedTotalPrice,
-            CheckIn = booking.CheckIn,
-            CheckOut = booking.CheckOut,
-            GuestsCount = booking.GuestsCount,
-        };
-        
-        try
-        {
-            var response = await _requestClient.GetResponse<PaymentSessionCreationSucceededEvent, PaymentSessionCreationFailedEvent>(createPaymentCommand);
-            if (response.Is(out Response<PaymentSessionCreationSucceededEvent>? created))
-            {
-                return created!.Message;
-            }
-            else if (response.Is(out Response<PaymentSessionCreationFailedEvent>? failed))
-            {
-                return failed!.Message.FailureReason;
-            }
-            
-            return "Payment session creation succeeded, but unknown response type returned";
-        }
-        catch (Exception ex)
-        {
-            return $"Could not create payment session: {ex.Message}";
-        }
-    }
-
+    
     public async Task DeleteBookingAsync(Guid bookingId)
     {
         await _unitOfWork.Bookings.DeleteAsync(bookingId);
