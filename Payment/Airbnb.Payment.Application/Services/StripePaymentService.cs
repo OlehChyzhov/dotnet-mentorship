@@ -35,7 +35,7 @@ public class StripePaymentService : IPaymentService
                     {
                         PriceData = new SessionLineItemPriceDataOptions()
                         {
-                            UnitAmount = (long)(message.PaymentAmount * 100),
+                            UnitAmount = (long)Math.Round(message.PaymentAmount * 100),
                             Currency = "usd",
                             ProductData = new SessionLineItemPriceDataProductDataOptions()
                             {

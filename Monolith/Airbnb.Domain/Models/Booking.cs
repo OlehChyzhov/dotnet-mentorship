@@ -15,8 +15,8 @@ public class Booking : IEntity<Guid, Guid?>
     public DateTime CheckOut { get; set; }
     
     // Pricing at booking time (to avoid price changes affecting existing bookings)
-    public double BookedPricePerNight { get; set; }
-    public double BookedTotalPrice { get; set; }
+    public decimal BookedPricePerNight { get; set; }
+    public decimal BookedTotalPrice { get; set; }
     
     public int GuestsCount { get; set; }
     

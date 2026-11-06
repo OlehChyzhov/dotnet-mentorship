@@ -77,7 +77,7 @@ public class BookingService : IBookingService
         booking.Status = BookingStatus.AwaitingPayment;
         booking.CreatedAt = DateTime.UtcNow;
         booking.BookedPricePerNight = apartment.PricePerNight;
-        booking.BookedTotalPrice =  apartment.PricePerNight * ((dto.CheckOut - dto.CheckIn).TotalDays);
+        booking.BookedTotalPrice =  apartment.PricePerNight * (decimal)(dto.CheckOut - dto.CheckIn).TotalDays;
         
         var paymentSession = await CreatePaymentSessionAsync(apartment, booking);
         if (!paymentSession.IsSuccessful)

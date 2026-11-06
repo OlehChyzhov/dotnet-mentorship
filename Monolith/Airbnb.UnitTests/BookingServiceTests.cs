@@ -40,7 +40,7 @@ public class BookingServiceTests
         _sut = new BookingService(_paymentClientMock.Object, _publisherMock.Object, _unitOfWorkMock.Object, _mapperMock.Object);
     }
 
-    private static Apartment CreateApartment(Guid id, bool isListed = true, double pricePerNight = 50) => new()
+    private static Apartment CreateApartment(Guid id, bool isListed = true, decimal pricePerNight = 50) => new()
     {
         Id = id,
         Title = "Cozy flat",
@@ -193,7 +193,7 @@ public class BookingServiceTests
         // Arrange
         var apartmentId = Guid.NewGuid();
         const string userId = "client-1";
-        const double pricePerNight = 50;
+        const decimal pricePerNight = 50;
 
         var baseDate = DateTime.UtcNow;
         var checkIn = baseDate.AddDays(1);

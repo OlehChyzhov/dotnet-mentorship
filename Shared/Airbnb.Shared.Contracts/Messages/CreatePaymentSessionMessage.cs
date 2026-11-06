@@ -7,5 +7,5 @@ public class CreatePaymentSessionMessage
     public DateTime CheckIn { get; set; }
     public DateTime CheckOut { get; set; }
     public int GuestsCount { get; set; }
-    public double PaymentAmount { get; set; }
+    public decimal PaymentAmount { get; set; }
 }

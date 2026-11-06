@@ -81,7 +81,7 @@ public class ExternalDataLoaderTests : IDisposable
                 City = "Krakow",
                 Address = "Ulica Florianska 12",
                 MaxGuests = 2,
-                PricePerNight = 65.5,
+                PricePerNight = 65.5m,
                 IsListed = true,
                 CreatedAt = DateTime.UtcNow
             }

@@ -75,8 +75,8 @@ namespace Airbnb.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<double>("PricePerNight")
-                        .HasColumnType("float");
+                    b.Property<decimal>("PricePerNight")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("Title")
                         .IsRequired()
@@ -105,11 +105,11 @@ namespace Airbnb.Infrastructure.Migrations
                     b.Property<Guid>("ApartmentId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<double>("BookedPricePerNight")
-                        .HasColumnType("float");
+                    b.Property<decimal>("BookedPricePerNight")
+                        .HasColumnType("decimal(18,2)");
 
-                    b.Property<double>("BookedTotalPrice")
-                        .HasColumnType("float");
+                    b.Property<decimal>("BookedTotalPrice")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<DateTime>("CheckIn")
                         .HasColumnType("datetime2");

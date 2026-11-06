@@ -28,8 +28,8 @@ namespace Airbnb.Payment.Infrastructure.Database.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<double>("Amount")
-                        .HasColumnType("float");
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<Guid>("BookingId")
                         .HasColumnType("uniqueidentifier");
