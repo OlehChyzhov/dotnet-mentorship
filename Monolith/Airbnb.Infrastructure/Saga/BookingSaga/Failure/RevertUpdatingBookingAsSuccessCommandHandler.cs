@@ -10,8 +10,11 @@ public class RevertUpdatingBookingAsSuccessCommandHandler(IUnitOfWork unitOfWork
     public async Task Consume(ConsumeContext<RevertUpdatingBookingAsSuccessCommand> context)
     {
         var booking = await unitOfWork.Bookings.GetByIdTrackedAsync(context.Message.BookingId);
-        booking.Status = BookingStatus.PaymentFailed;
-        await unitOfWork.SaveChangesAsync();
+        if (booking.Status != BookingStatus.PaymentFailed)
+        {
+            booking.Status = BookingStatus.PaymentFailed;
+            await unitOfWork.SaveChangesAsync();
+        }
 
         await publishEndpoint.Publish(new RevertUpdatingBookingAsSuccessCommandExecuted()
         {

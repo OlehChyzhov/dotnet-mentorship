@@ -54,7 +54,6 @@ public class PaymentWebhookTriggeredEvent
     public Guid BookingId { get; set; }
     public string PaymentIntentId { get; set; }
     public string PaymentSessionId { get; set; }
-    public bool IsSuccessful { get; set; }
     public PaymentStatus Status { get; set; }
 }
 

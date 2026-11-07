@@ -1,39 +1,39 @@
+using Airbnb.Payment.Application.Abstractions.Repositories;
 using Airbnb.Payment.Domain;
-using Airbnb.Payment.Infrastructure.Database;
 using Airbnb.Shared.Contracts.Saga.BookingPayment;
 using MassTransit;
-using Microsoft.EntityFrameworkCore;
 using Stripe.Checkout;
 
 namespace Airbnb.Payment.Infrastructure.Saga.BookingPayment.Failure;
 
-public class InvalidatePaymentSessionCommandHandler(ApplicationDbContext dbContext, SessionService sessionService, IPublishEndpoint publishEndpoint) : IConsumer<InvalidatePaymentSessionCommand>
+public class InvalidatePaymentSessionCommandHandler(IUnitOfWork unitOfWork, SessionService sessionService, IPublishEndpoint publishEndpoint) : IConsumer<InvalidatePaymentSessionCommand>
 {
     public async Task Consume(ConsumeContext<InvalidatePaymentSessionCommand> context)
     {
-        var transaction = await dbContext.PaymentTransactions
-            .FirstAsync(transaction => transaction.Id == context.Message.TransactionId);
+        var transaction = await unitOfWork.PaymentTransactions.GetByBookingIdAsync(context.Message.BookingId);
 
-        if (transaction.PaymentSessionStatus == PaymentSessionStatus.Valid)
+        if (transaction != null)
         {
-            transaction.PaymentSessionStatus = PaymentSessionStatus.Invalid;
-            await dbContext.SaveChangesAsync();
-        
-            await sessionService.ExpireAsync(transaction.StripeSessionId);
+            if (!string.IsNullOrEmpty(transaction.StripeSessionId))
+            {
+                var session = await sessionService.GetAsync(transaction.StripeSessionId, cancellationToken: context.CancellationToken);
+                if (session.Status == "open")
+                {
+                    await sessionService.ExpireAsync(transaction.StripeSessionId, cancellationToken: context.CancellationToken);
+                }
+            }
 
-            await publishEndpoint.Publish(new InvalidatePaymentSessionCommandExecuted()
+            if (transaction.PaymentSessionStatus != PaymentSessionStatus.Invalid)
             {
-                TransactionId = context.Message.TransactionId,
-                BookingId = context.Message.BookingId,
-            });
+                transaction.PaymentSessionStatus = PaymentSessionStatus.Invalid;
+                await unitOfWork.SaveChangesAsync();
+            }
         }
-        else
+
+        await publishEndpoint.Publish(new InvalidatePaymentSessionCommandExecuted()
         {
-            await publishEndpoint.Publish(new InvalidatePaymentSessionCommandExecuted()
-            {
-                TransactionId = context.Message.TransactionId,
-                BookingId = context.Message.BookingId,
-            });
-        }
+            TransactionId = context.Message.TransactionId,
+            BookingId = context.Message.BookingId,
+        });
     }
 }

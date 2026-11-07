@@ -1,4 +1,3 @@
-using Airbnb.Payment.Application.Abstractions;
 using Airbnb.Payment.Application.Abstractions.Services;
 using Microsoft.AspNetCore.Mvc;
 

@@ -1,20 +1,21 @@
+using Airbnb.Payment.Application.Abstractions.Repositories;
 using Airbnb.Payment.Domain;
-using Airbnb.Payment.Infrastructure.Database;
 using Airbnb.Shared.Contracts.Saga.BookingPayment;
 using MassTransit;
-using Microsoft.EntityFrameworkCore;
 
 namespace Airbnb.Payment.Infrastructure.Saga.BookingPayment.Failure;
 
-public class RevertTransactionCreateCommandHandler(ApplicationDbContext dbContext, IPublishEndpoint publishEndpoint) : IConsumer<RevertTransactionCreateCommand>
+public class RevertTransactionCreateCommandHandler(IUnitOfWork unitOfWork, IPublishEndpoint publishEndpoint) : IConsumer<RevertTransactionCreateCommand>
 {
     public async Task Consume(ConsumeContext<RevertTransactionCreateCommand> context)
     {
-        var transaction = await dbContext.PaymentTransactions
-            .FirstAsync(transaction => transaction.Id == context.Message.TransactionId);
+        var transaction = await unitOfWork.PaymentTransactions.GetByBookingIdAsync(context.Message.BookingId);
 
-        transaction.TransactionStatus = PaymentTransactionStatus.Failed;
-        await dbContext.SaveChangesAsync();
+        if (transaction != null && transaction.TransactionStatus != PaymentTransactionStatus.Failed)
+        {
+            transaction.TransactionStatus = PaymentTransactionStatus.Failed;
+            await unitOfWork.SaveChangesAsync();
+        }
 
         await publishEndpoint.Publish(new RevertingTransactionCreateCommandExecuted()
         {
