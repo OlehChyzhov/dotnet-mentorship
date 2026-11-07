@@ -23,7 +23,7 @@ public class ExternalApartmentDto
     public int Bathrooms { get; set; }
     public int Kitchens { get; set; }
     public int LivingRooms { get; set; }
-    public double PricePerNight { get; set; }
+    public decimal PricePerNight { get; set; }
 
     // Lifecycle
     public bool IsListed { get; set; }

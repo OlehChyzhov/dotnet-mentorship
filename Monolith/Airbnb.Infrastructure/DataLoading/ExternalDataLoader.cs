@@ -6,7 +6,7 @@ using Airbnb.Application.DTOs.External;
 using Airbnb.Application.Options;
 using Airbnb.Domain.Constants;
 using Airbnb.Domain.Models;
-using Airbnb.Shared.HTTP;
+using Airbnb.Shared.Common;
 using FluentValidation;
 using MapsterMapper;
 using Microsoft.Extensions.Options;

@@ -1,12 +1,12 @@
 using Airbnb.Audit.Application.Abstractions.Repositories;
 using Airbnb.Audit.Domain.Models;
-using Airbnb.Shared.Messages.User;
+using Airbnb.Shared.Contracts.Events.User;
 using MapsterMapper;
 using MassTransit;
 
 namespace Airbnb.Audit.Infrastructure.Consumers;
 
-public class UserMessageConsumer : IConsumer<UserCreated>, IConsumer<UserUpdated>, IConsumer<UserDeleted>
+public class UserMessageConsumer : IConsumer<UserCreatedEvent>, IConsumer<UserUpdatedEvent>, IConsumer<UserDeletedEvent>
 {
     private readonly IUserAuditRepository _userAuditRepository;
     private readonly IMapper _mapper;
@@ -17,19 +17,19 @@ public class UserMessageConsumer : IConsumer<UserCreated>, IConsumer<UserUpdated
         _mapper = mapper;
     }
     
-    public async Task Consume(ConsumeContext<UserCreated> context)
+    public async Task Consume(ConsumeContext<UserCreatedEvent> context)
     {
         var entity = _mapper.Map<UserAuditEntity>(context.Message);
         await _userAuditRepository.CreateAsync(entity);
     }
 
-    public async Task Consume(ConsumeContext<UserUpdated> context)
+    public async Task Consume(ConsumeContext<UserUpdatedEvent> context)
     {
         var entity = _mapper.Map<UserAuditEntity>(context.Message);
         await _userAuditRepository.CreateAsync(entity);
     }
 
-    public async Task Consume(ConsumeContext<UserDeleted> context)
+    public async Task Consume(ConsumeContext<UserDeletedEvent> context)
     {
         var entity = _mapper.Map<UserAuditEntity>(context.Message);
         await _userAuditRepository.CreateAsync(entity);

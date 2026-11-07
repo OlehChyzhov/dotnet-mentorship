@@ -1,0 +1,11 @@
+﻿using Airbnb.Shared.Common.Paging;
+
+namespace Airbnb.Application.DTOs.Querying;
+
+public record ApartmentPagingParameters : PagingPramsBase
+{
+    public DateTime? StartDate { get; init; } = null;
+    public DateTime? EndDate { get; init; } = null;
+
+    public bool? IsListed { get; init; } = null;
+}

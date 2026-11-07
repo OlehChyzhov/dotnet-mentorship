@@ -10,9 +10,9 @@ public record BookingDto
     public DateTime CheckIn { get; init; }
     public DateTime CheckOut { get; init; }
     
-    public double BookedPricePerNight { get; init; }
-    public double BookedTotalPrice { get; init; }
+    public decimal BookedPricePerNight { get; init; }
+    public decimal BookedTotalPrice { get; init; }
     
-    public int GuestsCount { get; init; }
+    public int GuestCount { get; init; }
     public DateTime CreatedAt { get; init; }
 }

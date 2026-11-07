@@ -4,8 +4,8 @@ using Airbnb.Application.DTOs.Querying;
 using Airbnb.Application.Services;
 using Airbnb.Domain.Enums;
 using Airbnb.Domain.Models;
-using Airbnb.Shared.Broker;
-using Airbnb.Shared.HTTP;
+using MassTransit;
+using Airbnb.Shared.Common;
 using MapsterMapper;
 using Moq;
 using Shouldly;
@@ -14,7 +14,7 @@ namespace Airbnb.Tests;
 
 public class BookingServiceTests
 {
-    private readonly Mock<IPublisher> _publisherMock;
+    private readonly Mock<IPublishEndpoint> _publisherMock;
     private readonly Mock<IUnitOfWork> _unitOfWorkMock;
     private readonly Mock<IApartmentRepository> _apartmentRepositoryMock;
     private readonly Mock<IBookingRepository> _bookingRepositoryMock;
@@ -23,7 +23,7 @@ public class BookingServiceTests
 
     public BookingServiceTests()
     {
-        _publisherMock = new Mock<IPublisher>();
+        _publisherMock = new Mock<IPublishEndpoint>();
         _apartmentRepositoryMock = new Mock<IApartmentRepository>();
         _bookingRepositoryMock = new Mock<IBookingRepository>();
 
@@ -36,7 +36,7 @@ public class BookingServiceTests
         _sut = new BookingService(_publisherMock.Object, _unitOfWorkMock.Object, _mapperMock.Object);
     }
 
-    private static Apartment CreateApartment(Guid id, bool isListed = true, double pricePerNight = 50) => new()
+    private static Apartment CreateApartment(Guid id, bool isListed = true, decimal pricePerNight = 50) => new()
     {
         Id = id,
         Title = "Cozy flat",
@@ -49,7 +49,7 @@ public class BookingServiceTests
     {
         Id = id,
         ApartmentId = apartmentId,
-        Status = BookingStatus.Pending,
+        Status = BookingStatus.AwaitingPayment,
         CheckIn = DateTime.UtcNow.AddDays(1),
         CheckOut = DateTime.UtcNow.AddDays(3),
         GuestsCount = 2,
@@ -161,7 +161,7 @@ public class BookingServiceTests
         // Arrange
         var apartmentId = Guid.NewGuid();
         const string userId = "client-1";
-        const double pricePerNight = 50;
+        const decimal pricePerNight = 50;
 
         var baseDate = DateTime.UtcNow;
         var checkIn = baseDate.AddDays(1);
@@ -207,7 +207,7 @@ public class BookingServiceTests
 
         createdBooking.ShouldNotBeNull();
         createdBooking!.ClientId.ShouldBe(userId);
-        createdBooking.Status.ShouldBe(BookingStatus.Pending);
+        createdBooking.Status.ShouldBe(BookingStatus.AwaitingPayment);
         createdBooking.BookedPricePerNight.ShouldBe(pricePerNight);
         createdBooking.BookedTotalPrice.ShouldBe(pricePerNight * 3);
 

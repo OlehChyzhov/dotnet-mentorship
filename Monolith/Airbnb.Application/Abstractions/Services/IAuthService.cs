@@ -1,5 +1,5 @@
 ﻿using Airbnb.Application.DTOs.Authentication;
-using Airbnb.Shared.HTTP;
+using Airbnb.Shared.Common;
 using Microsoft.AspNetCore.Identity;
 
 namespace Airbnb.Application.Abstractions.Services;

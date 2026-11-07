@@ -2,8 +2,8 @@ using Airbnb.Application.Abstractions.Services;
 using Airbnb.Application.Abstracts.Identity;
 using Airbnb.Application.Metrics;
 using Airbnb.Domain.Models;
-using Airbnb.Shared.Broker;
-using Airbnb.Shared.Messages.User;
+using Airbnb.Shared.Contracts.Events.User;
+using MassTransit;
 using Microsoft.AspNetCore.Identity;
 
 namespace Airbnb.Application.Services;
@@ -11,10 +11,10 @@ namespace Airbnb.Application.Services;
 public class UserService : IUserService
 {
     private readonly IIdentityService _identityService;
-    private readonly IPublisher _publisher;
+    private readonly IPublishEndpoint _publisher;
     private readonly BusinessMetrics _metrics;
 
-    public UserService(IIdentityService identityService, IPublisher publisher, BusinessMetrics metrics)
+    public UserService(IIdentityService identityService, IPublishEndpoint publisher, BusinessMetrics metrics)
     {
         _identityService = identityService;
         _publisher = publisher;
@@ -41,8 +41,7 @@ public class UserService : IUserService
         result = await _identityService.AddUserToRoleAsync(user, role);
         if (!result.Succeeded) return result;
         
-        await _publisher.PublishAsync(new UserCreated() { EntityId = user.Id });
-        
+        await _publisher.Publish(new UserCreatedEvent() { UserId = user.Id });
         return result;
     }
 
@@ -56,15 +55,15 @@ public class UserService : IUserService
         var result = await _identityService.ChangeEmailAsync(user, newEmail);
         if (!result.Succeeded) return result;
 
-        var message = new UserUpdated()
+        var message = new UserUpdatedEvent()
         {
-            EntityId = user.Id, 
+            UserId = user.Id, 
             PropertyName = nameof(user.Email), 
             NewValue = user.Email, 
             OldValue = oldEmail
         };
         
-        await _publisher.PublishAsync(message);
+        await _publisher.Publish(message);
         return result;
     }
 
@@ -76,7 +75,7 @@ public class UserService : IUserService
         var result = await _identityService.DeleteUserAsync(user);
         if (!result.Succeeded) return result;
         
-        await _publisher.PublishAsync(new UserDeleted() { EntityId = user.Id });
+        await _publisher.Publish(new UserDeletedEvent() { UserId = user.Id });
 
         return result;
     }
