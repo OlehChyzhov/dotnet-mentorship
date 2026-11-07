@@ -31,33 +31,18 @@ public class CreatePaymentSessionCommandHandler : IConsumer<CreatePaymentSession
     {
         var title = $"Booking of the apartment '{context.Message.ApartmentName}'";
         var description = $"From '{context.Message.CheckIn}' to '{context.Message.CheckOut}' for '{context.Message.GuestCount}' guests";
-
-        try
-        {
-            var options = CreateSessionCreateOptions(context.Message.BookingId, title, description, context.Message.PaymentAmount);
-            Session session = await _sessionService.CreateAsync(options);
+        
+        var options = CreateSessionCreateOptions(context.Message.BookingId, title, description, context.Message.PaymentAmount);
+        Session session = await _sessionService.CreateAsync(options);
             
-            await _publishEndpoint.Publish(new CreatePaymentSessionCommandExecuted()
-            {
-                BookingId = context.Message.BookingId,
-                PaymentTransactionId = context.Message.PaymentTransactionId,
-                PaymentIntentId = session.PaymentIntentId,
-                PaymentSessionId = session.Id,
-                PaymentSessionUrl = session.Url,
-                IsSuccessful = true
-            });
-        }
-        catch (StripeException)
+        await _publishEndpoint.Publish(new CreatePaymentSessionCommandExecuted()
         {
-            await _publishEndpoint.Publish(new CreatePaymentSessionCommandExecuted()
-            {
-                BookingId = context.Message.BookingId,
-                PaymentTransactionId = context.Message.PaymentTransactionId,
-                IsSuccessful = false
-            });
-
-            throw;
-        }
+            BookingId = context.Message.BookingId,
+            PaymentTransactionId = context.Message.PaymentTransactionId,
+            PaymentIntentId = session.PaymentIntentId,
+            PaymentSessionId = session.Id,
+            PaymentSessionUrl = session.Url
+        });
     }
 
     private SessionCreateOptions CreateSessionCreateOptions(Guid bookingId, string title, string description, decimal amount)

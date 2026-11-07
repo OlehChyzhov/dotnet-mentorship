@@ -46,7 +46,6 @@ public class CreatePaymentSessionCommandExecuted
     public string? PaymentIntentId { get; set; }
     public string? PaymentSessionId { get; set; }
     public string? PaymentSessionUrl { get; set; }
-    public bool IsSuccessful { get; set; }
 }
 
 // Step 3
@@ -72,7 +71,6 @@ public class UpdateBookingAsSuccessCommandExecuted
     public Guid TransactionId { get; set; }
     public Guid BookingId { get; set; }
     public PaymentStatus PaymentStatus { get; set; }
-    public bool IsSuccessful { get; set; }
 }
 
 // Step 5
@@ -87,5 +85,4 @@ public class UpdateTransactionAsSuccessCommandExecuted
 {
     public Guid TransactionId { get; set; }
     public Guid BookingId { get; set; }
-    public bool IsSuccessful { get; set; }
 }

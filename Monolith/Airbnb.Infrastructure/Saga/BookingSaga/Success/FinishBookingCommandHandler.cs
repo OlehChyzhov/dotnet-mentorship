@@ -25,39 +25,23 @@ public class FinishBookingCommandHandler : IConsumer<UpdateBookingAsSuccessComma
     
     public async Task Consume(ConsumeContext<UpdateBookingAsSuccessCommand> context)
     {
-        try
-        {
-            var booking = await _unitOfWork.Bookings.GetByIdTrackedAsync(context.Message.BookingId);
+        var booking = await _unitOfWork.Bookings.GetByIdTrackedAsync(context.Message.BookingId);
 
-            if (context.Message.Status == PaymentStatus.Paid)
-            {
-                booking.Status = BookingStatus.PaymentSucceeded;
-            }
-            else
-            {
-                booking.Status = BookingStatus.PaymentExpired;
-            }
-
-            await _unitOfWork.SaveChangesAsync();
-            await _publishEndpoint.Publish(new UpdateBookingAsSuccessCommandExecuted()
-            {
-                TransactionId = context.Message.TransactionId,
-                BookingId = context.Message.BookingId,
-                PaymentStatus = context.Message.Status,
-                IsSuccessful = true
-            });
-        }
-        catch (Exception ex)
+        if (context.Message.Status == PaymentStatus.Paid)
         {
-            await _publishEndpoint.Publish(new UpdateBookingAsSuccessCommandExecuted()
-            {
-                TransactionId = context.Message.TransactionId,
-                BookingId = context.Message.BookingId,
-                PaymentStatus = context.Message.Status,
-                IsSuccessful = false
-            });
-            
-            throw;
+            booking.Status = BookingStatus.PaymentSucceeded;
         }
+        else
+        {
+            booking.Status = BookingStatus.PaymentExpired;
+        }
+
+        await _unitOfWork.SaveChangesAsync();
+        await _publishEndpoint.Publish(new UpdateBookingAsSuccessCommandExecuted()
+        {
+            TransactionId = context.Message.TransactionId,
+            BookingId = context.Message.BookingId,
+            PaymentStatus = context.Message.Status
+        });
     }
 }

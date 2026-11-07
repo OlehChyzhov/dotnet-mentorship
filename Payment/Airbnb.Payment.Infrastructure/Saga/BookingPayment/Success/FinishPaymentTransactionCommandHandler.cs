@@ -3,6 +3,7 @@ using Airbnb.Payment.Infrastructure.Database;
 using Airbnb.Shared.Contracts.Saga.BookingPayment;
 using Airbnb.Shared.Contracts.Saga.BookingPayment.Enums;
 using MassTransit;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace Airbnb.Payment.Infrastructure.Saga.BookingPayment.Success;
@@ -24,40 +25,24 @@ public class FinishPaymentTransactionCommandHandler : IConsumer<UpdateTransactio
     }
     public async Task Consume(ConsumeContext<UpdateTransactionAsSuccessCommand> context)
     {
-        try
+        var transaction = await _context.PaymentTransactions
+            .FirstAsync(transaction => transaction.Id == context.Message.PaymentTransactionId);
+        
+        if (context.Message.PaymentStatus == PaymentStatus.Paid)
         {
-            var transaction =
-                _context.PaymentTransactions.First(transaction =>
-                    transaction.Id == context.Message.PaymentTransactionId);
-            if (context.Message.PaymentStatus == PaymentStatus.Paid)
-            {
-                transaction.TransactionStatus = PaymentTransactionStatus.Succeeded;
-            }
-            else
-            {
-                transaction.TransactionStatus = PaymentTransactionStatus.Expired;
-            }
-
-            await _context.SaveChangesAsync();
-
-            await _publishEndpoint.Publish(new UpdateTransactionAsSuccessCommandExecuted()
-            {
-                TransactionId = context.Message.PaymentTransactionId,
-                BookingId = context.Message.BookingId,
-                IsSuccessful = true
-            });
+            transaction.TransactionStatus = PaymentTransactionStatus.Succeeded;
         }
-        catch (Exception ex)
+        else
         {
-            await _publishEndpoint.Publish(new UpdateTransactionAsSuccessCommandExecuted()
-            {
-                TransactionId = context.Message.PaymentTransactionId,
-                BookingId = context.Message.BookingId,
-                IsSuccessful = false
-            });
-
-            throw;
+            transaction.TransactionStatus = PaymentTransactionStatus.Expired;
         }
 
+        await _context.SaveChangesAsync();
+
+        await _publishEndpoint.Publish(new UpdateTransactionAsSuccessCommandExecuted() 
+        { 
+            TransactionId = context.Message.PaymentTransactionId, 
+            BookingId = context.Message.BookingId, 
+        });
     }
 }

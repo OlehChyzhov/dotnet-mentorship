@@ -33,6 +33,11 @@ public class BookingPaymentSagaStateMachine : MassTransitStateMachine<BookingPay
     public Event<UpdateBookingAsSuccessCommandExecuted> BookingFinishedEventExecuted { get; set; }
     public Event<UpdateTransactionAsSuccessCommandExecuted> PaymentTransactionFinishedCommandExecuted { get; set; }
     
+    public Event<Fault<CreateTransactionCommand>> CreateTransactionCommandFaulted { get; set; }
+    public Event<Fault<CreatePaymentSessionCommand>> CreatePaymentSessionCommandFaulted { get; set; }
+    public Event<Fault<UpdateBookingAsSuccessCommand>> UpdateBookingAsSuccessCommandFaulted { get; set; }
+    public Event<Fault<UpdateTransactionAsSuccessCommand>> UpdateTransactionAsSuccessCommandFaulted { get; set; }
+    
     
     // Fail Path
     public State RevertingUpdatingTransactionAsSuccess { get; set; }
@@ -59,6 +64,11 @@ public class BookingPaymentSagaStateMachine : MassTransitStateMachine<BookingPay
         Event(() => PaymentWebhookTriggeredEventExecuted, e => e.CorrelateById(m => m.Message.BookingId));
         Event(() => BookingFinishedEventExecuted, e => e.CorrelateById(m => m.Message.BookingId));
         Event(() => PaymentTransactionFinishedCommandExecuted, e => e.CorrelateById(m => m.Message.BookingId));
+
+        Event(() => CreateTransactionCommandFaulted, e => e.CorrelateById(m => m.Message.Message.BookingId));
+        Event(() => CreatePaymentSessionCommandFaulted, e => e.CorrelateById(m => m.Message.Message.BookingId));
+        Event(() => UpdateBookingAsSuccessCommandFaulted, e => e.CorrelateById(m => m.Message.Message.BookingId));
+        Event(() => UpdateTransactionAsSuccessCommandFaulted, e => e.CorrelateById(m => m.Message.Message.BookingId));
         
         // Fail Path
         Event(() => RevertingUpdatingTransactionAsSuccessCommandExecuted, e => e.CorrelateById(m => m.Message.BookingId));
@@ -84,45 +94,42 @@ public class BookingPaymentSagaStateMachine : MassTransitStateMachine<BookingPay
         // Happy Path
         During(AwaitingTransactionCreate,
             When(TransactionCreateCommandExecuted)
-                .IfElse(ctx => ctx.Message.IsSuccessful,
-                    created => created
-                        .Then(context =>
-                        {
-                            context.Saga.PaymentTransactionId = context.Message.PaymentTransactionId;
-                        })         
-                        .TransitionTo(AwaitingPaymentSessionCreate)
-                        .Publish(ctx => new CreatePaymentSessionCommand()
-                        {
-                            BookingId = ctx.Message.BookingId,
-                            PaymentAmount = ctx.Message.PaymentAmount,
-                            PaymentTransactionId = ctx.Message.PaymentTransactionId,
-                            ApartmentName = ctx.Message.ApartmentName,
-                            CheckIn = ctx.Message.CheckIn,
-                            CheckOut = ctx.Message.CheckOut,
-                            GuestCount = ctx.Message.GuestCount,
-                        }),
-                    
-                    failed  => failed
-                        .TransitionTo(RevertingTransactionCreate)
-                        .Publish(context => new RevertTransactionCreateCommand()
-                        {
-                            TransactionId = context.Message.PaymentTransactionId,
-                            BookingId = context.Message.BookingId
-                        })));
+                .Then(context =>
+                {
+                    context.Saga.PaymentTransactionId = context.Message.PaymentTransactionId;
+                    context.Saga.BookingId = context.Message.BookingId;
+                })
+                .TransitionTo(AwaitingPaymentSessionCreate)
+                .Publish(ctx => new CreatePaymentSessionCommand()
+                {
+                    BookingId = ctx.Message.BookingId,
+                    PaymentAmount = ctx.Message.PaymentAmount,
+                    PaymentTransactionId = ctx.Message.PaymentTransactionId,
+                    ApartmentName = ctx.Message.ApartmentName,
+                    CheckIn = ctx.Message.CheckIn,
+                    CheckOut = ctx.Message.CheckOut,
+                    GuestCount = ctx.Message.GuestCount,
+                }),
+            
+            When(CreateTransactionCommandFaulted)
+                .TransitionTo(RevertingTransactionCreate)
+                .Publish(context => new RevertTransactionCreateCommand()
+                    {
+                        TransactionId = context.Saga.PaymentTransactionId,
+                        BookingId = context.Saga.BookingId
+                    }));
         
         During(AwaitingPaymentSessionCreate,
             When(PaymentSessionCreateEventExecuted)
-                .IfElse(ctx => ctx.Message.IsSuccessful,
-                    created => created
-                        .TransitionTo(AwaitingStripeWebhook),
-
-                    failed => failed
-                        .TransitionTo(InvalidatingPaymentSession)
-                        .Publish(context => new InvalidatePaymentSessionCommand()
-                        {
-                            TransactionId = context.Message.PaymentTransactionId,
-                            BookingId = context.Message.BookingId,
-                        })));
+                .TransitionTo(AwaitingStripeWebhook),
+            
+            When(CreatePaymentSessionCommandFaulted)
+                .TransitionTo(InvalidatingPaymentSession)
+                .Publish(context => new InvalidatePaymentSessionCommand()
+                {
+                    TransactionId = context.Saga.PaymentTransactionId,
+                    BookingId = context.Saga.BookingId,
+                }));
         
         During(AwaitingStripeWebhook,
             When(PaymentWebhookTriggeredEventExecuted)
@@ -146,37 +153,34 @@ public class BookingPaymentSagaStateMachine : MassTransitStateMachine<BookingPay
 
         During(UpdatingBookingAsSuccess,
             When(BookingFinishedEventExecuted)
-                .IfElse(ctx => ctx.Message.IsSuccessful,
-                    success => success
-                        .TransitionTo(UpdatingTransactionAsSuccess)
-                        .Publish(context => new UpdateTransactionAsSuccessCommand()
-                        {
-                            PaymentTransactionId = context.Message.TransactionId,
-                            BookingId = context.Message.BookingId,
-                            PaymentStatus = context.Message.PaymentStatus
-                        }),
-                    
-                    failed => failed
-                        .TransitionTo(RevertingUpdatingBookingAsSuccess)
-                        .Publish(context => new RevertUpdatingBookingAsSuccessCommand()
-                        {
-                            TransactionId = context.Saga.PaymentTransactionId,
-                            BookingId = context.Message.BookingId,
-                        })));
-
+                .TransitionTo(UpdatingTransactionAsSuccess)
+                .Publish(context => new UpdateTransactionAsSuccessCommand()
+                {
+                    PaymentTransactionId = context.Message.TransactionId,
+                    BookingId = context.Message.BookingId,
+                    PaymentStatus = context.Message.PaymentStatus
+                }),
+            
+            When(UpdateBookingAsSuccessCommandFaulted)
+                .TransitionTo(RevertingUpdatingBookingAsSuccess)
+                .Publish(context => new RevertUpdatingBookingAsSuccessCommand()
+                {
+                    TransactionId = context.Saga.PaymentTransactionId,
+                    BookingId = context.Saga.BookingId,
+                }));
+                
         During(UpdatingTransactionAsSuccess,
             When(PaymentTransactionFinishedCommandExecuted)
-                .IfElse(ctx => ctx.Message.IsSuccessful, 
-                    success => success
-                        .Finalize(),
-                    
-                    failed => failed
-                        .TransitionTo(RevertingUpdatingTransactionAsSuccess)
-                        .Publish(context => new RevertUpdatingTransactionAsSuccessCommand()
-                        {
-                            TransactionId = context.Saga.PaymentTransactionId,
-                            BookingId = context.Message.BookingId
-                        })));
+                .Finalize(),
+            
+            When(UpdateTransactionAsSuccessCommandFaulted)
+                .TransitionTo(RevertingUpdatingTransactionAsSuccess)
+                .Publish(context => new RevertUpdatingTransactionAsSuccessCommand()
+                {
+                    TransactionId = context.Saga.PaymentTransactionId,
+                    BookingId = context.Saga.BookingId
+                }));
+        
         
         // Fail Path
         During(RevertingUpdatingTransactionAsSuccess,
