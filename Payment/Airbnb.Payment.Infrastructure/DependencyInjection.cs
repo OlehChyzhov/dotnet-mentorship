@@ -1,5 +1,7 @@
 using Airbnb.Payment.Application.Abstractions;
+using Airbnb.Payment.Application.Abstractions.Repositories;
 using Airbnb.Payment.Infrastructure.Database;
+using Airbnb.Payment.Infrastructure.Database.Repositories;
 using Airbnb.Payment.Infrastructure.Options;
 using Airbnb.Payment.Infrastructure.Saga.BookingPayment;
 using Airbnb.Payment.Infrastructure.Saga.BookingPayment.Failure;
@@ -49,6 +51,10 @@ public static class DependencyInjection
             });
         });
         
+        // Repositories
+        services.AddScoped<IUnitOfWork, UnitOfWork>();
+        services.AddScoped<IPaymentTransactionRepository, PaymentTransactionRepository>();
+
         // Stripe
         services.Configure<StripeConfig>(configuration.GetSection("Stripe"));
         services.AddScoped<SessionService>();

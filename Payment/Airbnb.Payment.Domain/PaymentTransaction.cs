@@ -2,7 +2,7 @@ namespace Airbnb.Payment.Domain;
 
 public enum PaymentTransactionStatus { Pending, Succeeded, Failed, Expired }
 
-public class PaymentTransaction
+public class PaymentTransaction : IEntity
 {
     public Guid Id { get; set; }
     public Guid BookingId { get; set; }

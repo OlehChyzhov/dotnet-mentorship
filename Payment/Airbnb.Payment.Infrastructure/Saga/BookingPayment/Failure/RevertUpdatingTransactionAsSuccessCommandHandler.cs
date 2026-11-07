@@ -5,7 +5,7 @@ using MassTransit;
 
 namespace Airbnb.Payment.Infrastructure.Saga.BookingPayment.Failure;
 
-public class RevertUpdatingTransactionAsSuccessCommandHandle(ApplicationDbContext dbContext, IPublishEndpoint publishEndpoint) : IConsumer<RevertUpdatingTransactionAsSuccessCommand>
+public class RevertUpdatingTransactionAsSuccessCommandHandler(ApplicationDbContext dbContext, IPublishEndpoint publishEndpoint) : IConsumer<RevertUpdatingTransactionAsSuccessCommand>
 {
     public async Task Consume(ConsumeContext<RevertUpdatingTransactionAsSuccessCommand> context)
     {
