@@ -2,6 +2,7 @@ using Airbnb.Payment.Application.Abstractions;
 using Airbnb.Payment.Infrastructure.Database;
 using Airbnb.Payment.Infrastructure.Options;
 using Airbnb.Payment.Infrastructure.Saga.BookingPayment;
+using Airbnb.Payment.Infrastructure.Saga.BookingPayment.Failure;
 using Airbnb.Payment.Infrastructure.Saga.BookingPayment.Success;
 using Airbnb.Payment.Infrastructure.Services;
 using MassTransit;
@@ -33,6 +34,7 @@ public static class DependencyInjection
             config.SetKebabCaseEndpointNameFormatter();
             
             config.AddConsumersFromNamespaceContaining<CreatePaymentTransactionCommandHandler>();
+            config.AddConsumersFromNamespaceContaining<InvalidatePaymentSessionCommandHandler>();
             
             config.UsingRabbitMq((context, rabbitMqConfig) =>
             {
@@ -50,6 +52,7 @@ public static class DependencyInjection
         // Stripe
         services.Configure<StripeConfig>(configuration.GetSection("Stripe"));
         services.AddScoped<SessionService>();
+        services.AddScoped<RefundService>();
         
         // Services
         services.AddSingleton<IStripeClient>(sp =>

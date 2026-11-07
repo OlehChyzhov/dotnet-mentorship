@@ -33,8 +33,9 @@ public class CreatePaymentTransactionCommandHandler : IConsumer<CreateTransactio
             {
                 Id = context.Message.BookingId,
                 BookingId = context.Message.BookingId,
-                Status = PaymentTransactionStatus.Pending,
+                TransactionStatus = PaymentTransactionStatus.Pending,
                 PaymentAmount = context.Message.Amount,
+                RefundStatus = RefundStatus.RefundNotNeeded,
                 StripeSessionId = string.Empty,
                 StripePaymentIntendId = string.Empty,
                 StripePaymentSessionUrl = string.Empty
@@ -59,7 +60,7 @@ public class CreatePaymentTransactionCommandHandler : IConsumer<CreateTransactio
         }
         
         // Already created payment transaction
-        else if (paymentTransaction.Status == PaymentTransactionStatus.Pending)
+        else if (paymentTransaction.TransactionStatus == PaymentTransactionStatus.Pending)
         {
             await _publishEndpoint.Publish(new TransactionCreateCommandExecuted()
             {
@@ -91,7 +92,7 @@ public class CreatePaymentTransactionCommandHandler : IConsumer<CreateTransactio
                 IsSuccessful = false
             });
             
-            _logger.LogInformation("Tried to start payment transaction that is {Status} for booking with id {BookingId}", paymentTransaction.Status.ToString(), paymentTransaction.BookingId);
+            _logger.LogInformation("Tried to start payment transaction that is {Status} for booking with id {BookingId}", paymentTransaction.TransactionStatus.ToString(), paymentTransaction.BookingId);
         }
     }
 }

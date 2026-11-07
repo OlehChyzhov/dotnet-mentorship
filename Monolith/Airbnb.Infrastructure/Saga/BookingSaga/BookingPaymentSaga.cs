@@ -42,9 +42,9 @@ public class BookingPaymentSagaStateMachine : MassTransitStateMachine<BookingPay
     public State RevertingTransactionCreate { get; set; }
     
     public Event<RevertUpdatingTransactionAsSuccessCommandExecuted> RevertingUpdatingTransactionAsSuccessCommandExecuted { get; set; }
-    public Event<RevertingUpdatingBookingAsSuccessCommandExecuted> RevertingUpdatingBookingAsSuccessCommandExecuted { get; set; }
+    public Event<RevertUpdatingBookingAsSuccessCommandExecuted> RevertingUpdatingBookingAsSuccessCommandExecuted { get; set; }
     public Event<RefundingPaidAmountCommandExecuted> RefundingPaidAmountCommandExecuted { get; set; }
-    public Event<InvalidatingPaymentSessionCommandExecuted> InvalidatingPaymentSessionCommandExecuted { get; set; }
+    public Event<InvalidatePaymentSessionCommandExecuted> InvalidatingPaymentSessionCommandExecuted { get; set; }
     public Event<RevertingTransactionCreateCommandExecuted> RevertingTransactionCreateExecuted { get; set; }
     
     public BookingPaymentSagaStateMachine()
@@ -61,6 +61,10 @@ public class BookingPaymentSagaStateMachine : MassTransitStateMachine<BookingPay
         Event(() => PaymentTransactionFinishedCommandExecuted, e => e.CorrelateById(m => m.Message.BookingId));
         
         // Fail Path
+        Event(() => RevertingUpdatingTransactionAsSuccessCommandExecuted, e => e.CorrelateById(m => m.Message.BookingId));
+        Event(() => RevertingUpdatingBookingAsSuccessCommandExecuted, e => e.CorrelateById(m => m.Message.BookingId));
+        Event(() => RefundingPaidAmountCommandExecuted, e => e.CorrelateById(m => m.Message.BookingId));
+        Event(() => InvalidatingPaymentSessionCommandExecuted, e => e.CorrelateById(m => m.Message.BookingId));
         Event(() => RevertingTransactionCreateExecuted, e => e.CorrelateById(m => m.Message.BookingId));
         
         // Initial State
@@ -85,7 +89,7 @@ public class BookingPaymentSagaStateMachine : MassTransitStateMachine<BookingPay
                         .Then(context =>
                         {
                             context.Saga.PaymentTransactionId = context.Message.PaymentTransactionId;
-                        })
+                        })         
                         .TransitionTo(AwaitingPaymentSessionCreate)
                         .Publish(ctx => new CreatePaymentSessionCommand()
                         {
@@ -114,7 +118,7 @@ public class BookingPaymentSagaStateMachine : MassTransitStateMachine<BookingPay
 
                     failed => failed
                         .TransitionTo(InvalidatingPaymentSession)
-                        .Publish(context => new InvalidatingPaymentSessionCommand()
+                        .Publish(context => new InvalidatePaymentSessionCommand()
                         {
                             TransactionId = context.Message.PaymentTransactionId,
                             BookingId = context.Message.BookingId,
@@ -162,7 +166,10 @@ public class BookingPaymentSagaStateMachine : MassTransitStateMachine<BookingPay
 
         During(UpdatingTransactionAsSuccess,
             When(PaymentTransactionFinishedCommandExecuted)
-                .If(ctx => !ctx.Message.IsSuccessful,
+                .IfElse(ctx => ctx.Message.IsSuccessful, 
+                    success => success
+                        .Finalize(),
+                    
                     failed => failed
                         .TransitionTo(RevertingUpdatingTransactionAsSuccess)
                         .Publish(context => new RevertUpdatingTransactionAsSuccessCommand()
@@ -193,7 +200,7 @@ public class BookingPaymentSagaStateMachine : MassTransitStateMachine<BookingPay
         During(RefundingPaidAmount,
             When(RefundingPaidAmountCommandExecuted)
                 .TransitionTo(InvalidatingPaymentSession)
-                .Publish(context => new InvalidatingPaymentSessionCommand()
+                .Publish(context => new InvalidatePaymentSessionCommand()
                 {
                     TransactionId = context.Saga.PaymentTransactionId,
                     BookingId = context.Saga.BookingId,

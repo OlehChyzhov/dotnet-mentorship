@@ -10,5 +10,7 @@ public class PaymentTransaction
     public string StripePaymentIntendId { get; set; } = string.Empty;
     public decimal PaymentAmount { get; set; }
     public string StripePaymentSessionUrl { get; set; } = string.Empty;
-    public PaymentTransactionStatus Status { get; set; }
+    public PaymentTransactionStatus TransactionStatus { get; set; }
+    public RefundStatus RefundStatus { get; set; }
+    public PaymentSessionStatus PaymentSessionStatus { get; set; }
 }

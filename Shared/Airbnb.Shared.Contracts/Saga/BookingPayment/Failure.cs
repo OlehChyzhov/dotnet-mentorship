@@ -20,7 +20,7 @@ public class RevertUpdatingBookingAsSuccessCommand
     public Guid BookingId { get; set; }
 }
 
-public class RevertingUpdatingBookingAsSuccessCommandExecuted
+public class RevertUpdatingBookingAsSuccessCommandExecuted
 {
     public Guid TransactionId { get; set; }
     public Guid BookingId { get; set; }
@@ -40,13 +40,13 @@ public class RefundingPaidAmountCommandExecuted
 }
 
 // Step 2
-public class InvalidatingPaymentSessionCommand
+public class InvalidatePaymentSessionCommand
 {
     public Guid TransactionId { get; set; }
     public Guid BookingId { get; set; }
 }
 
-public class InvalidatingPaymentSessionCommandExecuted
+public class InvalidatePaymentSessionCommandExecuted
 {
     public Guid TransactionId { get; set; }
     public Guid BookingId { get; set; }

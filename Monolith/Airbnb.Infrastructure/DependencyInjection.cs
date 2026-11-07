@@ -9,6 +9,7 @@ using Airbnb.Infrastructure.Identity;
 using Airbnb.Infrastructure.Options;
 using Airbnb.Infrastructure.Saga;
 using Airbnb.Infrastructure.Saga.BookingSaga;
+using Airbnb.Infrastructure.Saga.BookingSaga.Failure;
 using Airbnb.Infrastructure.Saga.BookingSaga.Success;
 using MassTransit;
 using Microsoft.AspNetCore.Identity;
@@ -39,6 +40,7 @@ public static class DependencyInjection
                 });
             
             config.AddConsumersFromNamespaceContaining<FinishBookingCommandHandler>();
+            config.AddConsumersFromNamespaceContaining<RevertUpdatingBookingAsSuccessCommandHandler>();
             
             config.UsingRabbitMq((context, rabbitMqConfig) =>
             {

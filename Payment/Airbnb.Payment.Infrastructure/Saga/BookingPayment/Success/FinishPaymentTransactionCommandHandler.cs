@@ -31,11 +31,11 @@ public class FinishPaymentTransactionCommandHandler : IConsumer<UpdateTransactio
                     transaction.Id == context.Message.PaymentTransactionId);
             if (context.Message.PaymentStatus == PaymentStatus.Paid)
             {
-                transaction.Status = PaymentTransactionStatus.Succeeded;
+                transaction.TransactionStatus = PaymentTransactionStatus.Succeeded;
             }
             else
             {
-                transaction.Status = PaymentTransactionStatus.Expired;
+                transaction.TransactionStatus = PaymentTransactionStatus.Expired;
             }
 
             await _context.SaveChangesAsync();
