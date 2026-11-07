@@ -87,6 +87,7 @@ public class BookingService : IBookingService
             CheckIn = createdBookingDto.CheckIn,
             CheckOut = createdBookingDto.CheckOut,
             GuestCount = createdBookingDto.GuestCount,
+            ApartmentName = apartment.Title
         });
         
         return createdBookingDto;

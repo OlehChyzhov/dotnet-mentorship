@@ -33,9 +33,10 @@ public class CreatePaymentTransactionCommandHandler : IConsumer<CreateTransactio
             {
                 Id = context.Message.BookingId,
                 BookingId = context.Message.BookingId,
-                TransactionStatus = PaymentTransactionStatus.Pending,
                 PaymentAmount = context.Message.Amount,
+                TransactionStatus = PaymentTransactionStatus.Pending,
                 RefundStatus = RefundStatus.RefundNotNeeded,
+                PaymentSessionStatus = PaymentSessionStatus.Valid,
                 StripeSessionId = string.Empty,
                 StripePaymentIntendId = string.Empty,
                 StripePaymentSessionUrl = string.Empty

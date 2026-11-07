@@ -88,7 +88,11 @@ public class BookingPaymentSagaStateMachine : MassTransitStateMachine<BookingPay
                 .Publish(context => new CreateTransactionCommand()
                 {
                     BookingId = context.Message.BookingId,
-                    Amount = context.Message.TotalAmount
+                    Amount = context.Message.TotalAmount,
+                    ApartmentName = context.Message.ApartmentName,
+                    CheckIn = context.Message.CheckIn,
+                    CheckOut = context.Message.CheckOut,
+                    GuestCount = context.Message.GuestCount
                 }));
         
         // Happy Path

@@ -2,6 +2,7 @@ namespace Airbnb.Shared.Contracts.Events.Booking;
 
 public record BookingCreatedEvent
 {
+    public string ApartmentName { get; set; }
     public Guid BookingId { get; set; }
     public decimal TotalAmount { get; set; }
     public int GuestCount { get; set; }
