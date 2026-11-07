@@ -1,6 +1,6 @@
 using Airbnb.Shared.Common;
 
-namespace Airbnb.Payment.Application.Abstractions;
+namespace Airbnb.Payment.Application.Abstractions.Services;
 
 public interface IPaymentWebhookService
 {
