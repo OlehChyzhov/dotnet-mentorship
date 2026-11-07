@@ -1,13 +1,12 @@
 using Airbnb.Payment.Domain;
 using Airbnb.Payment.Infrastructure.Database;
-using Airbnb.Shared.Contracts.Saga.BookingPayment.Success.Commands;
-using Airbnb.Shared.Contracts.Saga.BookingPayment.Success.Events;
+using Airbnb.Shared.Contracts.Saga.BookingPayment;
 using MassTransit;
 using Microsoft.Extensions.Logging;
 
-namespace Airbnb.Payment.Infrastructure.Saga.BookingPayment;
+namespace Airbnb.Payment.Infrastructure.Saga.BookingPayment.Success;
 
-public class CreatePaymentTransactionCommandHandler : IConsumer<CreatePaymentTransactionCommand>
+public class CreatePaymentTransactionCommandHandler : IConsumer<CreateTransactionCommand>
 {
     private readonly IPublishEndpoint _publishEndpoint;
     private readonly ApplicationDbContext _dbContext;
@@ -23,7 +22,7 @@ public class CreatePaymentTransactionCommandHandler : IConsumer<CreatePaymentTra
         _logger = logger;
     }
     
-    public async Task Consume(ConsumeContext<CreatePaymentTransactionCommand> context)
+    public async Task Consume(ConsumeContext<CreateTransactionCommand> context)
     {
         PaymentTransaction? paymentTransaction = _dbContext.PaymentTransactions.FirstOrDefault(x => x.BookingId == context.Message.BookingId);
 
@@ -44,7 +43,7 @@ public class CreatePaymentTransactionCommandHandler : IConsumer<CreatePaymentTra
             _dbContext.PaymentTransactions.Add(paymentTransaction);
             await _dbContext.SaveChangesAsync(context.CancellationToken);
             
-            await _publishEndpoint.Publish(new CreatePaymentTransactionCommandExecuted()
+            await _publishEndpoint.Publish(new TransactionCreateCommandExecuted()
             {
                 BookingId = paymentTransaction.BookingId,
                 PaymentTransactionId = paymentTransaction.Id,
@@ -62,7 +61,7 @@ public class CreatePaymentTransactionCommandHandler : IConsumer<CreatePaymentTra
         // Already created payment transaction
         else if (paymentTransaction.Status == PaymentTransactionStatus.Pending)
         {
-            await _publishEndpoint.Publish(new CreatePaymentTransactionCommandExecuted()
+            await _publishEndpoint.Publish(new TransactionCreateCommandExecuted()
             {
                 BookingId = paymentTransaction.BookingId,
                 PaymentTransactionId = paymentTransaction.Id,
@@ -80,7 +79,7 @@ public class CreatePaymentTransactionCommandHandler : IConsumer<CreatePaymentTra
         // Tried to start already failed or expired transaction
         else
         {
-            await _publishEndpoint.Publish(new CreatePaymentTransactionCommandExecuted()
+            await _publishEndpoint.Publish(new TransactionCreateCommandExecuted()
             {
                 BookingId = paymentTransaction.BookingId,
                 PaymentTransactionId = paymentTransaction.Id,

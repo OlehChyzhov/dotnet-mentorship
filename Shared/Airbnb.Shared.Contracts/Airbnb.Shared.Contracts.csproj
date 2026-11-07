@@ -10,9 +10,4 @@
       <PackageReference Include="MassTransit.Abstractions" Version="8.0.0" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="Saga\BookingPayment\Failure\Commands\" />
-      <Folder Include="Saga\BookingPayment\Failure\Events\" />
-    </ItemGroup>
-
 </Project>

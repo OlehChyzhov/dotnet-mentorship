@@ -1,13 +1,12 @@
 using Airbnb.Payment.Infrastructure.Options;
-using Airbnb.Shared.Contracts.Saga.BookingPayment.Success.Commands;
-using Airbnb.Shared.Contracts.Saga.BookingPayment.Success.Events;
+using Airbnb.Shared.Contracts.Saga.BookingPayment;
 using MassTransit;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Stripe;
 using Stripe.Checkout;
 
-namespace Airbnb.Payment.Infrastructure.Saga.BookingPayment;
+namespace Airbnb.Payment.Infrastructure.Saga.BookingPayment.Success;
 
 public class CreatePaymentSessionCommandHandler : IConsumer<CreatePaymentSessionCommand>
 {

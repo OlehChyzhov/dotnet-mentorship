@@ -1,8 +1,5 @@
 using Airbnb.Shared.Contracts.Events.Booking;
-using Airbnb.Shared.Contracts.Events.Payment;
-using Airbnb.Shared.Contracts.Saga.BookingPayment.Success;
-using Airbnb.Shared.Contracts.Saga.BookingPayment.Success.Commands;
-using Airbnb.Shared.Contracts.Saga.BookingPayment.Success.Events;
+using Airbnb.Shared.Contracts.Saga.BookingPayment;
 using MassTransit;
 
 namespace Airbnb.Infrastructure.Saga.BookingSaga;
@@ -21,29 +18,34 @@ public class BookingPaymentSagaStateMachine : MassTransitStateMachine<BookingPay
     public Event<BookingCreatedEvent> BookingCreatedEventExecuted { get; set; }
     
     // Initial State
-    public State AwaitingPaymentTransactionToGetCreated { get; set; }
-    public Event<CreatePaymentTransactionCommandExecuted> PaymentTransactionCreatedEventExecuted { get; set; }
+    public State AwaitingTransactionCreate { get; set; }
+    public Event<TransactionCreateCommandExecuted> TransactionCreateCommandExecuted { get; set; }
     
     
     // Happy Path
-    public State AwaitingPaymentSessionToGetCreated { get; set; }
-    public State AwaitingPaymentWebhookToGetTriggered { get; set; }
-    public State FinishingBooking { get; set; }
-    public State FinishingPaymentTransaction { get; set; }
+    public State AwaitingPaymentSessionCreate { get; set; }
+    public State AwaitingStripeWebhook { get; set; }
+    public State UpdatingBookingAsSuccess { get; set; }
+    public State UpdatingTransactionAsSuccess { get; set; }
     
-    public Event<CreatePaymentSessionCommandExecuted> PaymentSessionCreatedEventExecuted { get; set; }
+    public Event<CreatePaymentSessionCommandExecuted> PaymentSessionCreateEventExecuted { get; set; }
     public Event<PaymentWebhookTriggeredEvent>  PaymentWebhookTriggeredEventExecuted { get; set; }
-    public Event<FinishBookingCommandExecuted> BookingFinishedEventExecuted { get; set; }
-    public Event<FinishPaymentTransactionCommandExecuted> PaymentTransactionFinishedCommandExecuted { get; set; }
+    public Event<UpdateBookingAsSuccessCommandExecuted> BookingFinishedEventExecuted { get; set; }
+    public Event<UpdateTransactionAsSuccessCommandExecuted> PaymentTransactionFinishedCommandExecuted { get; set; }
     
     
     // Fail Path
-    public State StartRevertingPaymentTransaction { get; set; }
+    public State RevertingUpdatingTransactionAsSuccess { get; set; }
+    public State RevertingUpdatingBookingAsSuccess { get; set; }
+    public State RefundingPaidAmount { get; set; }
     public State InvalidatingPaymentSession { get; set; }
-    public State RevertingPaymentIfWasPaid { get; set; }
-    public State RevertingBooking { get; set; }
-    public State RevertingPaymentTransaction { get; set; }
+    public State RevertingTransactionCreate { get; set; }
     
+    public Event<RevertUpdatingTransactionAsSuccessCommandExecuted> RevertingUpdatingTransactionAsSuccessCommandExecuted { get; set; }
+    public Event<RevertingUpdatingBookingAsSuccessCommandExecuted> RevertingUpdatingBookingAsSuccessCommandExecuted { get; set; }
+    public Event<RefundingPaidAmountCommandExecuted> RefundingPaidAmountCommandExecuted { get; set; }
+    public Event<InvalidatingPaymentSessionCommandExecuted> InvalidatingPaymentSessionCommandExecuted { get; set; }
+    public Event<RevertingTransactionCreateCommandExecuted> RevertingTransactionCreateExecuted { get; set; }
     
     public BookingPaymentSagaStateMachine()
     {
@@ -52,14 +54,14 @@ public class BookingPaymentSagaStateMachine : MassTransitStateMachine<BookingPay
         Event(() => BookingCreatedEventExecuted, e => e.CorrelateById(m => m.Message.BookingId));
         
         // Happy Path
-        Event(() => PaymentTransactionCreatedEventExecuted, e => e.CorrelateById(m => m.Message.BookingId));
-        Event(() => PaymentSessionCreatedEventExecuted, e => e.CorrelateById(m => m.Message.BookingId));
+        Event(() => TransactionCreateCommandExecuted, e => e.CorrelateById(m => m.Message.BookingId));
+        Event(() => PaymentSessionCreateEventExecuted, e => e.CorrelateById(m => m.Message.BookingId));
         Event(() => PaymentWebhookTriggeredEventExecuted, e => e.CorrelateById(m => m.Message.BookingId));
         Event(() => BookingFinishedEventExecuted, e => e.CorrelateById(m => m.Message.BookingId));
         Event(() => PaymentTransactionFinishedCommandExecuted, e => e.CorrelateById(m => m.Message.BookingId));
         
         // Fail Path
-        
+        Event(() => RevertingTransactionCreateExecuted, e => e.CorrelateById(m => m.Message.BookingId));
         
         // Initial State
         Initially(
@@ -68,23 +70,23 @@ public class BookingPaymentSagaStateMachine : MassTransitStateMachine<BookingPay
                 {
                     context.Saga.BookingId = context.Message.BookingId;
                 })
-                .TransitionTo(AwaitingPaymentTransactionToGetCreated)
-                .Publish(context => new CreatePaymentTransactionCommand()
+                .TransitionTo(AwaitingTransactionCreate)
+                .Publish(context => new CreateTransactionCommand()
                 {
                     BookingId = context.Message.BookingId,
                     Amount = context.Message.TotalAmount
                 }));
         
         // Happy Path
-        During(AwaitingPaymentTransactionToGetCreated,
-            When(PaymentTransactionCreatedEventExecuted)
+        During(AwaitingTransactionCreate,
+            When(TransactionCreateCommandExecuted)
                 .IfElse(ctx => ctx.Message.IsSuccessful,
                     created => created
                         .Then(context =>
                         {
                             context.Saga.PaymentTransactionId = context.Message.PaymentTransactionId;
                         })
-                        .TransitionTo(AwaitingPaymentSessionToGetCreated)
+                        .TransitionTo(AwaitingPaymentSessionCreate)
                         .Publish(ctx => new CreatePaymentSessionCommand()
                         {
                             BookingId = ctx.Message.BookingId,
@@ -97,31 +99,33 @@ public class BookingPaymentSagaStateMachine : MassTransitStateMachine<BookingPay
                         }),
                     
                     failed  => failed
-                        .TransitionTo(StartRevertingPaymentTransaction)
-                        .Publish(context => new // TODO: START REVERTING
+                        .TransitionTo(RevertingTransactionCreate)
+                        .Publish(context => new RevertTransactionCreateCommand()
                         {
-
+                            TransactionId = context.Message.PaymentTransactionId,
+                            BookingId = context.Message.BookingId
                         })));
         
-        During(AwaitingPaymentSessionToGetCreated,
-            When(PaymentSessionCreatedEventExecuted)
+        During(AwaitingPaymentSessionCreate,
+            When(PaymentSessionCreateEventExecuted)
                 .IfElse(ctx => ctx.Message.IsSuccessful,
                     created => created
-                        .TransitionTo(AwaitingPaymentWebhookToGetTriggered),
+                        .TransitionTo(AwaitingStripeWebhook),
 
                     failed => failed
-                        .TransitionTo(StartRevertingPaymentTransaction)
-                        .Publish(context => new // TODO: START REVERTING
+                        .TransitionTo(InvalidatingPaymentSession)
+                        .Publish(context => new InvalidatingPaymentSessionCommand()
                         {
-                            
+                            TransactionId = context.Message.PaymentTransactionId,
+                            BookingId = context.Message.BookingId,
                         })));
         
-        During(AwaitingPaymentWebhookToGetTriggered,
+        During(AwaitingStripeWebhook,
             When(PaymentWebhookTriggeredEventExecuted)
                 .IfElse(ctx => ctx.Message.IsSuccessful,
                     success => success
-                        .TransitionTo(FinishingBooking)
-                        .Publish(context => new FinishBookingCommand()
+                        .TransitionTo(UpdatingBookingAsSuccess)
+                        .Publish(context => new UpdateBookingAsSuccessCommand()
                         {
                             TransactionId = context.Saga.PaymentTransactionId,
                             BookingId = context.Message.BookingId,
@@ -129,18 +133,19 @@ public class BookingPaymentSagaStateMachine : MassTransitStateMachine<BookingPay
                         }),
                     
                     failed => failed
-                        .TransitionTo(StartRevertingPaymentTransaction)
-                        .Publish(context => new // TODO: START REVERTING
+                        .TransitionTo(RefundingPaidAmount)
+                        .Publish(context => new RefundPaidAmountCommand()
                         {
-                    
+                            TransactionId = context.Saga.PaymentTransactionId,
+                            BookingId = context.Message.BookingId,
                         })));
 
-        During(FinishingBooking,
+        During(UpdatingBookingAsSuccess,
             When(BookingFinishedEventExecuted)
                 .IfElse(ctx => ctx.Message.IsSuccessful,
                     success => success
-                        .TransitionTo(FinishingPaymentTransaction)
-                        .Publish(context => new FinishPaymentTransactionCommand()
+                        .TransitionTo(UpdatingTransactionAsSuccess)
+                        .Publish(context => new UpdateTransactionAsSuccessCommand()
                         {
                             PaymentTransactionId = context.Message.TransactionId,
                             BookingId = context.Message.BookingId,
@@ -148,25 +153,64 @@ public class BookingPaymentSagaStateMachine : MassTransitStateMachine<BookingPay
                         }),
                     
                     failed => failed
-                        .TransitionTo(StartRevertingPaymentTransaction)
-                        .Publish(context => new // TODO: START REVERTING
+                        .TransitionTo(RevertingUpdatingBookingAsSuccess)
+                        .Publish(context => new RevertUpdatingBookingAsSuccessCommand()
                         {
-                            
+                            TransactionId = context.Saga.PaymentTransactionId,
+                            BookingId = context.Message.BookingId,
                         })));
 
-        During(FinishingPaymentTransaction,
+        During(UpdatingTransactionAsSuccess,
             When(PaymentTransactionFinishedCommandExecuted)
                 .If(ctx => !ctx.Message.IsSuccessful,
                     failed => failed
-                        .TransitionTo(StartRevertingPaymentTransaction)
-                        .Publish(context => new // TODO: Start Reverting
+                        .TransitionTo(RevertingUpdatingTransactionAsSuccess)
+                        .Publish(context => new RevertUpdatingTransactionAsSuccessCommand()
                         {
-                            
+                            TransactionId = context.Saga.PaymentTransactionId,
+                            BookingId = context.Message.BookingId
                         })));
         
         // Fail Path
-
+        During(RevertingUpdatingTransactionAsSuccess,
+            When(RevertingUpdatingTransactionAsSuccessCommandExecuted)
+                .TransitionTo(RevertingUpdatingBookingAsSuccess)
+                .Publish(context => new RevertUpdatingBookingAsSuccessCommand()
+                {
+                    TransactionId = context.Saga.PaymentTransactionId,
+                    BookingId = context.Saga.BookingId
+                }));
         
+        During(RevertingUpdatingBookingAsSuccess,
+            When(RevertingUpdatingBookingAsSuccessCommandExecuted)
+                .TransitionTo(RefundingPaidAmount)
+                .Publish(context => new RefundPaidAmountCommand()
+                {
+                   TransactionId = context.Saga.PaymentTransactionId,
+                   BookingId = context.Saga.BookingId
+                }));
+        
+        During(RefundingPaidAmount,
+            When(RefundingPaidAmountCommandExecuted)
+                .TransitionTo(InvalidatingPaymentSession)
+                .Publish(context => new InvalidatingPaymentSessionCommand()
+                {
+                    TransactionId = context.Saga.PaymentTransactionId,
+                    BookingId = context.Saga.BookingId,
+                }));
+
+        During(InvalidatingPaymentSession,
+            When(InvalidatingPaymentSessionCommandExecuted)
+                .TransitionTo(RevertingTransactionCreate)
+                .Publish(context => new RevertTransactionCreateCommand()
+                {
+                    TransactionId = context.Saga.PaymentTransactionId,
+                    BookingId = context.Saga.BookingId,
+                }));
+        
+        During(RevertingTransactionCreate,
+            When(RevertingTransactionCreateExecuted)
+                .Finalize());
         
         SetCompletedWhenFinalized();
     }

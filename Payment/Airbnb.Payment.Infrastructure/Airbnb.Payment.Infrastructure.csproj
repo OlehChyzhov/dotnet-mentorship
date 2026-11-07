@@ -24,6 +24,7 @@
 
     <ItemGroup>
       <Folder Include="Database\Migrations\" />
+      <Folder Include="Saga\BookingPayment\Failure\" />
     </ItemGroup>
 
 </Project>

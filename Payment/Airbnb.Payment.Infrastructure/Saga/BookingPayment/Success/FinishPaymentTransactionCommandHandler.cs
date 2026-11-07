@@ -1,14 +1,13 @@
 using Airbnb.Payment.Domain;
 using Airbnb.Payment.Infrastructure.Database;
+using Airbnb.Shared.Contracts.Saga.BookingPayment;
 using Airbnb.Shared.Contracts.Saga.BookingPayment.Enums;
-using Airbnb.Shared.Contracts.Saga.BookingPayment.Success.Commands;
-using Airbnb.Shared.Contracts.Saga.BookingPayment.Success.Events;
 using MassTransit;
 using Microsoft.Extensions.Logging;
 
-namespace Airbnb.Payment.Infrastructure.Saga.BookingPayment;
+namespace Airbnb.Payment.Infrastructure.Saga.BookingPayment.Success;
 
-public class FinishPaymentTransactionCommandHandler : IConsumer<FinishPaymentTransactionCommand>
+public class FinishPaymentTransactionCommandHandler : IConsumer<UpdateTransactionAsSuccessCommand>
 {
     private readonly ILogger<FinishPaymentTransactionCommandHandler> _logger;
     private readonly IPublishEndpoint _publishEndpoint;
@@ -23,7 +22,7 @@ public class FinishPaymentTransactionCommandHandler : IConsumer<FinishPaymentTra
         _publishEndpoint = publishEndpoint;
         _context = context;
     }
-    public async Task Consume(ConsumeContext<FinishPaymentTransactionCommand> context)
+    public async Task Consume(ConsumeContext<UpdateTransactionAsSuccessCommand> context)
     {
         try
         {
@@ -41,7 +40,7 @@ public class FinishPaymentTransactionCommandHandler : IConsumer<FinishPaymentTra
 
             await _context.SaveChangesAsync();
 
-            await _publishEndpoint.Publish(new FinishPaymentTransactionCommandExecuted()
+            await _publishEndpoint.Publish(new UpdateTransactionAsSuccessCommandExecuted()
             {
                 TransactionId = context.Message.PaymentTransactionId,
                 BookingId = context.Message.BookingId,
@@ -50,7 +49,7 @@ public class FinishPaymentTransactionCommandHandler : IConsumer<FinishPaymentTra
         }
         catch (Exception ex)
         {
-            await _publishEndpoint.Publish(new FinishPaymentTransactionCommandExecuted()
+            await _publishEndpoint.Publish(new UpdateTransactionAsSuccessCommandExecuted()
             {
                 TransactionId = context.Message.PaymentTransactionId,
                 BookingId = context.Message.BookingId,

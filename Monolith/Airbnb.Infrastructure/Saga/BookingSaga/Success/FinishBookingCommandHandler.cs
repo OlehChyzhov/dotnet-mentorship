@@ -1,15 +1,13 @@
 using Airbnb.Application.Abstractions.Repositories;
 using Airbnb.Domain.Enums;
+using Airbnb.Shared.Contracts.Saga.BookingPayment;
 using Airbnb.Shared.Contracts.Saga.BookingPayment.Enums;
-using Airbnb.Shared.Contracts.Saga.BookingPayment.Success;
-using Airbnb.Shared.Contracts.Saga.BookingPayment.Success.Commands;
-using Airbnb.Shared.Contracts.Saga.BookingPayment.Success.Events;
 using MassTransit;
 using Microsoft.Extensions.Logging;
 
-namespace Airbnb.Infrastructure.Saga.BookingSaga.Handlers;
+namespace Airbnb.Infrastructure.Saga.BookingSaga.Success;
 
-public class FinishBookingCommandHandler : IConsumer<FinishBookingCommand>
+public class FinishBookingCommandHandler : IConsumer<UpdateBookingAsSuccessCommand>
 {
     private readonly ILogger<FinishBookingCommandHandler> _logger;
     private readonly IUnitOfWork _unitOfWork;
@@ -25,7 +23,7 @@ public class FinishBookingCommandHandler : IConsumer<FinishBookingCommand>
         _publishEndpoint = publishEndpoint;
     }
     
-    public async Task Consume(ConsumeContext<FinishBookingCommand> context)
+    public async Task Consume(ConsumeContext<UpdateBookingAsSuccessCommand> context)
     {
         try
         {
@@ -41,7 +39,7 @@ public class FinishBookingCommandHandler : IConsumer<FinishBookingCommand>
             }
 
             await _unitOfWork.SaveChangesAsync();
-            await _publishEndpoint.Publish(new FinishBookingCommandExecuted()
+            await _publishEndpoint.Publish(new UpdateBookingAsSuccessCommandExecuted()
             {
                 TransactionId = context.Message.TransactionId,
                 BookingId = context.Message.BookingId,
@@ -51,7 +49,7 @@ public class FinishBookingCommandHandler : IConsumer<FinishBookingCommand>
         }
         catch (Exception ex)
         {
-            await _publishEndpoint.Publish(new FinishBookingCommandExecuted()
+            await _publishEndpoint.Publish(new UpdateBookingAsSuccessCommandExecuted()
             {
                 TransactionId = context.Message.TransactionId,
                 BookingId = context.Message.BookingId,

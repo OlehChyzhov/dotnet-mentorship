@@ -2,6 +2,7 @@ using Airbnb.Payment.Application.Abstractions;
 using Airbnb.Payment.Infrastructure.Database;
 using Airbnb.Payment.Infrastructure.Options;
 using Airbnb.Payment.Infrastructure.Saga.BookingPayment;
+using Airbnb.Payment.Infrastructure.Saga.BookingPayment.Success;
 using Airbnb.Payment.Infrastructure.Services;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;

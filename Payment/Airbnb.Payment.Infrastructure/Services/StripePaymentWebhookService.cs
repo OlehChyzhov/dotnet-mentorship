@@ -1,8 +1,8 @@
 using Airbnb.Payment.Application.Abstractions;
 using Airbnb.Payment.Infrastructure.Options;
 using Airbnb.Shared.Common;
+using Airbnb.Shared.Contracts.Saga.BookingPayment;
 using Airbnb.Shared.Contracts.Saga.BookingPayment.Enums;
-using Airbnb.Shared.Contracts.Saga.BookingPayment.Success.Events;
 using MassTransit;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
