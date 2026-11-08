@@ -38,7 +38,13 @@ public static class DependencyInjection
                     r.ExistingDbContext<ApplicationDbContext>();
                     r.UseSqlServer();
                 });
-            
+
+            config.AddEntityFrameworkOutbox<ApplicationDbContext>(o =>
+            {
+                o.UseSqlServer();
+                o.UseBusOutbox();
+            });
+
             config.AddConsumersFromNamespaceContaining<FinishBookingCommandHandler>();
             config.AddConsumersFromNamespaceContaining<RevertUpdatingBookingAsSuccessCommandHandler>();
             
@@ -50,7 +56,6 @@ public static class DependencyInjection
                     hostAddress.Password(rabbitmqOptions.Password);
                 });
                 
-                rabbitMqConfig.UseInMemoryOutbox();
                 rabbitMqConfig.ConfigureEndpoints(context);
             });
         });

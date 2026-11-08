@@ -2,6 +2,7 @@
 using Airbnb.Infrastructure.Database.Configurations;
 using Airbnb.Infrastructure.Saga;
 using Airbnb.Infrastructure.Saga.BookingSaga;
+using MassTransit;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -26,5 +27,9 @@ public class ApplicationDbContext : IdentityDbContext<User, IdentityRole, string
         builder.ApplyConfiguration(new UserConfiguration());
         builder.ApplyConfiguration(new ApartmentConfiguration());
         builder.ApplyConfiguration(new BookingConfiguration());
+
+        builder.AddInboxStateEntity();
+        builder.AddOutboxMessageEntity();
+        builder.AddOutboxStateEntity();
     }
 }

@@ -75,20 +75,21 @@ public class BookingService : IBookingService
         booking.BookedTotalPrice =  apartment.PricePerNight * (decimal)(dto.CheckOut - dto.CheckIn).TotalDays;
         
         await _unitOfWork.Bookings.CreateAsync(booking);
+        
+        await _publishEndpoint.Publish(new BookingCreatedEvent()
+        {
+            BookingId = booking.Id, 
+            TotalAmount = booking.BookedTotalPrice,
+            CheckIn = booking.CheckIn,
+            CheckOut = booking.CheckOut,
+            GuestCount = booking.GuestsCount,
+            ApartmentName = apartment.Title
+        });
+        
         await _unitOfWork.SaveChangesAsync();
         
         var createdBooking = await _unitOfWork.Bookings.GetByIdAsync(bookingId);
         var createdBookingDto = _mapper.Map<BookingDto>(createdBooking);
-        
-        await _publishEndpoint.Publish(new BookingCreatedEvent()
-        {
-            BookingId = createdBookingDto.Id, 
-            TotalAmount = createdBookingDto.BookedTotalPrice,
-            CheckIn = createdBookingDto.CheckIn,
-            CheckOut = createdBookingDto.CheckOut,
-            GuestCount = createdBookingDto.GuestCount,
-            ApartmentName = apartment.Title
-        });
         
         return createdBookingDto;
     }
@@ -96,8 +97,8 @@ public class BookingService : IBookingService
     public async Task DeleteBookingAsync(Guid bookingId)
     {
         await _unitOfWork.Bookings.DeleteAsync(bookingId);
-        await _unitOfWork.SaveChangesAsync();
-
         await _publishEndpoint.Publish(new BookingDeletedEvent() { BookingId = bookingId.ToString() });
+
+        await _unitOfWork.SaveChangesAsync();
     }
 }

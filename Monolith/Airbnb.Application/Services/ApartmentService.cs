@@ -65,12 +65,12 @@ public class ApartmentService : IApartmentService
         apartment.CreatedAt = DateTime.UtcNow;
         
         await _unitOfWork.Apartments.CreateAsync(apartment);
+        await _publishEndpoint.Publish(new ApartmentCreatedEvent() { ApartmentId = apartment.Id.ToString() });
+        
         await _unitOfWork.SaveChangesAsync();
         
         var createdApartment = await _unitOfWork.Apartments.GetByIdAsync(apartmentGuid);
         var createdApartmentDto = _mapper.Map<ApartmentDto>(createdApartment);
-
-        await _publishEndpoint.Publish(new ApartmentCreatedEvent() { ApartmentId = apartment.Id.ToString() });
         
         return createdApartmentDto;
     }
@@ -94,9 +94,9 @@ public class ApartmentService : IApartmentService
     public async Task DeleteApartmentAsync(Guid id)
     {
         await _unitOfWork.Apartments.DeleteAsync(id);
-        await _unitOfWork.SaveChangesAsync();
-        
         await _publishEndpoint.Publish(new ApartmentDeletedEvent() { ApartmentId = id.ToString() });
+        
+        await _unitOfWork.SaveChangesAsync();
     }
 
     public async Task<Result<List<ApartmentByProfitDto>>> GetTopApartmentsByProfitAsync(int numOfApartments, string userId) =>
