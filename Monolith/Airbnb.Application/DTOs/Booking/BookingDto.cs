@@ -13,6 +13,6 @@ public record BookingDto
     public decimal BookedPricePerNight { get; init; }
     public decimal BookedTotalPrice { get; init; }
     
-    public int GuestCount { get; init; }
+    public int GuestsCount { get; init; }
     public DateTime CreatedAt { get; init; }
 }
