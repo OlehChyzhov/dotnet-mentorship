@@ -63,6 +63,7 @@ builder.Services.AddOpenTelemetry()
 var app = builder.Build();
 app.MapControllers();
 
+// Deliberate: everything runs via docker compose, so the IsProduction check and MigrateAsync on startup are kept for development convenience.
 if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
 {
     app.MapOpenApi();

@@ -109,6 +109,7 @@ builder.Services.AddOpenApi();
 
 var app = builder.Build();
 
+// Deliberate: everything runs via docker compose, so the IsProduction check and MigrateAsync on startup are kept for development convenience.
 if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
 {
     app.MapOpenApi();
@@ -119,9 +120,7 @@ if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
             .WithTheme(ScalarTheme.Default)
             .WithDefaultHttpClient(ScalarTarget.CSharp, ScalarClient.Http);
     });
-
-    // TODO: Replace with explicit step in CI/CD using bundle
-    // TODO: Add migration in docker-compose file
+    
     using (var scope = app.Services.CreateScope())
     {
         var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
