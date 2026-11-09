@@ -39,6 +39,11 @@ public static class DependencyInjection
             config.AddConsumersFromNamespaceContaining<CreatePaymentTransactionCommandHandler>();
             config.AddConsumersFromNamespaceContaining<InvalidatePaymentSessionCommandHandler>();
             
+            config.AddConfigureEndpointsCallback((context, _, endpointConfig) =>
+            {
+                endpointConfig.UseEntityFrameworkOutbox<ApplicationDbContext>(context);
+            });
+
             config.UsingRabbitMq((context, rabbitMqConfig) =>
             {
                 rabbitMqConfig.Host(new Uri(rabbitmqOptions.HostUri), hostAddress =>
@@ -47,8 +52,13 @@ public static class DependencyInjection
                     hostAddress.Password(rabbitmqOptions.Password);
                 });
                 
-                rabbitMqConfig.UseInMemoryOutbox();
                 rabbitMqConfig.ConfigureEndpoints(context);
+            });
+            
+            config.AddEntityFrameworkOutbox<ApplicationDbContext>(o =>
+            {
+                o.UseSqlServer();
+                o.UseBusOutbox();
             });
         });
         

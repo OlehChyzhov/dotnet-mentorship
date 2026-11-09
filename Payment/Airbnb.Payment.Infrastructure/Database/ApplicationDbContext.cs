@@ -1,5 +1,6 @@
 using Airbnb.Payment.Domain;
 using Airbnb.Payment.Infrastructure.Database.Configurations;
+using MassTransit;
 using Microsoft.EntityFrameworkCore;
 
 namespace Airbnb.Payment.Infrastructure.Database;
@@ -15,5 +16,9 @@ public class ApplicationDbContext : DbContext
         base.OnModelCreating(builder);
 
         builder.ApplyConfiguration(new PaymentTransactionConfiguration());
+        
+        builder.AddInboxStateEntity();
+        builder.AddOutboxMessageEntity();
+        builder.AddOutboxStateEntity();
     }
 }
