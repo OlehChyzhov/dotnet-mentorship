@@ -25,7 +25,7 @@ public static class Program
             Args = args,
             ContentRootPath = AppContext.BaseDirectory
         });
-        await builder.Services.AddInfrastructureAsync(builder.Configuration);
+        builder.Services.AddInfrastructure(builder.Configuration);
         builder.Services.AddApplication(builder.Configuration);
 
         using var host = builder.Build();

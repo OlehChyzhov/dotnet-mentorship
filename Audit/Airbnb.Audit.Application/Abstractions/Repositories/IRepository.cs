@@ -1,4 +1,4 @@
-using Airbnb.Shared.HTTP;
+using Airbnb.Shared.Common;
 
 namespace Airbnb.Audit.Application.Abstractions.Repositories;
 

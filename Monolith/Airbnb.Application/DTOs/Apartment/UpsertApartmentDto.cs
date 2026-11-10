@@ -23,7 +23,7 @@ public record UpsertApartmentDto
     public int Bathrooms { get; init; }
     public int Kitchens { get; init; }
     public int LivingRooms { get; init; }
-    public double PricePerNight { get; init; }
+    public decimal PricePerNight { get; init; }
 
     // Lifecycle
     public bool IsListed { get; init; }

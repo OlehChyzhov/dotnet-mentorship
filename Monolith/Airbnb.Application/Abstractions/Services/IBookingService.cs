@@ -1,6 +1,6 @@
 ﻿using Airbnb.Application.DTOs.Booking;
 using Airbnb.Application.DTOs.Querying;
-using Airbnb.Shared.HTTP;
+using Airbnb.Shared.Common;
 
 namespace Airbnb.Application.Abstractions.Services;
 

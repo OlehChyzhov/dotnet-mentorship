@@ -5,8 +5,8 @@ namespace Airbnb.Domain.Enums;
 [JsonConverter(typeof(JsonStringEnumConverter))]
 public enum BookingStatus
 {
-    Pending,
-    Confirmed,
-    Cancelled,
-    Completed
+    AwaitingPayment = 1,
+    PaymentExpired = 2,
+    PaymentSucceeded = 3,
+    PaymentFailed = 4,
 }

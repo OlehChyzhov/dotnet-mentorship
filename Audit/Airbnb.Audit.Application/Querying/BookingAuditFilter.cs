@@ -1,4 +1,4 @@
-using Airbnb.Shared.HTTP;
+using Airbnb.Shared.Common.Paging;
 
 namespace Airbnb.Audit.Application.Querying;
 

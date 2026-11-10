@@ -17,11 +17,19 @@
     <Project Path="Monolith/Airbnb.Migrator/Airbnb.Migrator.csproj" />
     <Project Path="Monolith/Airbnb.UnitTests/Airbnb.UnitTests.csproj" />
   </Folder>
+  <Folder Name="/Payment/">
+    <Project Path="Payment/Airbnb.Payment.API/Airbnb.Payment.API.csproj" />
+    <Project Path="Payment/Airbnb.Payment.Application/Airbnb.Payment.Application.csproj" />
+    <Project Path="Payment/Airbnb.Payment.Domain/Airbnb.Payment.Domain.csproj" />
+    <Project Path="Payment/Airbnb.Payment.Infrastructure/Airbnb.Payment.Infrastructure.csproj" />
+  </Folder>
   <Folder Name="/Shared/">
-    <Project Path="Shared/Airbnb.Shared/Airbnb.Shared.csproj" />
+    <Project Path="Shared/Airbnb.Shared.Common/Airbnb.Shared.Common.csproj" />
+    <Project Path="Shared/Airbnb.Shared.Contracts/Airbnb.Shared.Contracts.csproj" />
   </Folder>
   <Folder Name="/Solution Items/">
     <File Path=".env" />
+    <File Path=".env.example" />
     <File Path="docker-compose.yaml" />
     <File Path="load-test.js" />
     <File Path="prometheus.yml" />

@@ -22,3 +22,9 @@ scrape_configs:
           - "airbnb.audit.api.first:8080"
           - "airbnb.audit.api.second:8080"
           - "airbnb.audit.api.third:8080"
+  
+  # Payment microservice (1 Instance)
+  - job_name: "airbnb.payment.api"
+    static_configs:
+      - targets:
+          - "airbnb.payment.api.first:8080"

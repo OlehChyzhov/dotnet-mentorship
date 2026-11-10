@@ -1,11 +1,11 @@
-﻿using System.Linq.Expressions;
-using Airbnb.Domain.Models;
+﻿using Airbnb.Domain.Models;
 
-namespace Airbnb.Application.Abstracts.Repositories;
+namespace Airbnb.Application.Abstractions.Repositories;
 
 public interface IRepository<TEntity, TKey, TExternalKey> where TEntity : class, IEntity<TKey, TExternalKey>
 {
     Task<TEntity> GetByIdAsync(TKey id);
+    Task<TEntity> GetByIdTrackedAsync(TKey id);
     Task<TEntity> GetByExternalIdAsync(TExternalKey externalId);
     Task CreateAsync(TEntity entity);
     Task UpdateAsync(TEntity entity);

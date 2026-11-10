@@ -6,7 +6,7 @@ using Airbnb.Application.Abstracts.Identity;
 using Airbnb.Application.DTOs.Authentication;
 using Airbnb.Application.Options;
 using Airbnb.Domain.Models;
-using Airbnb.Shared.HTTP;
+using Airbnb.Shared.Common;
 using MapsterMapper;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;

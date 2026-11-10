@@ -3,22 +3,26 @@ using Airbnb.Application.Abstractions.Services;
 using Airbnb.Application.DTOs.Booking;
 using Airbnb.Application.DTOs.Querying;
 using Airbnb.Domain.Enums;
-using Airbnb.Shared.Broker;
-using Airbnb.Shared.HTTP;
-using Airbnb.Shared.Messages.Booking;
+using Airbnb.Domain.Models;
+using Airbnb.Shared.Common;
+using Airbnb.Shared.Contracts.Events.Booking;
 using MapsterMapper;
+using MassTransit;
 
 namespace Airbnb.Application.Services;
 
 public class BookingService : IBookingService
 {
-    private readonly IPublisher _publisher;
+    private readonly IPublishEndpoint _publishEndpoint;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
 
-    public BookingService(IPublisher publisher, IUnitOfWork unitOfWork, IMapper mapper)
+    public BookingService(
+        IPublishEndpoint publishEndpoint,
+        IUnitOfWork unitOfWork, 
+        IMapper mapper)
     {
-        _publisher = publisher;
+        _publishEndpoint = publishEndpoint;
         _unitOfWork = unitOfWork;
         _mapper = mapper;
     }
@@ -61,31 +65,40 @@ public class BookingService : IBookingService
         
 
         Guid bookingId = Guid.NewGuid();
-        var booking = _mapper.Map<Domain.Models.Booking>(dto);
+        var booking = _mapper.Map<Booking>(dto);
 
         booking.Id = bookingId;
         booking.ClientId = userId;
-        booking.Status = BookingStatus.Pending;
+        booking.Status = BookingStatus.AwaitingPayment;
         booking.CreatedAt = DateTime.UtcNow;
         booking.BookedPricePerNight = apartment.PricePerNight;
-        booking.BookedTotalPrice =  apartment.PricePerNight * ((dto.CheckOut - dto.CheckIn).TotalDays);
+        booking.BookedTotalPrice =  apartment.PricePerNight * (decimal)(dto.CheckOut - dto.CheckIn).TotalDays;
         
         await _unitOfWork.Bookings.CreateAsync(booking);
+        
+        await _publishEndpoint.Publish(new BookingCreatedEvent()
+        {
+            BookingId = booking.Id, 
+            TotalAmount = booking.BookedTotalPrice,
+            CheckIn = booking.CheckIn,
+            CheckOut = booking.CheckOut,
+            GuestCount = booking.GuestsCount,
+            ApartmentName = apartment.Title
+        });
+        
         await _unitOfWork.SaveChangesAsync();
         
         var createdBooking = await _unitOfWork.Bookings.GetByIdAsync(bookingId);
         var createdBookingDto = _mapper.Map<BookingDto>(createdBooking);
         
-        await _publisher.PublishAsync(new BookingCreated() { EntityId = createdBookingDto.Id.ToString() });
-        
         return createdBookingDto;
     }
-
+    
     public async Task DeleteBookingAsync(Guid bookingId)
     {
         await _unitOfWork.Bookings.DeleteAsync(bookingId);
-        await _unitOfWork.SaveChangesAsync();
+        await _publishEndpoint.Publish(new BookingDeletedEvent() { BookingId = bookingId.ToString() });
 
-        await _publisher.PublishAsync(new BookingDeleted() { EntityId = bookingId.ToString() });
+        await _unitOfWork.SaveChangesAsync();
     }
 }

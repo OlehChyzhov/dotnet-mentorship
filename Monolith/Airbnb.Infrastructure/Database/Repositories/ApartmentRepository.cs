@@ -4,7 +4,7 @@ using Airbnb.Application.DTOs.Querying;
 using Airbnb.Domain.Enums;
 using Airbnb.Domain.Models;
 using Airbnb.Infrastructure.Database.Dapper;
-using Airbnb.Shared.HTTP;
+using Airbnb.Shared.Common;
 using Dapper;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,7 +14,7 @@ public class ApartmentRepository : Repository<Apartment, Guid, Guid?>, IApartmen
 {
     public ApartmentRepository(ApplicationDbContext context) : base(context) {}
     
-    public async Task<PagedResult<Apartment>> GetApartmentsPagedAsync(ApartmentPagingParamters query)
+    public async Task<PagedResult<Apartment>> GetApartmentsPagedAsync(ApartmentPagingParameters query)
     {
         var apartmentsQuery = DbSet.AsQueryable();
 
@@ -25,7 +25,7 @@ public class ApartmentRepository : Repository<Apartment, Guid, Guid?>, IApartmen
                 .Include(apartment => apartment.Bookings)
                 .Where(apartment => apartment.Bookings
                     .Where(booking =>
-                        booking.Status == BookingStatus.Confirmed || booking.Status == BookingStatus.Pending)
+                        booking.Status == BookingStatus.PaymentSucceeded || booking.Status == BookingStatus.AwaitingPayment)
                     .All(booking => booking.CheckOut <= query.StartDate || booking.CheckIn >= query.EndDate)
                 );
 

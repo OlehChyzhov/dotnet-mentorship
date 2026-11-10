@@ -3,7 +3,6 @@ using Airbnb.Audit.API.Options;
 using Airbnb.Audit.Application;
 using Airbnb.Audit.Infrastructure;
 using Airbnb.Audit.Infrastructure.Consumers;
-using Airbnb.Shared;
 using MassTransit;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
@@ -13,12 +12,6 @@ using Serilog.Events;
 using Serilog.Sinks.Elasticsearch;
 
 var builder = WebApplication.CreateBuilder(args);
-
-// Message Broker
-builder.Services.AddRabbitMq(builder.Configuration, config =>
-{
-    config.AddConsumersFromNamespaceContaining<ApartmentMessageConsumer>();
-});
 
 // DbContext, Repositories, UnitOfWork, etc.
 builder.Services.AddInfrastructure(builder.Configuration);

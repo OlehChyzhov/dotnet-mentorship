@@ -2,7 +2,6 @@ using System.Text.Json;
 using Airbnb.Application.Abstractions.Repositories;
 using Airbnb.Application.Abstractions.Services;
 using Airbnb.Application.Abstracts.Identity;
-using Airbnb.Application.Abstracts.Repositories;
 using Airbnb.Application.DTOs.External;
 using Airbnb.Application.Options;
 using Airbnb.Domain.Constants;
@@ -81,7 +80,7 @@ public class ExternalDataLoaderTests : IDisposable
                 City = "Krakow",
                 Address = "Ulica Florianska 12",
                 MaxGuests = 2,
-                PricePerNight = 65.5,
+                PricePerNight = 65.5m,
                 IsListed = true,
                 CreatedAt = DateTime.UtcNow
             }

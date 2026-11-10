@@ -1,12 +1,17 @@
 ﻿using Airbnb.Application.Abstractions.Repositories;
 using Airbnb.Application.Abstractions.Services;
 using Airbnb.Application.Abstracts.Identity;
-using Airbnb.Application.Abstracts.Repositories;
 using Airbnb.Domain.Models;
 using Airbnb.Infrastructure.Database;
 using Airbnb.Infrastructure.Database.Repositories;
 using Airbnb.Infrastructure.DataLoading;
 using Airbnb.Infrastructure.Identity;
+using Airbnb.Infrastructure.Options;
+using Airbnb.Infrastructure.Saga;
+using Airbnb.Infrastructure.Saga.BookingSaga;
+using Airbnb.Infrastructure.Saga.BookingSaga.Failure;
+using Airbnb.Infrastructure.Saga.BookingSaga.Success;
+using MassTransit;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -16,8 +21,45 @@ namespace Airbnb.Infrastructure;
 
 public static class DependencyInjection
 {
-    public static async Task<IServiceCollection> AddInfrastructureAsync(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
+        // Message Broker (MassTransit.RabbitMQ)
+        var rabbitmqSection = configuration.GetSection("RabbitMq");
+        services.Configure<MessageBrokerOptions>(rabbitmqSection);
+        var rabbitmqOptions = rabbitmqSection.Get<MessageBrokerOptions>()!;
+        
+        services.AddMassTransit(config =>
+        {
+            config.SetKebabCaseEndpointNameFormatter();
+
+            config.AddSagaStateMachine<BookingPaymentSagaStateMachine, BookingPaymentStateMachineInstance>()
+                .EntityFrameworkRepository(r =>
+                {
+                    r.ExistingDbContext<ApplicationDbContext>();
+                    r.UseSqlServer();
+                });
+
+            config.AddEntityFrameworkOutbox<ApplicationDbContext>(o =>
+            {
+                o.UseSqlServer();
+                o.UseBusOutbox();
+            });
+
+            config.AddConsumersFromNamespaceContaining<FinishBookingCommandHandler>();
+            config.AddConsumersFromNamespaceContaining<RevertUpdatingBookingAsSuccessCommandHandler>();
+            
+            config.UsingRabbitMq((context, rabbitMqConfig) =>
+            {
+                rabbitMqConfig.Host(new Uri(rabbitmqOptions.HostUri), hostAddress =>
+                {
+                    hostAddress.Username(rabbitmqOptions.UserName);
+                    hostAddress.Password(rabbitmqOptions.Password);
+                });
+                
+                rabbitMqConfig.ConfigureEndpoints(context);
+            });
+        });
+        
         // Repositories
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<IApartmentRepository, ApartmentRepository>();

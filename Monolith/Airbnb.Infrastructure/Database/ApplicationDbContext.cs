@@ -1,5 +1,8 @@
 ﻿using Airbnb.Domain.Models;
 using Airbnb.Infrastructure.Database.Configurations;
+using Airbnb.Infrastructure.Saga;
+using Airbnb.Infrastructure.Saga.BookingSaga;
+using MassTransit;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -8,6 +11,8 @@ namespace Airbnb.Infrastructure.Database;
 
 public class ApplicationDbContext : IdentityDbContext<User, IdentityRole, string>
 {
+    public DbSet<BookingPaymentStateMachineInstance> SagaInstances { get; set; }
+    
     public DbSet<Apartment> Apartments { get; set; }
     public DbSet<Booking> Bookings { get; set; }
     
@@ -16,10 +21,15 @@ public class ApplicationDbContext : IdentityDbContext<User, IdentityRole, string
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
-        
+
+        builder.ApplyConfiguration(new SagaInstanceConfiguration());
         builder.ApplyConfiguration(new IdentityRoleConfiguration());
         builder.ApplyConfiguration(new UserConfiguration());
         builder.ApplyConfiguration(new ApartmentConfiguration());
         builder.ApplyConfiguration(new BookingConfiguration());
+
+        builder.AddInboxStateEntity();
+        builder.AddOutboxMessageEntity();
+        builder.AddOutboxStateEntity();
     }
 }
