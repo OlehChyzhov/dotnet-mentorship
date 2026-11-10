@@ -105,8 +105,7 @@ public class StripePaymentWebhookService : IPaymentWebhookService
 
         transaction.StripePaymentIntendId = session.PaymentIntentId;
         transaction.RefundStatus = RefundStatus.RefundPending;
-        await _unitOfWork.SaveChangesAsync();
-
+        
         await _publishEndpoint.Publish(new PaymentWebhookTriggeredEvent
         {
             BookingId = transaction.BookingId,
@@ -114,7 +113,8 @@ public class StripePaymentWebhookService : IPaymentWebhookService
             PaymentSessionId = session.Id,
             Status = PaymentStatus.Paid
         });
-
+        
+        await _unitOfWork.SaveChangesAsync();
         _logger.LogInformation("Payment successful for booking with id {BookingId}", transaction.BookingId);
     }
 
@@ -127,15 +127,14 @@ public class StripePaymentWebhookService : IPaymentWebhookService
         }
 
         transaction.PaymentSessionStatus = PaymentSessionStatus.Invalid;
-        await _unitOfWork.SaveChangesAsync();
-
         await _publishEndpoint.Publish(new PaymentWebhookTriggeredEvent
         {
             BookingId = transaction.BookingId,
             PaymentSessionId = session.Id,
             Status = PaymentStatus.Expired
         });
-
+        
+        await _unitOfWork.SaveChangesAsync();
         _logger.LogInformation("Payment expired for booking with id {BookingId}", transaction.BookingId);
     }
 }
