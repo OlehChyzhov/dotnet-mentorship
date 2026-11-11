@@ -26,6 +26,7 @@
   <Folder Name="/Shared/">
     <Project Path="Shared/Airbnb.Shared.Common/Airbnb.Shared.Common.csproj" />
     <Project Path="Shared/Airbnb.Shared.Contracts/Airbnb.Shared.Contracts.csproj" />
+    <Project Path="Shared/Airbnb.Shared.Web/Airbnb.Shared.Web.csproj" />
   </Folder>
   <Folder Name="/Solution Items/">
     <File Path=".env" />

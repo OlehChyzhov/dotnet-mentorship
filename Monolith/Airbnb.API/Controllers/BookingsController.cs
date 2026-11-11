@@ -4,6 +4,7 @@ using Airbnb.Application.Abstractions.Services;
 using Airbnb.Application.DTOs.Booking;
 using Airbnb.Application.DTOs.Querying;
 using Airbnb.Domain.Constants;
+using Airbnb.Shared.Web;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -47,6 +48,7 @@ public class BookingsController : ControllerBase
         return Ok(result.Value);
     }
 
+    [Idempotent]
     [HttpPost("booking")]
     public async Task<IActionResult> ReserveBooking([FromBody] CreateBookingDto dto)
     {

@@ -14,10 +14,13 @@
           <PrivateAssets>all</PrivateAssets>
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
+        <PackageReference Include="Microsoft.Extensions.Caching.Hybrid" Version="11.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="11.0.0" />
         <PackageReference Include="Scalar.AspNetCore" Version="2.16.18" />
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\..\Shared\Airbnb.Shared.Web\Airbnb.Shared.Web.csproj" />
       <ProjectReference Include="..\Airbnb.Infrastructure\Airbnb.Infrastructure.csproj" />
     </ItemGroup>
 

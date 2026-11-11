@@ -8,6 +8,7 @@ using Airbnb.Infrastructure;
 using Airbnb.Infrastructure.Database;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.IdentityModel.Tokens;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
@@ -102,6 +103,21 @@ builder.Services.AddOpenTelemetry()
         metrics.AddMeter(BusinessMetrics.MeterName);
         metrics.AddPrometheusExporter();
     });
+
+// Caching
+builder.Services.AddHybridCache(options =>
+{
+    options.DefaultEntryOptions = new HybridCacheEntryOptions()
+    {
+        LocalCacheExpiration = TimeSpan.FromHours(24),
+        Expiration = TimeSpan.FromHours(24)
+    };
+});
+
+builder.Services.AddStackExchangeRedisCache(options =>
+{
+    options.Configuration = builder.Configuration.GetConnectionString("Redis");
+});
 
 // Default
 builder.Services.AddControllers();

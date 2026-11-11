@@ -98,6 +98,7 @@
       JWT__Audience: ${APPLICATION_JWT_Audience}
       JWT__ExpirationMinutes: ${APPLICATION_JWT_EXPIRATION_MINUTES}
       ConnectionStrings__DefaultConnection: ${APPLICATION_DB_CONNECTION_STRING}
+      ConnectionStrings__Redis: ${REDIS_CONNECTION_STRING}
       DefaultUserOptions__DefaultPassword: ${APPLICATION_DEFAULT_USER_PASSWORD}
       
       RabbitMq__HostUri: ${RABBITMQ_HOST_URI}
@@ -123,6 +124,7 @@
       JWT__Audience: ${APPLICATION_JWT_Audience}
       JWT__ExpirationMinutes: ${APPLICATION_JWT_EXPIRATION_MINUTES}
       ConnectionStrings__DefaultConnection: ${APPLICATION_DB_CONNECTION_STRING}
+      ConnectionStrings__Redis: ${REDIS_CONNECTION_STRING}
       DefaultUserOptions__DefaultPassword: ${APPLICATION_DEFAULT_USER_PASSWORD}
 
       RabbitMq__HostUri: ${RABBITMQ_HOST_URI}
@@ -148,6 +150,7 @@
       JWT__Audience: ${APPLICATION_JWT_Audience}
       JWT__ExpirationMinutes: ${APPLICATION_JWT_EXPIRATION_MINUTES}
       ConnectionStrings__DefaultConnection: ${APPLICATION_DB_CONNECTION_STRING}
+      ConnectionStrings__Redis: ${REDIS_CONNECTION_STRING}
       DefaultUserOptions__DefaultPassword: ${APPLICATION_DEFAULT_USER_PASSWORD}
 
       RabbitMq__HostUri: ${RABBITMQ_HOST_URI}
@@ -253,6 +256,12 @@
     command: listen --forward-to http://airbnb.gateway:8080/api/payments/webhook --events checkout.session.completed,checkout.session.expired
     environment:
       STRIPE_API_KEY: ${STRIPE_SECRET_KEY}
+      
+  # Redis
+  redis:
+    image: redis:7
+    ports:
+      - "6379:6379"
 
   # Other
   elasticsearch:

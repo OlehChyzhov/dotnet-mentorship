@@ -5,8 +5,10 @@ using Airbnb.Application.DTOs.Apartment;
 using Airbnb.Application.DTOs.Querying;
 using Airbnb.Domain.Constants;
 using Airbnb.Domain.Enums;
+using Airbnb.Shared.Web;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Hybrid;
 
 namespace Airbnb.API.Controllers;
 
@@ -128,6 +130,7 @@ public class ApartmentsController : ControllerBase
     }
 
     [HttpPost]
+    [Idempotent]
     [Authorize(Roles = $"{Roles.Host}")]
     public async Task<IActionResult> CreateApartmentAsync([FromBody] CreateApartmentDto dto)
     {
@@ -144,6 +147,7 @@ public class ApartmentsController : ControllerBase
     }
 
     [HttpPut]
+    [Idempotent]
     [Authorize(Roles = $"{Roles.Host}")]
     public async Task<IActionResult> UpsertApartmentAsync([FromBody] UpsertApartmentDto dto)
     {
