@@ -9,7 +9,7 @@ using Airbnb.Shared.Contracts.Events.Booking;
 using MapsterMapper;
 using MassTransit;
 
-namespace Airbnb.Application.Services;
+namespace Airbnb.Application.Services.Booking;
 
 public class BookingService : IBookingService
 {

@@ -16,6 +16,8 @@
     <ItemGroup>
       <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.2.0" />
       <PackageReference Include="Mapster.DependencyInjection" Version="10.1.0-pre01" />
+      <PackageReference Include="Microsoft.Extensions.Caching.Hybrid" Version="11.0.0" />
+      <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="11.0.0" />
       <PackageReference Include="Microsoft.Extensions.Identity.Core" Version="10.0.10" />
       <PackageReference Include="Microsoft.Extensions.Identity.Stores" Version="10.0.10" />
       <PackageReference Include="OpenTelemetry.Exporter.Prometheus.AspNetCore" Version="1.20.1-beta.1" />

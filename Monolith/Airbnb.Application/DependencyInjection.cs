@@ -3,6 +3,7 @@ using Airbnb.Application.Mapping;
 using Airbnb.Application.Metrics;
 using Airbnb.Application.Options;
 using Airbnb.Application.Services;
+using Airbnb.Application.Services.Booking;
 using Airbnb.Application.Validators;
 using FluentValidation;
 using Mapster;
@@ -17,9 +18,14 @@ public static class DependencyInjection
     {
         // Services
         services.AddScoped<IApartmentService, ApartmentService>();
-        services.AddScoped<IBookingService, BookingService>();
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<IUserService, UserService>();
+        
+        // Booking Service Decorator
+        services.AddScoped<BookingService>();
+        services.AddScoped<IBookingService>(sp => new LockingBookingService(
+            sp.GetRequiredService<BookingService>(),
+            sp.GetRequiredService<ICacheBasedOperationLocker>()));
 
         // Metrics
         services.AddSingleton<BusinessMetrics>();

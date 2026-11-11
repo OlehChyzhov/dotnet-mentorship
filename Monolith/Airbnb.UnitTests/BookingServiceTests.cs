@@ -2,6 +2,7 @@ using Airbnb.Application.Abstractions.Repositories;
 using Airbnb.Application.DTOs.Booking;
 using Airbnb.Application.DTOs.Querying;
 using Airbnb.Application.Services;
+using Airbnb.Application.Services.Booking;
 using Airbnb.Domain.Enums;
 using Airbnb.Domain.Models;
 using MassTransit;
