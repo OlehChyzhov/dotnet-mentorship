@@ -65,7 +65,7 @@ public class BookingService : IBookingService
         
 
         Guid bookingId = Guid.NewGuid();
-        var booking = _mapper.Map<Booking>(dto);
+        var booking = _mapper.Map<Domain.Models.Booking>(dto);
 
         booking.Id = bookingId;
         booking.ClientId = userId;
