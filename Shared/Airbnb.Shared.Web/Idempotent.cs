@@ -70,7 +70,9 @@ public class Idempotent : Attribute, IAsyncActionFilter
 
     private bool IsSuccessfulResult(ObjectResult objectResult)
     {
+        // when object returned directly the status code is skipped
         objectResult.StatusCode ??= 200;
+        
         return objectResult.StatusCode >= 200 && objectResult.StatusCode < 300;
     }
 }
