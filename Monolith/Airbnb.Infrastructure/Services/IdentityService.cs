@@ -2,7 +2,7 @@ using Airbnb.Application.Abstracts.Identity;
 using Airbnb.Domain.Models;
 using Microsoft.AspNetCore.Identity;
 
-namespace Airbnb.Infrastructure.Identity;
+namespace Airbnb.Infrastructure.Services;
 
 public class IdentityService : IIdentityService
 {

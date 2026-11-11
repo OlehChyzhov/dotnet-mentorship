@@ -9,7 +9,7 @@ using Airbnb.Shared.Contracts.Events.Booking;
 using MapsterMapper;
 using MassTransit;
 
-namespace Airbnb.Application.Services;
+namespace Airbnb.Application.Services.Booking;
 
 public class BookingService : IBookingService
 {
@@ -65,7 +65,7 @@ public class BookingService : IBookingService
         
 
         Guid bookingId = Guid.NewGuid();
-        var booking = _mapper.Map<Booking>(dto);
+        var booking = _mapper.Map<Domain.Models.Booking>(dto);
 
         booking.Id = bookingId;
         booking.ClientId = userId;

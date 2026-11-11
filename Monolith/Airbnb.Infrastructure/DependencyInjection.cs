@@ -5,17 +5,18 @@ using Airbnb.Domain.Models;
 using Airbnb.Infrastructure.Database;
 using Airbnb.Infrastructure.Database.Repositories;
 using Airbnb.Infrastructure.DataLoading;
-using Airbnb.Infrastructure.Identity;
 using Airbnb.Infrastructure.Options;
 using Airbnb.Infrastructure.Saga;
 using Airbnb.Infrastructure.Saga.BookingSaga;
 using Airbnb.Infrastructure.Saga.BookingSaga.Failure;
 using Airbnb.Infrastructure.Saga.BookingSaga.Success;
+using Airbnb.Infrastructure.Services;
 using MassTransit;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using StackExchange.Redis;
 
 namespace Airbnb.Infrastructure;
 
@@ -67,6 +68,13 @@ public static class DependencyInjection
         
         // Services
         services.AddScoped<IIdentityService, IdentityService>();
+        services.AddSingleton<ICacheBasedOperationLocker, RedisBasedOperationLocker>();
+        
+        // Redis
+        services.AddSingleton<IConnectionMultiplexer>(options =>
+        {
+            return ConnectionMultiplexer.Connect(configuration.GetConnectionString("Redis")!);
+        });
         
         // Helpers
         services.AddScoped<IExternalDataLoader, ExternalDataLoader>();
