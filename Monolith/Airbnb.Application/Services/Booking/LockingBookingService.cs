@@ -33,7 +33,7 @@ public class LockingBookingService : IBookingService
         var key = $"lock:booking:apartment:{dto.ApartmentId}";
         var lockingToken = Guid.NewGuid().ToString();
 
-        if (!await _locker.TryLock(key, lockingToken, TimeSpan.FromSeconds(30)))
+        if (!await _locker.LockAsync(key, lockingToken, TimeSpan.FromSeconds(30)))
         {
             return "The apartment is being booked by someone else right now, try again";
         }

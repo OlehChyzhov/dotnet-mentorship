@@ -12,7 +12,7 @@ public class RedisBasedOperationLocker : ICacheBasedOperationLocker
         _redis = redis;
     }
 
-    public async Task<bool> TryLock(string key, string lockToken, TimeSpan expiration)
+    public async Task<bool> LockAsync(string key, string lockToken, TimeSpan expiration)
     {
         IDatabase db = _redis.GetDatabase();
         return await db.LockTakeAsync(key, lockToken, expiration);
