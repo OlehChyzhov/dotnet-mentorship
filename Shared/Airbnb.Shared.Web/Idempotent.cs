@@ -15,9 +15,9 @@ public class Idempotent : Attribute, IAsyncActionFilter
 {
     public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
     {
-        if (!context.HttpContext.Request.Headers.TryGetValue("Idempotency-Key", out var key) || string.IsNullOrWhiteSpace(key))
+        if (!context.HttpContext.Request.Headers.TryGetValue("X-Idempotency-Key", out var key) || string.IsNullOrWhiteSpace(key))
         {
-            context.Result = new BadRequestObjectResult("Idempotency-Key header is required");
+            context.Result = new BadRequestObjectResult("X-Idempotency-Key header is required");
             return;
         }
         
@@ -63,7 +63,7 @@ public class Idempotent : Attribute, IAsyncActionFilter
         var httpContext = context.HttpContext;
         var userId = httpContext.User.FindFirstValue(ClaimTypes.NameIdentifier)!;
         var endpoint = $"{httpContext.Request.Method}:{httpContext.Request.Path}";
-        var idempotencyKey = httpContext.Request.Headers["Idempotency-Key"];
+        var idempotencyKey = httpContext.Request.Headers["X-Idempotency-Key"];
         
         return $"{userId}_{endpoint}_{idempotencyKey}";
     }
